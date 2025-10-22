@@ -1,4 +1,4 @@
-# HubShop
+# Ecobazar
 A marketplace where you can buy/sell your goods which ease.
 
 ## Stack
