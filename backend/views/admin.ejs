@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop.ly app</title>
+    <%- include('./partials/head') %>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar bg-secondary-subtle text-secondary-emphasis">
+        <div class="container-fluid">
+          <a class="navbar-brand">Shop.ly</a>
+          <div class="d-flex">
+            <% if (user) { %>
+              <a href="/adminPage/orders" class="btn btn-success me-1">Orders</a>
+              <a href="/adminPage/AddProduct" class="btn btn-primary me-3">Add Product</a>
+              <a href="/user/logout" class="btn btn-primary">Logout</a>
+              <% } else { %>
+                <a href="/login" class="btn btn-primary me-3">Login</a>
+                <a href="/signup" class="btn btn-primary">Signup</a>
+                <% } %>
+          </div>
+        </div>
+      </nav>
+
+    <!-- Navbar end -->
+
+    <!-- Main content -->
+     <h2>Welcome to Shop.ly Admin page</h2>
+     <h4>Your listed Products: </h4>
+
+     <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Category</th>
+            <th scope="col">Stock</th>
+            <th scope="col">Price</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach((pro,index) => { %>
+            <tr>
+              <th scope="row"><%= index+1 %></th>
+              <td><%= pro.name %></td>
+              <td><%= pro.category %></td>
+              <td> <%= pro.stock %></td>
+              <td>₹ <%= pro.price %></td>
+              <td>
+                <form method="get" action="/adminPage/EditProduct/<%= pro._id %>">
+                  <button type="submit" class="btn btn-primary"> Edit </button>
+                </form>
+              </td>
+              <td>
+                <form method="post" action="/admin/remove/<%= pro._id %>?_method=DELETE">
+                  <button type="submit" class="btn btn-danger"> Remove </button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+
+    
+
+    <%- include('./partials/script') %>
+</body>
+
+</html>

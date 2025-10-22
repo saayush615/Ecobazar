@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My cart</title>
+    <%- include('./partials/head') %>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar bg-secondary-subtle text-secondary-emphasis">
+      <div class="container-fluid">
+        <a class="navbar-brand">Shop.ly</a>
+        <div class="d-flex">
+          <% if (user) { %>
+    
+            <form method="post" action="/product/" class="d-flex " role="search">
+              <input class="form-control me-2 outline-danger" name="search" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success me-5" type="submit">Search</button>
+            </form>
+    
+            <a href="/orders" class="btn btn-primary me-3">Orders</a>
+            <a href="/user/logout" class="btn btn-primary">Logout</a>
+            <% } else { %>
+              <a href="/login" class="btn btn-primary me-3">Login</a>
+              <a href="/signup" class="btn btn-primary">Signup</a>
+              <% } %>
+        </div>
+      </div>
+    </nav>
+    <!-- End of Navbar -->    
+
+
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Cost</th>
+            <th scope="col">Price</th>
+            <th scope="col">Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach((pro,index) => { %>
+            <tr>
+              <th scope="row"><%= index+1 %></th>
+              <td><%= pro.product.name %></td>
+              <td><%= pro.quantity %></td>
+              <td>₹ <%= pro.product.price %></td>
+              <td>₹ <%= pro.product.price * pro.quantity %></td>
+              <td>
+                <form method="post" action="/cart/remove/<%= pro._id %>">
+                  <button type="submit" class="btn btn-secondary"> - </button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+
+
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+              <th scope="row">sum</th>
+              <td><%= total %></td>
+              <td><a href="/order/BuyNow" class="btn btn-success"> Buy </a></td>
+          </tr>
+        </tbody>
+      </table>
+
+
+    <%- include('./partials/script') %>
+</body>
+
+</html>
