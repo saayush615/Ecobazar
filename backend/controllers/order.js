@@ -1,6 +1,6 @@
-const Order = require('../models/order');
-const Cart = require('../models/cart');
-const user = require('../models/user');
+import Order from '../models/order.js';
+import Cart from '../models/cart.js';
+import user from '../models/user.js';
 
 async function handleBuyNow(req, res) {
     try{
@@ -25,4 +25,4 @@ async function handleBuyNow(req, res) {
     }
 }
 
-module.exports = { handleBuyNow }
+export { handleBuyNow };

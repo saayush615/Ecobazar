@@ -1,6 +1,6 @@
-const Cart = require('../models/cart');
-const Product = require('../models/product');
-const User = require('../models/user')
+import Cart from '../models/cart.js';
+import Product from '../models/product.js';
+import User from '../models/user.js';
 
 async function handleAddToCart(req,res) {
     if (!req.user) {
@@ -47,4 +47,4 @@ async function handleProdRemove(req,res) {
     return res.redirect('/mycart');
 }
 
-module.exports = { handleAddToCart,handleProdRemove }
+export { handleAddToCart, handleProdRemove };

@@ -7,4 +7,4 @@ function adminOnly(req,res,next) {
     next();
 }
 
-module.exports = { adminOnly };
+export { adminOnly };

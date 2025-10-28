@@ -1,6 +1,6 @@
-const User = require('../models/user');
-const { setPassword, checkPassword } = require('../services/hashpass');
-const { createToken, checkToken } = require('../services/auth');
+import User from '../models/user.js';
+import { setPassword, checkPassword } from '../services/hashpass.js';
+import { createToken, checkToken } from '../services/auth.js';
 
 async function handleSignup(req,res) {
     try {
@@ -57,4 +57,4 @@ async function handleLogin(req,res) {
 
 }
 
-module.exports = { handleSignup, handleLogin};
+export { handleSignup, handleLogin };

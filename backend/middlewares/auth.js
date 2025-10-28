@@ -1,4 +1,4 @@
-const { checkToken } = require('../services/auth')
+import { checkToken } from '../services/auth.js';
 
 async function checkAuthentication(req,res,next) {
     const userUid = req.cookies?.uid;
@@ -24,4 +24,4 @@ async function checkAuthentication(req,res,next) {
 
 }
 
-module.exports = { checkAuthentication };
+export { checkAuthentication };

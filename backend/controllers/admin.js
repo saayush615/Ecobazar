@@ -1,6 +1,6 @@
-const product = require('../models/product');
-const cart = require('../models/cart');
-const Order = require('../models/order');
+import product from '../models/product.js';
+import cart from '../models/cart.js';
+import Order from '../models/order.js';
 
 async function handlePostProd(req,res) {
     const { name, price, category, stock } = req.body;
@@ -52,4 +52,4 @@ async function handleUpdateStatus(req, res) {
     }
 }
 
-module.exports = { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd, handleUpdateStatus };
+export { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd, handleUpdateStatus };

@@ -1,9 +1,9 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import { handleAddToCart,handleProdRemove } from '../controllers/cart.js';
 
-const { handleAddToCart,handleProdRemove } = require('../controllers/cart');
+const router = express.Router();
 
 router.post('/remove/:id', handleProdRemove);
 router.post('/:id', handleAddToCart);
 
-module.exports = router;
+export default router;

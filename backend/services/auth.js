@@ -1,5 +1,8 @@
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dot.config();
+
 const secret = process.env.secret;
 
 function createToken(payload) {
@@ -14,4 +17,4 @@ function checkToken(token) {
     // Throws an error if token is invalid
 }
 
-module.exports = { createToken, checkToken };
+export { createToken, checkToken };

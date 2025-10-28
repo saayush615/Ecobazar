@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import { handleSignup, handleLogin} from '../controllers/user.js';
+
 const router = express.Router();
-const { handleSignup, handleLogin} = require('../controllers/user')
 
 router.post('/signup', handleSignup);
 router.post('/login', handleLogin);
@@ -10,4 +11,4 @@ router.get('/logout', (req,res) => {
     return res.redirect('/');
  })
 
-module.exports = router;
+export default router;

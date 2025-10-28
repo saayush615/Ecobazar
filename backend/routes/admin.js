@@ -1,7 +1,7 @@
-const express = require('express');
-const router = express.Router();
+import express from 'express';
+import { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd, handleUpdateStatus } from '../controllers/admin.js';
 
-const { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd, handleUpdateStatus } = require('../controllers/admin');
+const router = express.Router();
 
 router.post('/product', handlePostProd);
 router.put('/edit/:id', handleUpdateProd);
@@ -9,4 +9,4 @@ router.delete('/remove/:id', handleDeleteProd);
 router.get('/orders', handleShowAllProd);
 router.put('/status/:id', handleUpdateStatus);
 
-module.exports = router;
+export default router;

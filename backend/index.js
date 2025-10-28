@@ -1,21 +1,27 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
-const path = require('path');
-const methodOverride = require('method-override');
+import express from 'express';
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import methodOverride from 'method-override';
 
-const { checkAuthentication } = require('./middlewares/auth');
-const { adminOnly } = require('./middlewares/admin');
+import { checkAuthentication } from './middlewares/auth.js';
+import { adminOnly } from './middlewares/admin.js';
 
-const staticRoute = require('./routes/staticRoute');
-const userRoute = require('./routes/user');
-const productRoute = require('./routes/product');
-const cartRoute = require('./routes/cart');
-const adminRoute = require('./routes/admin');
-const orderRoute = require('./routes/order');
+import staticRoute from './routes/staticRoute.js';
+import userRoute from './routes/user.js';
+import productRoute from './routes/product.js';
+import cartRoute from './routes/cart.js';
+import adminRoute from './routes/admin.js';
+import orderRoute from './routes/order.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
+
+dotenv.config();
 
 // Middleware to parse JSON payloads
 // This allows your server to accept and parse JSON data in request bodies
@@ -31,8 +37,6 @@ app.use(cookieParser()); //cookie-parser parses the Cookie header from incoming 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(checkAuthentication);
-
-dotenv.config();
 
 async function connectToDB() {
     try {

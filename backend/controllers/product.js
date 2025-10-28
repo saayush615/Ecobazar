@@ -1,4 +1,4 @@
-const Product = require('../models/product');
+import Product from '../models/product.js';
 
 async function handleGetProdByName(req,res) {
     try{
@@ -10,5 +10,4 @@ async function handleGetProdByName(req,res) {
     }
 }
 
-
-module.exports = { handleGetProdByName };
+export { handleGetProdByName };
