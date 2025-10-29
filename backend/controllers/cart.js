@@ -26,7 +26,11 @@ async function handleAddToCart(req,res) {
         await cartItem.save();
     }
 
-    return res.redirect('/'); // Redirect to the home page after adding to cart
+    // return res.redirect('/'); // Redirect to the home page after adding to cart
+    return res.status(201).json({
+        success: true,
+        message: 'Product added to cart'
+    })
 }
 
 async function handleProdRemove(req,res) {
@@ -44,7 +48,12 @@ async function handleProdRemove(req,res) {
             await Cart.findByIdAndDelete(cartItem._id);
         }
     }
-    return res.redirect('/mycart');
+    // return res.redirect('/mycart');
+    return res.status(200).json({
+        success: false,
+        message: 'Item removed from cart',
+        cartItem
+    })
 }
 
 export { handleAddToCart, handleProdRemove };

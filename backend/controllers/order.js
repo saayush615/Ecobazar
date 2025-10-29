@@ -18,7 +18,11 @@ async function handleBuyNow(req, res) {
         const stackInOrder = await Order.create({ user: userId, carts: newCart});
         // Delete all items in the cart after creating the order
         await Cart.deleteMany({ user: userId });
-        res.redirect('/mycart')
+        // res.redirect('/mycart')
+        return res.status(201).json({
+            success: true,
+            message: 'Order Placed Successfully!'
+        })
 
     } catch(err) {
         return res.end('Something went wrong while buying try again')

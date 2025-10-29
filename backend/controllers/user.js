@@ -9,7 +9,10 @@ async function handleSignup(req,res) {
          // Check if the user already exists
         const existingUser = await User.findOne({ email });
         if(existingUser){
-            return res.redirect('/signup');
+            return res.status(409).json({
+                success: false,
+                message: 'User already exist!'
+            });
         }
 
         // Hash the password before saving
@@ -17,10 +20,17 @@ async function handleSignup(req,res) {
 
         // Create the user
         const user = await User.create({ name, email,password: hashedPassword, role});
-        return res.redirect('/login')
+        return res.status(201).json({
+            success: true,
+            message: 'Signup Successfully!, Proceed to login',
+            user
+        })
     } catch(err) {
-        console.log(err);
-        return res.status(500).json({message: 'signup again some error occured'})
+        console.log(`Signup Error: ${err}`);
+        return res.status(500).json({
+            success: false,
+            message: 'Try again!'
+        })
     }
 }
 
@@ -31,13 +41,19 @@ async function handleLogin(req,res) {
         // Find the user by email
         const user = await User.findOne({ email });
         if(!user){
-            return res.redirect('/login'); // Generic error message
+            return res.status(400).json({
+                success: false,
+                message: 'User not found!'
+            })
         }
     
         // Validate the password
         const passwordvalidate = await checkPassword(password, user.password);
         if(!passwordvalidate){
-            return res.redirect('/login'); // Generic error message
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid password'
+            })
         }
     
         // Create a token with user ID and role
@@ -45,14 +61,17 @@ async function handleLogin(req,res) {
 
         res.cookie('uid',token);
 
-        if(user.role === 'admin'){
-            return res.redirect('/adminPage');
-        }
-
-        return res.redirect('/');
+        return res.status(200).json({
+            success: true,
+            message: 'Login Successfully',
+            user
+        });
     } catch(err) {
-        console.log(err);
-        return res.status(500).json({message: 'server-side error'});
+        console.log(`Login error: ${err}`);
+        return res.status(500).json({
+            success: false,
+            message: 'Try again!'
+        });
     }
 
 }

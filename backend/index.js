@@ -9,7 +9,6 @@ import methodOverride from 'method-override';
 import { checkAuthentication } from './middlewares/auth.js';
 import { adminOnly } from './middlewares/admin.js';
 
-import staticRoute from './routes/staticRoute.js';
 import userRoute from './routes/user.js';
 import productRoute from './routes/product.js';
 import cartRoute from './routes/cart.js';
@@ -49,10 +48,13 @@ async function connectToDB() {
 }
 connectToDB();
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname,'views'));
+app.get('/', (req,res) => {
+    return res.status(200).json({
+        success: true,
+        message: 'Welcome to Ecobazar'
+    })
+}); 
 
-app.use('/', staticRoute); // Use app.use() to include all routes from staticRoute
 app.use('/user', userRoute);
 app.use('/product', productRoute);
 app.use('/cart', cartRoute);
