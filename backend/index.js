@@ -8,6 +8,7 @@ import methodOverride from 'method-override';
 
 import { checkAuthentication } from './middlewares/auth.js';
 import { adminOnly } from './middlewares/admin.js';
+import { globalglobalErrorHandler } from './middlewares/errorHandler.js'
 
 import userRoute from './routes/user.js';
 import productRoute from './routes/product.js';
@@ -61,6 +62,14 @@ app.use('/cart', cartRoute);
 app.use('/order', orderRoute);
 app.use('/admin', adminOnly, adminRoute);
 
+app.use('*', (req,res) => {
+    return res.status(404).json({
+        success: false,
+        error: `Route not found`
+    })
+})
+
+app.use(globalglobalErrorHandler);
 
 const port = process.env.PORT || 3000;
 
