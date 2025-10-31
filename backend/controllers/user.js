@@ -25,7 +25,6 @@ async function handleSignup(req,res,next) {
             user
         })
     } catch(err) {
-        console.log(`Signup Error: ${err}`);
         next(err)
     }
 }
@@ -57,7 +56,6 @@ async function handleLogin(req,res,next) {
             user
         });
     } catch(err) {
-        console.log(`Login error: ${err}`);
         next(err);
     }
 

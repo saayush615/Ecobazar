@@ -52,7 +52,6 @@ async function handleUpdateStatus(req, res,next) {
         // res.redirect('/adminPage/orders');
         res.status(200).json({ success: true, message: 'Order status updated successfully', order });
     } catch (err) {
-        console.error('Error updating order status:', err);
         next(err);
     }
 }

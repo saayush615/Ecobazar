@@ -28,3 +28,27 @@ _Middleware: errorHandler.js_
 - Library-specific - MongoDB uses 11000 for duplicates
 - Different from statusCode - statusCode is HTTP, code is error-specific
 - Check the docs - Each library has its own properties while sending error
+
+_Flow of error handling:_
+
+`next(error)` Flow:
+- `next()` without argument → Continue to next normal middleware
+- `next(error)` with argument → Skip to error handler
+- Express detects error by checking if argument exists
+- Skips all normal middleware after error occurs
+- Finds first middleware with 4 parameters (error handler)
+
+Error Handler Requirements:
+- Must have 4 parameters: `(err, req, res, next)`
+- Must be registered last in app.js (after all routes)
+- First parameter is the error object from `next(error)`
+- Can have multiple handlers - they run in order
+
+Best Practices:
+- Always use try-catch in async routes
+- Always call `next(error)` instead of throwing
+- Put error handler last in middleware chain
+- Use asyncHandler to avoid repetitive try-catch
+- Log errors before sending response
+
+---

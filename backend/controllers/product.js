@@ -12,7 +12,6 @@ async function handleGetProdByName(req,res,next) {
             products
         })
     } catch (err) {
-        console.log(`Error in getting product by Name: ${err}`);
         next(err);
     }
 }
