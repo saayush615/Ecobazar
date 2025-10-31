@@ -1,18 +1,17 @@
 import User from '../models/user.js';
 import { setPassword, checkPassword } from '../services/hashpass.js';
 import { createToken, checkToken } from '../services/auth.js';
+import AppError from '../utils/AppError.js';
+import { createNotFoundError, createUnauthorizedError } from '../utils/ErrorFactory.js'
 
-async function handleSignup(req,res) {
+async function handleSignup(req,res,next) {
     try {
         const { name, email, password, role} = req.body;
 
          // Check if the user already exists
         const existingUser = await User.findOne({ email });
         if(existingUser){
-            return res.status(409).json({
-                success: false,
-                message: 'User already exist!'
-            });
+            return next(new AppError('User already exist!',409));
         }
 
         // Hash the password before saving
@@ -27,33 +26,24 @@ async function handleSignup(req,res) {
         })
     } catch(err) {
         console.log(`Signup Error: ${err}`);
-        return res.status(500).json({
-            success: false,
-            message: 'Try again!'
-        })
+        next(err)
     }
 }
 
-async function handleLogin(req,res) {
+async function handleLogin(req,res,next) {
     try {
         const { email, password } = req.body;
 
         // Find the user by email
         const user = await User.findOne({ email });
         if(!user){
-            return res.status(400).json({
-                success: false,
-                message: 'User not found!'
-            })
+            return next(createNotFoundError('User'))
         }
     
         // Validate the password
         const passwordvalidate = await checkPassword(password, user.password);
         if(!passwordvalidate){
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid password'
-            })
+            return next(createUnauthorizedError('Invalid password'));
         }
     
         // Create a token with user ID and role
@@ -68,10 +58,7 @@ async function handleLogin(req,res) {
         });
     } catch(err) {
         console.log(`Login error: ${err}`);
-        return res.status(500).json({
-            success: false,
-            message: 'Try again!'
-        });
+        next(err);
     }
 
 }

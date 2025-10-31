@@ -2,7 +2,7 @@ import Order from '../models/order.js';
 import Cart from '../models/cart.js';
 import user from '../models/user.js';
 
-async function handleBuyNow(req, res) {
+async function handleBuyNow(req, res, next) {
     try{
         const userId = req.user.id;
 
@@ -25,7 +25,7 @@ async function handleBuyNow(req, res) {
         })
 
     } catch(err) {
-        return res.end('Something went wrong while buying try again')
+        next(err);
     }
 }
 

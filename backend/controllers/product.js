@@ -1,6 +1,6 @@
 import Product from '../models/product.js';
 
-async function handleGetProdByName(req,res) {
+async function handleGetProdByName(req,res,next) {
     try{
         const searchQuery = req.body.search;
         const products = await Product.find({name: { $regex: searchQuery, $options: 'i' }});
@@ -13,10 +13,7 @@ async function handleGetProdByName(req,res) {
         })
     } catch (err) {
         console.log(`Error in getting product by Name: ${err}`);
-        res.status(500).json({
-            success: false,
-            message: 'Server side error'
-        });
+        next(err);
     }
 }
 
