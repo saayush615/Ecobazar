@@ -13,7 +13,9 @@ const userSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: function(){
+            return !this.googleId;
+        },
         minlength: [6, 'Password should be at least 6 characters']
     },
     role: {
@@ -21,7 +23,18 @@ const userSchema = mongoose.Schema({
         required: true,
         default: 'user',
         enum: ['user','admin'] // Restrict the role to this values
+    },
+    googleId:{
+        type: String, 
+        unique: true,
+        sparse: true
+    },
+    authProvider:{
+        type: String,
+        enum: ['local','google'],
+        default: 'local'
     }
+
 }, {timestamps: true}); // Adds createdAt and updatedAt fields
 
 export default mongoose.model('User', userSchema);
