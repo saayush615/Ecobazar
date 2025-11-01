@@ -1,6 +1,5 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -8,6 +7,7 @@ import methodOverride from 'method-override';
 import passport from 'passport';
 
 import './config/passport.js'
+import { connectToDB } from './config/database.js'
 
 import { checkAuthentication } from './middlewares/auth.js';
 import { adminOnly } from './middlewares/admin.js';
@@ -36,15 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(checkAuthentication);
 
-async function connectToDB() {
-    try {
-        await mongoose.connect(process.env.MONGOOSE_URI);
-        console.log('Connected to MongoDB');
-    } catch (error) {
-        console.error('Error connecting to MongoDB:', error);
-        process.exit(1);
-    }
-}
+
 connectToDB();
 
 app.get('/', (req,res) => {
