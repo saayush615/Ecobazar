@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import methodOverride from 'method-override';
 import passport from 'passport';
+import cors from 'cors';
 
 import './config/passport.js'
 import { connectToDB } from './config/database.js'
@@ -26,6 +27,11 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 dotenv.config();
+
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    credentials: true    // Allow cookies to be sent/received
+}))
 
 app.use(passport.initialize());
 app.use(express.json());
