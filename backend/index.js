@@ -5,6 +5,9 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import methodOverride from 'method-override';
+import passport from 'passport';
+
+import './config/passport.js'
 
 import { checkAuthentication } from './middlewares/auth.js';
 import { adminOnly } from './middlewares/admin.js';
@@ -15,6 +18,7 @@ import productRoute from './routes/product.js';
 import cartRoute from './routes/cart.js';
 import adminRoute from './routes/admin.js';
 import orderRoute from './routes/order.js';
+import oAuthRoute from './routes/oauth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,17 +27,11 @@ const app = express();
 
 dotenv.config();
 
-// Middleware to parse JSON payloads
-// This allows your server to accept and parse JSON data in request bodies
-// Essential for handling POST/PUT requests with JSON data
+app.use(passport.initialize());
 app.use(express.json());
 
 app.use(cookieParser()); //cookie-parser parses the Cookie header from incoming HTTP requests and makes cookies accessible as a JavaScript object via req.cookies.
 
-// Middleware to parse URL-encoded bodies
-// This allows your server to handle form data submissions
-// extended: true allows for nested objects and arrays in form data
-// Required for processing HTML form submissions and complex request bodies
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(checkAuthentication);
@@ -61,6 +59,7 @@ app.use('/product', productRoute);
 app.use('/cart', cartRoute);
 app.use('/order', orderRoute);
 app.use('/admin', adminOnly, adminRoute);
+app.use('/oauth', oAuthRoute);
 
 app.use('*', (req,res) => {
     return res.status(404).json({
