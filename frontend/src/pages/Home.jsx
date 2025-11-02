@@ -1,9 +1,15 @@
 import React from 'react'
 
+import Header from '@/components/Header'
+import HeroCouresel from '@/components/HeroCouresel'
+
 const Home = () => {
   return (
     <div>
-      Hey it is home
+      <div>
+        <Header />
+      </div>
+      <HeroCouresel />
     </div>
   )
 }
