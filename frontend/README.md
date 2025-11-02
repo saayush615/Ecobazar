@@ -1,5 +1,5 @@
 # Frontend
-## Tailwind classes patterns
+## Note 1: Tailwind classes patterns
 #### Header component
 
 _1. Flexbox Container Pattern_
@@ -110,4 +110,12 @@ Breakdown:
 
 #### Navbar
 ---
-## 
+## Note 2: Js and Jsx
+#### Function call onClick.
+- `onClick={myFn}` — call myFn on click (recommended) ✅
+- `onClick={() => myFn()}` — call myFn on click (**redundant wrapper**)
+- `onClick={() => myFn(arg)}` — pass arg on click (use when necessary) ✅
+- `onClick={myFn()}` — BAD: calls immediately during render ❌
+- `onClick={(e) => { e.preventDefault(); myFn(); }}` — prevent default then call ✅
+- `onClick={(e) => myFn(e, arg)}` — forward event + args ✅
+- `onClick={() => setCount(c => c + 1)}` ✅
