@@ -30,7 +30,7 @@ const Header = () => {
             </div>
 
             {/* Search Bar */}
-            <div className='flex items-center flex-1 max-w-xl mx-auto sm:mx-8'>
+            <div className='flex items-center flex-1 w-full mx-auto sm:mx-8'>
               <div className='relative w-full'>
                 <input 
                   type="text" 
