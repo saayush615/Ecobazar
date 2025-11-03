@@ -108,7 +108,102 @@ Breakdown:
 </div>
 ```
 
-#### Navbar
+#### Navbar component - Collapsible Menu Pattern
+
+_10. Desktop Navigation Menu Pattern:_
+**When to use**: Navigation with dropdown submenus
+```jsx
+<NavigationMenu>
+  <NavigationMenuList>
+    <NavigationMenuItem>
+      <NavigationMenuTrigger>Category</NavigationMenuTrigger>
+      <NavigationMenuContent>
+        <div className='flex flex-col p-2 min-w-[200px]'>
+          <NavigationMenuLink href="/category/vegetable" className='px-4 py-2 hover:bg-gray-200 rounded'>
+            Vegetable
+          </NavigationMenuLink>
+        </div>
+      </NavigationMenuContent>
+    </NavigationMenuItem>
+  </NavigationMenuList>
+</NavigationMenu>
+```
+- `NavigationMenu` - Shadcn wrapper for accessible navigation
+- `NavigationMenuTrigger` - Dropdown activator (auto handles aria attributes)
+- `NavigationMenuContent` - Hidden content that appears on hover/click
+- `min-w-[200px]` - Sets minimum dropdown width
+- Pattern: Trigger → Content → Links with consistent hover states
+
+_11. Mobile Sheet Menu Pattern:_
+**When to use**: Slide-in mobile menus (hamburger navigation)
+```jsx
+const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+// Trigger Button
+<button onClick={() => setIsMobileMenuOpen(true)}>
+  <Menu className='w-5 h-5' />
+</button>
+
+// Sheet Component
+<Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+  <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+    <SheetHeader>
+      <SheetTitle>Menu</SheetTitle>
+    </SheetHeader>
+    <div className='flex flex-col gap-2 mt-6'>
+      <a onClick={() => setIsMobileMenuOpen(false)}>Link</a>
+    </div>
+  </SheetContent>
+</Sheet>
+```
+- `Sheet` - Shadcn's drawer/modal component
+- `open` + `onOpenChange` - Controlled component pattern (required!)
+- `side="left"` - Slide direction (left, right, top, bottom)
+- `w-[300px] sm:w-[400px]` - Responsive width (custom values)
+- **Always close sheet** on link click: `onClick={() => setIsMobileMenuOpen(false)}`
+
+_12. Responsive Menu Toggle Pattern:_
+**When to use**: Show mobile menu below breakpoint, desktop menu above
+```jsx
+{/* Mobile Button */}
+<div className='block min-[520px]:hidden'>
+  <button onClick={() => setIsMobileMenuOpen(true)}>Menu</button>
+</div>
+
+{/* Desktop Menu */}
+<div className='hidden min-[520px]:block'>
+  <NavigationMenu>...</NavigationMenu>
+</div>
+```
+- `block` + `hidden` - Base visibility states
+- `min-[520px]:hidden` - Hide on screens ≥520px (custom breakpoint!)
+- `min-[520px]:block` - Show on screens ≥520px
+- Pattern: Both exist in DOM, CSS controls visibility
+
+_13. Mobile Menu Sections Pattern:_
+**When to use**: Grouping related links in mobile drawer
+```jsx
+<div className='px-4 py-3'>
+  <h3 className='font-semibold text-gray-900 mb-2'>Category</h3>
+  <div className='flex flex-col gap-1 ml-4'>
+    <a href="/link" className='py-2 hover:text-green-600 transition-colors'>
+      Link Text
+    </a>
+  </div>
+</div>
+```
+- `px-4 py-3` - Section container padding
+- `ml-4` - Indent child links for hierarchy
+- `gap-1` - Tight vertical spacing for links
+- `hover:text-{color}` - Color change on hover (not background!)
+- Pattern: Section title → Indented links with consistent spacing
+
+**Key Gotchas:**
+- ❌ Don't forget `onOpenChange` on Sheet - needed for backdrop close
+- ❌ Don't use `onClick={fn()}` - calls immediately! Use `onClick={fn}` or `onClick={() => fn()}`
+- ✅ Always close mobile menu on navigation: `onClick={() => setIsMobileMenuOpen(false)}`
+- ✅ Custom breakpoints use `min-[value]:class` syntax (e.g., `min-[520px]:block`)
+
 ---
 ## Note 2: Js and Jsx
 #### Function call onClick.
