@@ -115,6 +115,7 @@ _10. Desktop Navigation Menu Pattern:_
 ```jsx
 <NavigationMenu>
   <NavigationMenuList>
+
     <NavigationMenuItem>
       <NavigationMenuTrigger>Category</NavigationMenuTrigger>
       <NavigationMenuContent>
@@ -125,6 +126,7 @@ _10. Desktop Navigation Menu Pattern:_
         </div>
       </NavigationMenuContent>
     </NavigationMenuItem>
+    
   </NavigationMenuList>
 </NavigationMenu>
 ```
