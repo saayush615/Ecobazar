@@ -216,3 +216,168 @@ _13. Mobile Menu Sections Pattern:_
 - `onClick={(e) => { e.preventDefault(); myFn(); }}` — prevent default then call ✅
 - `onClick={(e) => myFn(e, arg)}` — forward event + args ✅
 - `onClick={() => setCount(c => c + 1)}` ✅
+
+---
+
+## Note 3: Slider with [Swiperjs](https://swiperjs.com/)
+**See the example to better understand it.**
+#### Slider and image css
+_1. aspect-ratio Property_
+Controls the width-to-height ratio of an element, maintaining proportional dimensions even when the container resizes.
+💡 Syntax & Examples
+```css
+.element {
+  aspect-ratio: 16/9;  /* Width / Height */
+}
+```
+Common Ratios:
+- 16/9 - Widescreen (YouTube, modern TVs)
+- 4/3 - Traditional screen/tablet
+- 1/1 - Perfect square (Instagram posts)
+- 21/9 - Ultrawide
+- 3/2 - Photography standard
+
+🎯 Key Points
+- **Automatically calculates missing dimension** - If width is set, height adjusts automatically
+- **Prevents layout shifts** - Great for images/videos loading
+- **Responsive by nature** - Works perfectly with flexible layouts
+- **Browser support** - Modern browsers (IE not supported)
+
+Best Practice and common mistakes
+```css
+/* ✅ Good - Responsive card */
+.card-image {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+
+/* ✅ Good - Profile picture */
+.avatar {
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+}
+
+/* ❌ Bad - Setting both width AND height with aspect-ratio */
+.image {
+  width: 300px;
+  height: 200px;      /* This will override aspect-ratio */
+  aspect-ratio: 16/9; /* Won't work as expected */
+}
+
+/* ✅ Good - Let aspect-ratio calculate height */
+.image {
+  width: 300px;
+  aspect-ratio: 16/9; /* Height auto-calculated as ~169px */
+}
+```
+
+_2. object-fit Property_
+Controls how an image/video fills its container, similar to `background-size` but for `<img>` and `<video>` elements.
+
+**cover ⭐ Most Common**
+```css
+img {
+  object-fit: cover;
+}
+```
+- Fills entire container
+- Maintains aspect ratio
+- Crops overflow (parts of image may be cut off)
+- Use case: Hero images, thumbnails, backgrounds
+
+**contain**
+- Fits entirely within container
+- Maintains aspect ratio
+- Shows letterboxing (empty space on sides/top/bottom)
+- Use case: Product images, logos, galleries
+
+**fill (Default)**
+- Stretches to fill container
+- Ignores aspect ratio ⚠️
+- No cropping, no letterboxing
+- Use case: Rarely used (causes distortion)
+
+**none**
+- Original size
+- Centered in container
+- Crops if too large
+- Use case: Specific design needs
+
+**scale-down**
+- Chooses smaller of none or contain
+- Never enlarges image
+- Use case: Preventing pixelation
+
+**Good practices and common mistakes**
+```css
+/* ✅ Good - Card thumbnail (always fills) */
+.card-image {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  object-position: center; /* Focus center of image */
+}
+
+/* ✅ Good - Product image (show everything) */
+.product-image {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  background: #f5f5f5; /* Fill empty space */
+}
+
+/* ✅ Good - Profile picture with focus */
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top; /* Focus on face */
+}
+
+/* ❌ Bad - No dimensions set */
+img {
+  object-fit: cover; /* Won't work without width/height */
+}
+
+/* ✅ Good - Container has dimensions */
+.container {
+  width: 300px;
+  height: 200px;
+}
+.container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ❌ Bad - Using fill (causes distortion) */
+.thumbnail {
+  object-fit: fill; /* Image looks stretched/squashed */
+}
+
+/* ✅ Good - Use cover or contain */
+.thumbnail {
+  object-fit: cover; /* Maintains aspect ratio */
+}
+```
+Cheat sheet for responsive image
+```css
+/* Perfect responsive image setup */
+.responsive-image {
+  /* Container dimensions */
+  width: 100%;
+  aspect-ratio: 16/9;
+  
+  /* Image display */
+  display: block;
+  
+  /* How image fills container */
+  object-fit: cover;        /* or 'contain' for full image */
+  object-position: center;  /* or 'top', 'bottom', '50% 25%' */
+}
+```
+
+#### Swiper js
+**For code Read HeroSlider.jsx component and examples in docs**
