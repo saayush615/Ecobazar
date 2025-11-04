@@ -5,7 +5,6 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetFooter
 } from "@/components/ui/sheet"
 
 const SheetSidebar = ({ content, open, onOpenChange }) => {
@@ -19,10 +18,6 @@ const SheetSidebar = ({ content, open, onOpenChange }) => {
               </SheetDescription>
               </SheetHeader>
           </SheetContent>
-
-          <SheetFooter>
-            <p>great content</p>
-          </SheetFooter>
       </Sheet>
   )
 }

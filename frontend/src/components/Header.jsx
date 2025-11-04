@@ -20,7 +20,7 @@ const Header = () => {
 
   return (
     <>
-      <div className='py-4 sm:py-6'>
+      <div className='py-2 sm:pt-6'>
         <div className='container mx-auto px-4'>
           <div className='flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-4'>
             
