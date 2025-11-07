@@ -1,9 +1,9 @@
 import React from 'react'
 
-import Heroslide1 from '@/assets/heroslide1.svg'
-import Heroslide2 from '@/assets/heroslide2.svg'
-import Heroslide3 from '@/assets/heroslide3.svg'
-import Heroslide4 from '@/assets/heroslide4.svg'
+import Heroslide1 from '@/assets/Slider/heroslide1.svg'
+import Heroslide2 from '@/assets/Slider/heroslide2.svg'
+import Heroslide3 from '@/assets/Slider/heroslide3.svg'
+import Heroslide4 from '@/assets/Slider/heroslide4.svg'
 
 // Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';

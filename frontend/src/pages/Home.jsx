@@ -1,13 +1,26 @@
 import React from 'react'
 
-import fruitCategory from '@/assets/fruitCategory.svg'
-import vegeCategory from '@/assets/vegeCategory.svg'
-import meatCategory from '@/assets/meatCategory.svg'
-import snackCategory from '@/assets/snackCategory.svg'
-import bevrageCategory from '@/assets/bevrageCategory.svg'
-import breadCategory from '@/assets/breadCategory.svg'
-import needsCategory from '@/assets/needsCategory.svg'
-import cookCategory from '@/assets/cookCategory.svg'
+// Popular category
+import fruitCategory from '@/assets/Category/fruitCategory.svg'
+import vegeCategory from '@/assets/Category/vegeCategory.svg'
+import meatCategory from '@/assets/Category/meatCategory.svg'
+import snackCategory from '@/assets/Category/snackCategory.svg'
+import bevrageCategory from '@/assets/Category/bevrageCategory.svg'
+import breadCategory from '@/assets/Category/breadCategory.svg'
+import needsCategory from '@/assets/Category/needsCategory.svg'
+import cookCategory from '@/assets/Category/cookCategory.svg'
+
+// Popular Products
+import g_apple from '@/assets/Products/g_apple.svg'
+import malta from '@/assets/Products/malta.svg'
+import cabbage from '@/assets/Products/cabbage.svg'
+import lattice from '@/assets/Products/lattice.svg'
+import brinjal from '@/assets/Products/brinjal.svg'
+import potato from '@/assets/Products/potato.svg'
+import corn from '@/assets/Products/corn.svg'
+import cauliflower from '@/assets/Products/cauliflower.svg'
+import capsicum from '@/assets/Products/capsicum.svg'
+import chilli from '@/assets/Products/chilli.svg'
 
 import Header from '@/components/Header'
 import HeroSlider from '@/components/HeroSlider'
@@ -26,6 +39,11 @@ const Home = () => {
     { id: 7, title: 'Baking Needs', source: needsCategory},
     { id: 8, title: 'Cooking', source: cookCategory},
   ]
+
+  const Products = [
+
+  ]
+
   return (
     <div>
       <div>
@@ -39,7 +57,7 @@ const Home = () => {
           <img src={HeroBanner} alt="HeroBanner" />
         </div>
 
-        {/* Product */}
+        {/* Popular category */}
         <div className='mt-4'>
           <h3 className='text-lg sm:text-xl md:text-2xl font-bold mb-4 md:mb-6 px-4 md:px-0'>Popular Category</h3>
           <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4 px-2 md:px-0'>
@@ -51,6 +69,14 @@ const Home = () => {
                 category={true}  
               />
             })}
+          </div>
+        </div>
+
+        {/* Popular Product */}
+        <div className='mt-4'>
+          <h3 className='text-lg sm:text-xl md:text-2xl font-bold mb-4 md:mb-6 px-4 md:px-0'>Popular Products</h3>
+          <div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-0 '>
+
           </div>
         </div>
       </div>
