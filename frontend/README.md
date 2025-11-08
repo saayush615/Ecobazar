@@ -381,3 +381,38 @@ Cheat sheet for responsive image
 
 #### Swiper js
 **For code Read HeroSlider.jsx component and examples in docs**
+
+---
+
+## Note 4: Group Hover Pattern in Tailwind CSS
+
+The `group` pattern allows **child elements to respond to parent hover states**. This is one of Tailwind's most powerful interactive patterns.
+
+### Basic Syntax
+
+```jsx
+<div className="group">
+  <p className="group-hover:text-blue-500">I change when parent is hovered!</p>
+</div>
+```
+
+### 🎯 How It Works
+
+1. Add `group` class to the **parent** element you want to track
+2. Add `group-hover:` prefix to **child** elements that should respond
+3. When parent is hovered, all `group-hover:` styles activate on children
+
+#### Example: Product Card (E-commerce)
+```jsx
+<Card className="group hover:border-green-500 hover:shadow-lg transition-all">
+  <img src={product.image} className="group-hover:scale-105 transition-transform" />
+  <h3 className="group-hover:text-green-500">{product.name}</h3>
+  <p className="text-gray-600">{product.price}</p>
+  <button className="opacity-0 group-hover:opacity-100 transition-opacity">
+    Add to Cart
+  </button>
+</Card>
+```
+**Effect**: Hover on card → Image scales, title turns green, button fades in
+
+---
