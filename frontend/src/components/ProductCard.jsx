@@ -47,7 +47,7 @@ const ProductCard = ({ name, source, originalPrice, discountedPrice}) => {
                         )}
                     </div>
 
-                    <ShoppingBag className='size-9 p-2 hover:bg-green-500 rounded-2xl' />
+                    <ShoppingBag className='size-9 p-2 bg-gray-200 transition-colors duration-300 hover:bg-green-500 rounded-2xl' />
                 </div>
 
             </CardContent>

@@ -28,10 +28,16 @@ import chilli from '@/assets/Products/chilli.svg'
 
 import HeroBanner from '@/assets/herobanner.svg'
 
+// Sales
+import sale1 from '@/assets/Sales/sale1.svg'
+import sale2 from '@/assets/Sales/sale2.svg'
+import sale3 from '@/assets/Sales/sale3.svg'
+
 import Header from '@/components/Header'
 import HeroSlider from '@/components/HeroSlider'
 import CategoryCard from '@/components/CategoryCard'
 import ProductCard from '@/components/ProductCard'
+import SaleCard from '@/components/SaleCard'
 
 const Home = () => {
 
@@ -50,7 +56,7 @@ const Home = () => {
     { id: 12, title: 'Dishwash', source: dishwash},
   ]
 
-const Products = [
+  const Products = [
     { id: 1, name: 'Green Apple', source: g_apple, originalPrice: 150, discountedPrice: 120 },
     { id: 2, name: 'Malta', source: malta, originalPrice: 100, discountedPrice: 100 },
     { id: 3, name: 'Cabbage', source: cabbage, originalPrice: 60, discountedPrice: 45 },
@@ -61,7 +67,13 @@ const Products = [
     { id: 8, name: 'Cauliflower', source: cauliflower, originalPrice: 70, discountedPrice: 55 },
     { id: 9, name: 'Capsicum', source: capsicum, originalPrice: 90, discountedPrice: 70 },
     { id: 10, name: 'Chilli', source: chilli, originalPrice: 55, discountedPrice: 55 },
-]
+  ]
+
+  const Sales = [
+    {id: 1, name:'Best Deal', title:'Sale of Month', desc:'Few Hours Left!', source: sale1},
+    {id: 2, name:'85% Fat Free', title:'Low-Fat Meat', desc:'Starting at ₹80', source: sale2},
+    {id: 3, name:'Summer Sale', title:'100% Fresh Fruit', desc:'upto 64% OFF', source: sale3},
+  ]
 
   return (
     <div>
@@ -101,6 +113,21 @@ const Products = [
                 source={product.source}
                 originalPrice={product.originalPrice}
                 discountedPrice={product.discountedPrice}
+              />
+            })}
+          </div>
+        </div>
+
+        {/* Sales */}
+        <div className='mt-4'>
+          <div className='grid grid-cols-3 gap-0 '>
+            {Sales.map((sale) => {
+              return <SaleCard 
+                key={sale.id}
+                name={sale.name}
+                title={sale.title}
+                desc={sale.desc}
+                source={sale.source}
               />
             })}
           </div>

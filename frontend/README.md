@@ -206,6 +206,14 @@ _13. Mobile Menu Sections Pattern:_
 - ✅ Always close mobile menu on navigation: `onClick={() => setIsMobileMenuOpen(false)}`
 - ✅ Custom breakpoints use `min-[value]:class` syntax (e.g., `min-[520px]:block`)
 
+_14. Button pulse pattern:_
+```jsx
+<button
+  className=' p-2 cursor-pointer rounded-xl bg-gray-100 hover:bg-gray-300 transition-all duration-300 hover:scale-105 active:scale-95'
+>
+</button>
+```
+> `hover:scale-105 active:scale-95` - this help in sclaing the button when pulse
 ---
 ## Note 2: Js and Jsx
 #### Function call onClick.
