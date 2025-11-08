@@ -27,6 +27,7 @@ import capsicum from '@/assets/Products/capsicum.svg'
 import chilli from '@/assets/Products/chilli.svg'
 
 import HeroBanner from '@/assets/herobanner.svg'
+import discountbanner from '@/assets/discountbanner.svg'
 
 // Sales
 import sale1 from '@/assets/Sales/sale1.svg'
@@ -133,8 +134,90 @@ const Home = () => {
           </div>
         </div>
 
-        
+        {/* Client testimoney */}
+        <div className='bg-gray-300 text-black'>
+          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex iste corporis ducimus debitis id facilis, cum repellendus nisi quo, omnis perferendis adipisci earum sapiente, a voluptates quod exercitationem distinctio tenetur corrupti soluta est doloribus molestias facere! Perferendis ex pariatur, recusandae minus similique laudantium quaerat nobis, maiores cum accusamus ipsa corrupti!
+        </div>
+
+        <img src={discountbanner} alt="discount banner" className='my-2' />        
       </div>
+
+      {/* Footer */}
+      <footer className='bg-gray-900 text-white'>
+        {/* main footer */}
+        <div className='container mx-auto xl:max-w-mainComponent px-4 py-12'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+            {/* About Section */}
+            <div>
+              <h3 className='text-xl font-bold mb-4'>Ecobazar</h3>
+              <p className='text-gray-400 text-sm leading-relaxed mb-4'>
+                Your trusted online grocery store for fresh, organic products delivered to your doorstep.
+              </p>
+              <div className='flex gap-3'>
+                <a href="#" className='w-8 h-8 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700'>
+                  <i className='fab fa-facebook-f'></i>
+                </a>
+                <a href="#" className='w-8 h-8 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700'>
+                  <i className='fab fa-twitter'></i>
+                </a>
+                <a href="#" className='w-8 h-8 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700'>
+                  <i className='fab fa-instagram'></i>
+                </a>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className='text-lg font-semibold mb-4'>Quick Links</h4>
+              <ul className='space-y-2 text-gray-400 text-sm'>
+                <li><a href="#" className='hover:text-green-500'>About Us</a></li>
+                <li><a href="#" className='hover:text-green-500'>Shop</a></li>
+                <li><a href="#" className='hover:text-green-500'>Contact</a></li>
+                <li><a href="#" className='hover:text-green-500'>Blog</a></li>
+              </ul>
+            </div>
+
+            {/* Categories */}
+            <div>
+              <h4 className='text-lg font-semibold mb-4'>Categories</h4>
+              <ul className='space-y-2 text-gray-400 text-sm'>
+                <li><a href="#" className='hover:text-green-500'>Fresh Fruits</a></li>
+                <li><a href="#" className='hover:text-green-500'>Vegetables</a></li>
+                <li><a href="#" className='hover:text-green-500'>Meat & Fish</a></li>
+                <li><a href="#" className='hover:text-green-500'>Beverages</a></li>
+              </ul>
+            </div>
+
+            {/* Contact Info */}
+            <div>
+              <h4 className='text-lg font-semibold mb-4'>Contact Us</h4>
+              <ul className='space-y-3 text-gray-400 text-sm'>
+                <li className='flex items-start gap-2'>
+                  <span>📍</span>
+                  <span>123 Street, City, Country</span>
+                </li>
+                <li className='flex items-center gap-2'>
+                  <span>📧</span>
+                  <span>info@ecobazar.com</span>
+                </li>
+                <li className='flex items-center gap-2'>
+                  <span>📞</span>
+                  <span>+1 234 567 890</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* copyright section */}
+        <div className='border-t border-gray-800'>
+          <div className='container mx-auto xl:max-w-mainComponent px-4 py-4'>
+            <p className='text-center text-gray-400 text-sm'>
+              © {new Date().getFullYear()} Ecobazar. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
