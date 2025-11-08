@@ -416,3 +416,103 @@ The `group` pattern allows **child elements to respond to parent hover states**.
 **Effect**: Hover on card → Image scales, title turns green, button fades in
 
 ---
+
+## Note 5: Transitions & Duration - Smooth Interactions
+#### 📚 What They Do
+Transitions animate CSS property changes from one state to another. Duration controls animation speed.
+
+#### 💡 Core Classes
+```
+// transition-{property}
+transition-all      // Animates ALL properties (color, size, position, etc.)
+transition-colors   // Only color/background changes
+transition-opacity  // Only opacity changes
+transition-transform // Only transforms (scale, rotate, translate)
+transition-shadow   // Only box-shadow changes
+
+// duration-{time}
+duration-75    // 75ms  - Very fast
+duration-150   // 150ms - Fast (default if unspecified)
+duration-300   // 300ms - Normal ⭐ Most common
+duration-500   // 500ms - Slow
+duration-700   // 700ms - Very slow
+```
+#### 🎯 When to Use
+**transition-colors** - Hover effects, theme changes
+```jsx
+<button className="bg-blue-500 hover:bg-blue-700 transition-colors duration-300">
+  Click Me
+</button>
+```
+**transition-transform** - Scale, rotate, move effects
+```jsx
+<img className="group-hover:scale-110 transition-transform duration-300" />
+```
+**transition-all** - Multiple properties change together
+```jsx
+<Card className="hover:border-green-500 hover:shadow-lg transition-all duration-300">
+  {/* Border AND shadow animate */}
+</Card>
+```
+**transition-opacity** - Fade in/out effects
+```jsx
+<div className="opacity-0 hover:opacity-100 transition-opacity duration-500">
+  Appears on hover
+</div>
+```
+---
+
+## Note 6: Position - Layout Control
+#### 📚 What It Does
+Controls how elements are positioned in the document flow.
+
+#### 💡 Position Types
+#### 1. static (default)
+
+- Normal document flow
+- Ignores top/right/bottom/left
+- Rarely used explicitly
+
+#### 2. relative
+```jsx
+<div className="relative">
+  {/* Creates positioning context for children */}
+  {/* Can be nudged with top-2, left-4, etc. */}
+</div>
+```
+- Stays in normal flow
+- Can be offset with `top/right/bottom/left`
+- **Parent for absolute children** ⭐ Most common use
+
+#### 3. absolute
+```jsx
+<div className="relative">
+  <div className="absolute top-2 right-2">
+    {/* Positioned relative to parent */}
+  </div>
+</div>
+```
+- Removed from normal flow
+- Positioned relative to nearest `relative` parent
+- Use `top/right/bottom/left` to place
+
+#### 4. fixed
+```jsx
+<nav className="fixed top-0 left-0 right-0 z-50">
+  {/* Sticky header */}
+</nav>
+```
+- Removed from flow
+- Positioned relative to viewport
+- Stays in place on scroll
+
+#### 5. sticky
+```jsx
+<div className="sticky top-0">
+  {/* Sticks when scrolling past */}
+</div>
+```
+- Hybrid of relative + fixed
+- Becomes fixed when scrolling threshold is met
+
+---
