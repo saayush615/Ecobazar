@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { ShoppingBag } from 'lucide-react';
+import { Heart } from 'lucide-react';
 
 import {
   Card,
@@ -17,8 +18,22 @@ const ProductCard = ({ name, source, originalPrice, discountedPrice}) => {
     <div>
         <Card className={`cursor-pointer transition-all duration-300 ease-in-out hover:border-green-700 group`}>
 
-            <CardHeader>
+            <CardHeader className='relative'>
                 <img src={source} alt="Category" className='w-full h-20 sm:h-24 md:h-28 object-contain' />
+
+                {/* Favourite */}
+                <div className='absolute top-2 right-2'>
+                    <Heart className='size-8 p-1.5 bg-white rounded-2xl transition-colors duration-300 hover:fill-red-500 hover:text-red-500' />
+                </div>
+
+                {/* save */}
+                {originalPrice !== discountedPrice && (
+                    <div className='absolute top-2 left-2'>
+                        <div className='bg-red-500 py-1 px-2 rounded-lg text-xs'>
+                            {`Save ₹${Math.round(((originalPrice - discountedPrice) / originalPrice) * 100)}%`}
+                        </div>
+                    </div>
+                )}
             </CardHeader>
 
             <CardContent className={`px-2`}>
@@ -26,9 +41,9 @@ const ProductCard = ({ name, source, originalPrice, discountedPrice}) => {
 
                 <div className='flex flex-row justify-between items-center'>
                     <div>
-                        <span className='font-semibold text-gray-900'>{discountedPrice}</span>
+                        <span className='font-semibold text-gray-900'>{`₹${discountedPrice}`}</span>
                         {originalPrice !== discountedPrice && (
-                            <span className='text-xs text-gray-500 line-through p-2'>{originalPrice}</span>
+                            <span className='text-xs text-gray-500 line-through p-2'>{`₹${originalPrice}`}</span>
                         )}
                     </div>
 

@@ -51,16 +51,16 @@ const Home = () => {
   ]
 
 const Products = [
-    { id: 1, name: 'Green Apple', source: g_apple, originalPrice: '₹150', discountedPrice: '₹120' },
-    { id: 2, name: 'Malta', source: malta, originalPrice: '₹100', discountedPrice: '₹100' },
-    { id: 3, name: 'Cabbage', source: cabbage, originalPrice: '₹60', discountedPrice: '₹45' },
-    { id: 4, name: 'Lattice', source: lattice, originalPrice: '₹50', discountedPrice: '₹35' },
-    { id: 5, name: 'Brinjal', source: brinjal, originalPrice: '₹65', discountedPrice: '₹50' },
-    { id: 6, name: 'Potato', source: potato, originalPrice: '₹40', discountedPrice: '₹30' },
-    { id: 7, name: 'Corn', source: corn, originalPrice: '₹80', discountedPrice: '₹80' },
-    { id: 8, name: 'Cauliflower', source: cauliflower, originalPrice: '₹70', discountedPrice: '₹55' },
-    { id: 9, name: 'Capsicum', source: capsicum, originalPrice: '₹90', discountedPrice: '₹70' },
-    { id: 10, name: 'Chilli', source: chilli, originalPrice: '₹55', discountedPrice: '₹55' },
+    { id: 1, name: 'Green Apple', source: g_apple, originalPrice: 150, discountedPrice: 120 },
+    { id: 2, name: 'Malta', source: malta, originalPrice: 100, discountedPrice: 100 },
+    { id: 3, name: 'Cabbage', source: cabbage, originalPrice: 60, discountedPrice: 45 },
+    { id: 4, name: 'Lattice', source: lattice, originalPrice: 50, discountedPrice: 35 },
+    { id: 5, name: 'Brinjal', source: brinjal, originalPrice: 65, discountedPrice: 50 },
+    { id: 6, name: 'Potato', source: potato, originalPrice: 40, discountedPrice: 30 },
+    { id: 7, name: 'Corn', source: corn, originalPrice: 80, discountedPrice: 80 },
+    { id: 8, name: 'Cauliflower', source: cauliflower, originalPrice: 70, discountedPrice: 55 },
+    { id: 9, name: 'Capsicum', source: capsicum, originalPrice: 90, discountedPrice: 70 },
+    { id: 10, name: 'Chilli', source: chilli, originalPrice: 55, discountedPrice: 55 },
 ]
 
   return (
@@ -105,6 +105,8 @@ const Products = [
             })}
           </div>
         </div>
+
+        
       </div>
     </div>
   )
