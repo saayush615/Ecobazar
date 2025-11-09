@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 // Popular category
 import fruitCategory from '@/assets/Category/fruitCategory.svg'
@@ -28,6 +28,12 @@ import chilli from '@/assets/Products/chilli.svg'
 
 import HeroBanner from '@/assets/herobanner.svg'
 import discountbanner from '@/assets/discountbanner.svg'
+import logo from '@/assets/logo.svg'
+
+import { Facebook } from 'lucide-react';
+import { Instagram } from 'lucide-react';
+import { Twitter } from 'lucide-react';
+
 
 // Sales
 import sale1 from '@/assets/Sales/sale1.svg'
@@ -149,19 +155,19 @@ const Home = () => {
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
             {/* About Section */}
             <div>
-              <h3 className='text-xl font-bold mb-4'>Ecobazar</h3>
+              <img src={logo} alt="Logo" width='130px' />
               <p className='text-gray-400 text-sm leading-relaxed mb-4'>
                 Your trusted online grocery store for fresh, organic products delivered to your doorstep.
               </p>
               <div className='flex gap-3'>
                 <a href="#" className='w-8 h-8 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700'>
-                  <i className='fab fa-facebook-f'></i>
+                  <Facebook />
                 </a>
                 <a href="#" className='w-8 h-8 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700'>
-                  <i className='fab fa-twitter'></i>
+                  <Instagram />
                 </a>
                 <a href="#" className='w-8 h-8 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700'>
-                  <i className='fab fa-instagram'></i>
+                  <Twitter />
                 </a>
               </div>
             </div>
