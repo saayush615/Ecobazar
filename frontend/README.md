@@ -524,3 +524,32 @@ Controls how elements are positioned in the document flow.
 - Becomes fixed when scrolling threshold is met
 
 ---
+
+## Note 7: Dark Mode Implementation
+
+#### How It Works
+1. **ThemeContext** - Manages global theme state
+2. **localStorage** - Persists user preference
+3. **dark class** - Added to `<html>` element to activate dark mode
+4. **dark: prefix** - Tailwind applies styles conditionally
+
+#### Usage Pattern
+```jsx
+// Get theme state and toggle function
+const { theme, toggleTheme } = useTheme();
+
+// Apply dark mode classes
+<div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+```
+
+#### Common Dark Mode Classes
+- **Backgrounds**: `dark:bg-gray-800`, `dark:bg-gray-900`
+- **Text**: `dark:text-white`, `dark:text-gray-200`
+- **Borders**: `dark:border-gray-700`
+- **Hover**: `dark:hover:bg-gray-800`
+
+#### Key Points
+- Always test both light and dark modes
+- Pair background and text colors for readability
+- Use `transition-colors` for smooth theme switches
+- System preference is respected by default
