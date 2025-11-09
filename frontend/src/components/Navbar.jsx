@@ -21,7 +21,7 @@ const Navbar = () => {
   return (
     <>
       {/* Desktop Navbar */}
-      <nav className='bg-gray-800 text-white mt-0 sm:mt-2'>
+      <nav className='bg-gray-800 dark:bg-gray-900 text-white mt-0 sm:mt-2'>
         <div className='container mx-auto'>
           
           {/* Mobile Menu Button - Shows below 520px */}
@@ -143,7 +143,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Sheet */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+        <SheetContent side="left" className="w-[300px] sm:w-[400px] dark:bg-gray-900 dark:text-white">
           <SheetHeader>
             <SheetTitle>Menu</SheetTitle>
           </SheetHeader>

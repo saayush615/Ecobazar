@@ -23,7 +23,9 @@ const ProductCard = ({ name, source, originalPrice, discountedPrice}) => {
 
                 {/* Favourite */}
                 <div className='absolute top-2 right-2'>
-                    <Heart className='size-8 p-1.5 bg-white rounded-2xl transition-colors duration-300 hover:fill-red-500 hover:text-red-500' />
+                    <Heart 
+                        className='size-8 p-1.5 bg-white dark:bg-gray-900 rounded-2xl transition-all duration-300 hover:fill-red-500 hover:text-red-500 hover:scale-110 active:scale-90' 
+                    />
                 </div>
 
                 {/* save */}
@@ -41,13 +43,15 @@ const ProductCard = ({ name, source, originalPrice, discountedPrice}) => {
 
                 <div className='flex flex-row justify-between items-center'>
                     <div>
-                        <span className='font-semibold text-gray-900'>{`₹${discountedPrice}`}</span>
+                        <span className='font-semibold text-gray-900 dark:text-white'>{`₹${discountedPrice}`}</span>
                         {originalPrice !== discountedPrice && (
                             <span className='text-xs text-gray-500 line-through p-2'>{`₹${originalPrice}`}</span>
                         )}
                     </div>
 
-                    <ShoppingBag className='size-9 p-2 bg-gray-200 transition-colors duration-300 hover:bg-green-500 rounded-2xl' />
+                    <ShoppingBag 
+                        className='size-9 p-2 bg-gray-200 dark:text-black transition-colors duration-300 hover:bg-green-500 rounded-2xl hover:scale-105 active:scale-95' 
+                    />
                 </div>
 
             </CardContent>

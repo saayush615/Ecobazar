@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Navbar from './Navbar';
 import SheetSidebar from './SheetSidebar';
+import { useTheme } from '@/hooks/useTheme'
 
 import Logo from '@/assets/logo.svg'
 import { Flag, Heart } from 'lucide-react';
@@ -12,6 +13,7 @@ import { Search } from 'lucide-react';
 const Header = () => {
   const [showSheet, setShowSheet] = useState(false);
   const [sheetContent, setSheetContent] = useState('');
+  const { theme, toggleTheme } = useTheme();
 
   const handleOpenSheet = (content) => {
     setSheetContent(content),
@@ -45,22 +47,32 @@ const Header = () => {
             {/* Icons */}
             <div className='flex items-center gap-4'>
               <div className='hidden sm:flex items-center gap-4'>
-                <button className='p-2 hover:bg-gray-100 rounded-full transition-colors'>
+                <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors hover:scale-105 active:scale-95'>
                   <Heart 
-                    className='w-6 h-6 text-gray-700' 
+                    className='w-6 h-6 text-gray-700 dark:text-gray-100' 
                     onClick={() => handleOpenSheet("Wishlist 💖")}
                   />
                 </button>
-                <button className='p-2 hover:bg-gray-100 rounded-full transition-colors relative'>
+                <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors relative hover:scale-105 active:scale-95'>
                   <ShoppingCart 
-                    className='w-6 h-6 text-gray-700' 
+                    className='w-6 h-6 text-gray-700 dark:text-gray-100' 
                     onClick={() => handleOpenSheet("Shopping Cart 🛒")}
                   />
                   <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>0</span>
                 </button>
               </div>
-              <button className='hidden sm:block p-2 hover:bg-gray-100 rounded-full transition-colors'>
-                <Sun className='w-6 h-6 text-gray-700' />
+              
+              {/* Theme Toggle Button */}
+              <button 
+                onClick={toggleTheme}
+                className='hidden sm:block p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors'
+                aria-label="Toggle theme"
+              >
+                {theme === 'light' ? (
+                  <Sun className='w-6 h-6 text-gray-700 dark:text-gray-300' />
+                ) : (
+                  <Moon className='w-6 h-6 text-gray-700 dark:text-gray-300' />
+                )}
               </button>
             </div>
 

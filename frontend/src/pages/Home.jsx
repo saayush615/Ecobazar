@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 // Popular category
 import fruitCategory from '@/assets/Category/fruitCategory.svg'
@@ -77,7 +77,7 @@ const Home = () => {
   ]
 
   return (
-    <div>
+    <div className='dark:bg-gray-900 dark:text-white min-h-screen'>
       <div>
         <Header />
       </div>
@@ -91,7 +91,7 @@ const Home = () => {
 
         {/* Popular category */}
         <div className='mt-4'>
-          <h3 className='text-lg sm:text-xl md:text-2xl font-bold mb-4 md:mb-6 px-4 md:px-0'>Popular Category</h3>
+          <h3 className='text-lg sm:text-xl md:text-2xl font-bold mb-4 md:mb-6 px-4 md:px-0 dark:text-white'>Popular Category</h3>
           <div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-3 md:gap-4 px-2 md:px-0'>
             {Categoies.map((category) => {
               return <CategoryCard 
@@ -105,7 +105,7 @@ const Home = () => {
 
         {/* Popular Product */}
         <div className='mt-4'>
-          <h3 className='text-lg sm:text-xl md:text-2xl font-bold mb-4 md:mb-6 px-4 md:px-0'>Popular Products</h3>
+          <h3 className='text-lg sm:text-xl md:text-2xl font-bold mb-4 md:mb-6 px-4 md:px-0 dark:text-white'>Popular Products</h3>
           <div className='grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-0 '>
             {Products.map((product) => {
               return <ProductCard 
@@ -143,7 +143,7 @@ const Home = () => {
       </div>
 
       {/* Footer */}
-      <footer className='bg-gray-900 text-white'>
+      <footer className='bg-gray-900 text-white dark:bg-black'>
         {/* main footer */}
         <div className='container mx-auto xl:max-w-mainComponent px-4 py-12'>
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
