@@ -45,6 +45,7 @@ import HeroSlider from '@/components/HeroSlider'
 import CategoryCard from '@/components/CategoryCard'
 import ProductCard from '@/components/ProductCard'
 import SaleCard from '@/components/SaleCard'
+import TestimonySlider from '@/components/TestimonySlider'
 
 const Home = () => {
 
@@ -138,14 +139,17 @@ const Home = () => {
               />
             })}
           </div>
-        </div>
+        </div>        
+      </div>
 
-        {/* Client testimoney */}
-        <div className='bg-gray-300 text-black'>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ex iste corporis ducimus debitis id facilis, cum repellendus nisi quo, omnis perferendis adipisci earum sapiente, a voluptates quod exercitationem distinctio tenetur corrupti soluta est doloribus molestias facere! Perferendis ex pariatur, recusandae minus similique laudantium quaerat nobis, maiores cum accusamus ipsa corrupti!
-        </div>
+      {/* Client testimoney */}
+      <div className='bg-gray-300 py-3 dark:bg-gray-600'>
+        <TestimonySlider />
+      </div>
 
-        <img src={discountbanner} alt="discount banner" className='my-2' />        
+      {/* Sales and Instragram Banners */}
+      <div className='container mx-auto xl:max-w-mainComponent'>
+        <img src={discountbanner} alt="discount banner" className='my-2' />
       </div>
 
       {/* Footer */}
