@@ -26,10 +26,18 @@ import cauliflower from '@/assets/Products/cauliflower.svg'
 import capsicum from '@/assets/Products/capsicum.svg'
 import chilli from '@/assets/Products/chilli.svg'
 
+// Instagram posts
+import Post1 from '@/assets/InstaPost/Post1.svg'
+import Post2 from '@/assets/InstaPost/Post2.svg'
+import Post3 from '@/assets/InstaPost/Post3.svg'
+import Post4 from '@/assets/InstaPost/Post4.svg'
+import Post5 from '@/assets/InstaPost/Post5.svg'
+
 import HeroBanner from '@/assets/herobanner.svg'
 import discountbanner from '@/assets/discountbanner.svg'
 import logo from '@/assets/logo.svg'
 
+// Social media logos
 import { Facebook } from 'lucide-react';
 import { Instagram } from 'lucide-react';
 import { Twitter } from 'lucide-react';
@@ -150,6 +158,37 @@ const Home = () => {
       {/* Sales and Instragram Banners */}
       <div className='container mx-auto xl:max-w-mainComponent'>
         <img src={discountbanner} alt="discount banner" className='my-2' />
+        <div className='mb-1'>
+          <h3 className='text-center text-lg sm:text-xl md:text-2xl font-bold mb-4 md:mb-6 px-4 md:px-0 dark:text-white'>Follow us on Instagram</h3>
+          <div className='flex flex-row justify-evenly items-center'>
+
+            {[Post1, Post2, Post3, Post4, Post5].map((post, index) => (
+              <a
+                key={index}
+                href="https://www.instagram.com/yourprofile" // Replace with your Instagram URL
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative group overflow-hidden"
+              >
+                {/* 
+                  rel="noopener noreferrer" - Security & Privacy
+                  - noopener: Prevents new tab from accessing window.opener (stops reverse tabnabbing attacks)
+                  - noreferrer: Hides referrer info from destination site
+                  - Always use with target="_blank"
+                */}
+
+                <img src={post} alt={`Post${index + 1}`} className="block" />
+                {/* Overlay with light green background */}
+                <div className="absolute inset-0 bg-green-700 opacity-0 group-hover:opacity-40 transition-opacity duration-300"></div>
+                {/* Instagram logo - only visible on hover */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Instagram className='text-white size-10' />
+                </div>
+              </a>
+            ))}
+
+          </div>
+        </div>
       </div>
 
       {/* Footer */}
