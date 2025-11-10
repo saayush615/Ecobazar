@@ -553,3 +553,69 @@ const { theme, toggleTheme } = useTheme();
 - Pair background and text colors for readability
 - Use `transition-colors` for smooth theme switches
 - System preference is respected by default
+
+---
+
+## Note 8: Image as Link Pattern
+### 💡 Core Structure
+```jsx
+<a href="https://example.com" target="_blank" rel="noopener noreferrer">
+  <img src={imageSrc} alt="Description" />
+</a>
+```
+
+### 🎯 Important Attributes
+
+**target="_blank"**
+- Opens link in new tab
+- Essential for external links (social media, documentation, etc.)
+
+**rel="noopener noreferrer"** ⭐ Security Must-Have
+- `noopener` - Prevents new tab from accessing `window.opener` (stops reverse tabnabbing attacks)
+- `noreferrer` - Hides referrer information from destination site
+- **Always use together** with `target="_blank"` for security
+
+---
+
+## Note 9: Image Overlay Effect with Group Hover
+
+### 📚 Concept
+Layer multiple elements on top of an image that appear/animate on hover using the `group` pattern.
+
+### 💡 3-Layer Structure
+```jsx
+<div className="relative group overflow-hidden">
+  {/* Layer 1: Base Image */}
+  <img src={image} alt="Post" className="block" />
+  
+  {/* Layer 2: Colored Overlay */}
+  <div className="absolute inset-0 bg-green-700 opacity-0 group-hover:opacity-40 transition-opacity duration-300"></div>
+  
+  {/* Layer 3: Icon/Content */}
+  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+    <Instagram className="text-white size-10" />
+  </div>
+</div>
+```
+
+### 🎯 Key Classes Breakdown
+
+**Parent Container**
+- `relative` - Creates positioning context for absolute children
+- `group` - Enables child elements to respond to parent hover
+- `overflow-hidden` - Clips content that extends beyond boundaries
+
+**Overlay Layer**
+- `absolute inset-0` - Covers entire parent (top-0 right-0 bottom-0 left-0)
+- `bg-green-700` - Overlay background color
+- `opacity-0` - Hidden by default
+- `group-hover:opacity-40` - Shows at 40% opacity on parent hover
+- `transition-opacity duration-300` - Smooth fade animation (300ms)
+
+**Icon/Content Layer**
+- `absolute inset-0` - Covers entire parent
+- `flex items-center justify-center` - Centers content perfectly
+- `opacity-0 group-hover:opacity-100` - Fades in on hover
+- `transition-opacity duration-300` - Smooth animation
+
+--- 
