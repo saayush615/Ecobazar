@@ -214,6 +214,31 @@ _14. Button pulse pattern:_
 </button>
 ```
 > `hover:scale-105 active:scale-95` - this help in sclaing the button when pulse
+
+_15. Scroll-Area Pattern:_
+
+**When to use**: Scrollable containers with fixed height (sidebars, chat windows, dropdowns, mobile menus)
+
+```jsx
+<div className='flex-1 overflow-y-auto px-1'>
+  {/* Your scrollable content */}
+</div>
+```
+
+**Class Breakdown:**
+- `flex-1` - Grows to fill available space in flex parent (takes remaining height/width)
+- `overflow-y-auto` - Enables vertical scrolling when content exceeds container height
+- `px-1` - Horizontal padding (prevents scrollbar from touching content)
+
+❌ **Common mistake**: Scroll doesn't work
+```jsx
+<div className='overflow-y-auto px-1'>
+  {/* Content */}
+</div>
+```
+**Why**: Container has no fixed/constrained height
+✅ **Solution**: Parent must have defined height OR use `flex-1` in flex container
+
 ---
 ## Note 2: Js and Jsx
 #### Function call onClick.
