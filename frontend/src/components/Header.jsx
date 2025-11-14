@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import Navbar from './Navbar';
 import SheetSidebar from './SheetSidebar';
-import { useTheme } from '@/hooks/useTheme'
+import { useTheme } from '@/hooks/useTheme';
+import { useAuth } from '@/hooks/useAuth';
 
 import Logo from '@/assets/logo.svg'
-import { Flag, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { ShoppingCart } from 'lucide-react';
 import { Sun } from 'lucide-react';
 import { Moon } from 'lucide-react';
@@ -14,6 +15,7 @@ const Header = () => {
   const [showSheet, setShowSheet] = useState(false);
   const [sheetContent, setSheetContent] = useState('');
   const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated } = useAuth();
 
   const handleOpenSheet = (content) => {
     setSheetContent(content),
@@ -44,23 +46,38 @@ const Header = () => {
               </div>
             </div>
 
-            {/* Icons */}
-            <div className='flex items-center gap-4'>
-              <div className='hidden sm:flex items-center gap-4'>
-                <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors hover:scale-105 active:scale-95'>
-                  <Heart 
-                    className='w-6 h-6 text-gray-700 dark:text-gray-100' 
-                    onClick={() => handleOpenSheet("Wishlist 💖")}
-                  />
-                </button>
-                <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors relative hover:scale-105 active:scale-95'>
-                  <ShoppingCart 
-                    className='w-6 h-6 text-gray-700 dark:text-gray-100' 
-                    onClick={() => handleOpenSheet("Shopping Cart 🛒")}
-                  />
-                  <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>0</span>
-                </button>
+            {/* Login / Whislist Icons */}
+            
+            {!isAuthenticated ? (
+              <div className='flex items-center gap-4'>
+                <div className='hidden sm:flex items-center gap-4'>
+                  <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl transition-colors active:scale-95'>
+                    Sign-up
+                  </button>
+                  <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl transition-colors relative active:scale-95'>
+                    Login
+                  </button>
+                </div>
               </div>
+            ) : (
+              <div className='flex items-center gap-4'>
+                <div className='hidden sm:flex items-center gap-4'>
+                  <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors hover:scale-105 active:scale-95'>
+                    <Heart 
+                      className='w-6 h-6 text-gray-700 dark:text-gray-100' 
+                      onClick={() => handleOpenSheet("Wishlist 💖")}
+                    />
+                  </button>
+                  <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors relative hover:scale-105 active:scale-95'>
+                    <ShoppingCart 
+                      className='w-6 h-6 text-gray-700 dark:text-gray-100' 
+                      onClick={() => handleOpenSheet("Shopping Cart 🛒")}
+                    />
+                    <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>0</span>
+                  </button>
+                </div>
+              </div>
+            )}
               
               {/* Theme Toggle Button */}
               <button 
@@ -74,9 +91,8 @@ const Header = () => {
                   <Moon className='w-6 h-6 text-gray-700 dark:text-gray-300' />
                 )}
               </button>
-            </div>
-
           </div>
+
         </div>
 
         <Navbar />
