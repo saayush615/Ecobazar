@@ -3,6 +3,7 @@ import Navbar from './Navbar';
 import SheetSidebar from './SheetSidebar';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 import Logo from '@/assets/logo.svg'
 import { Heart } from 'lucide-react';
@@ -16,6 +17,7 @@ const Header = () => {
   const [sheetContent, setSheetContent] = useState('');
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate(); 
 
   const handleOpenSheet = (content) => {
     setSheetContent(content),
@@ -51,10 +53,16 @@ const Header = () => {
             {!isAuthenticated ? (
               <div className='flex items-center gap-4'>
                 <div className='hidden sm:flex items-center gap-4'>
-                  <button className='px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl transition-colors active:scale-95 font-medium'>
+                  <button 
+                    className='px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl transition-colors active:scale-95 font-medium'
+                    onClick={() => navigate('/signup')}
+                  >
                     Sign-up
                   </button>
-                  <button className='px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors active:scale-95 font-medium'>
+                  <button 
+                    className='px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors active:scale-95 font-medium'
+                    onClick={() => navigate('/login')}
+                  >
                     Login
                   </button>
                 </div>
