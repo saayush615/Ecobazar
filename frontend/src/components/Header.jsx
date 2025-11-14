@@ -51,10 +51,10 @@ const Header = () => {
             {!isAuthenticated ? (
               <div className='flex items-center gap-4'>
                 <div className='hidden sm:flex items-center gap-4'>
-                  <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl transition-colors active:scale-95'>
+                  <button className='px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl transition-colors active:scale-95 font-medium'>
                     Sign-up
                   </button>
-                  <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl transition-colors relative active:scale-95'>
+                  <button className='px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors active:scale-95 font-medium'>
                     Login
                   </button>
                 </div>

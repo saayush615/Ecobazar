@@ -13,10 +13,19 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetFooter,
 } from "@/components/ui/sheet"
+import { Switch } from "@/components/ui/switch"
+import { Sun } from 'lucide-react';
+import { Moon } from 'lucide-react';
+
+import { useTheme } from '@/hooks/useTheme';
+import { useAuth } from '@/hooks/useAuth';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated } = useAuth();
 
   return (
     <>
@@ -143,111 +152,138 @@ const Navbar = () => {
 
       {/* Mobile Menu Sheet */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <SheetContent side="left" className="w-[300px] sm:w-[400px] dark:bg-gray-900 dark:text-white">
-          <SheetHeader>
+        <SheetContent side="left" className="w-[300px] sm:w-[400px] dark:bg-gray-900 dark:text-white flex flex-col overflow-hidden" aria-describedby={undefined}>
+          <SheetHeader className='shrink-0'>
             <SheetTitle>Menu</SheetTitle>
           </SheetHeader>
           
-          <div className='flex flex-col gap-2 mt-6'>
-            {/* Home Link */}
-            <a 
-              href="/" 
-              className='px-4 py-3 hover:bg-gray-100 rounded-md transition-colors font-medium'
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Home
-            </a>
+          {/* Scrollable Content Area */}
+          <div className='flex-1 overflow-y-auto px-1'>
+            <div className='flex flex-col gap-2'>
+              {/* Home Link */}
+              <a 
+                href="/" 
+                className='px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors font-medium'
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </a>
 
-            {/* Category Section */}
-            <div className='px-4 py-3'>
-              <h3 className='font-semibold text-gray-900 mb-2'>Category</h3>
-              <div className='flex flex-col gap-1 ml-4'>
-                <a 
-                  href="/category/vegetable" 
-                  className='py-2 hover:text-green-600 transition-colors'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Vegetable
-                </a>
-                <a 
-                  href="/category/fruits" 
-                  className='py-2 hover:text-green-600 transition-colors'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Fruits
-                </a>
-                <a 
-                  href="/category/dairy" 
-                  className='py-2 hover:text-green-600 transition-colors'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Dairy
-                </a>
-                <a 
-                  href="/category/meat-eggs" 
-                  className='py-2 hover:text-green-600 transition-colors'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Meat & Eggs
-                </a>
+              {/* Category Section */}
+              <div className='px-4 py-3'>
+                <h3 className='font-semibold text-gray-900 mb-2 dark:text-white'>Category</h3>
+                <div className='flex flex-col gap-1 ml-4'>
+                  <a 
+                    href="/category/vegetable" 
+                    className='py-2 hover:text-green-600 transition-colors'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Vegetable
+                  </a>
+                  <a 
+                    href="/category/fruits" 
+                    className='py-2 hover:text-green-600 transition-colors'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Fruits
+                  </a>
+                  <a 
+                    href="/category/dairy" 
+                    className='py-2 hover:text-green-600 transition-colors'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Dairy
+                  </a>
+                  <a 
+                    href="/category/meat-eggs" 
+                    className='py-2 hover:text-green-600 transition-colors'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Meat & Eggs
+                  </a>
+                </div>
               </div>
-            </div>
 
-            {/* My Account Section */}
-            <div className='px-4 py-3'>
-              <h3 className='font-semibold text-gray-900 mb-2'>My Account</h3>
-              <div className='flex flex-col gap-1 ml-4'>
-                <a 
-                  href="/account/orders" 
-                  className='py-2 hover:text-green-600 transition-colors'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Orders
-                </a>
-                <a 
-                  href="/account/wishlist" 
-                  className='py-2 hover:text-green-600 transition-colors'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Wishlist
-                </a>
-                <a 
-                  href="/account/profile" 
-                  className='py-2 hover:text-green-600 transition-colors'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Edit Profile
-                </a>
-                <a 
-                  href="/account/settings" 
-                  className='py-2 hover:text-green-600 transition-colors'
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Settings
-                </a>
+              {/* My Account Section */}
+              <div className='px-4 py-3'>
+                <h3 className='font-semibold text-gray-900 mb-2 dark:text-white'>My Account</h3>
+                <div className='flex flex-col gap-1 ml-4'>
+                  <a 
+                    href="/account/orders" 
+                    className='py-2 hover:text-green-600 transition-colors'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Orders
+                  </a>
+                  <a 
+                    href="/account/wishlist" 
+                    className='py-2 hover:text-green-600 transition-colors'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Wishlist
+                  </a>
+                  <a 
+                    href="/account/profile" 
+                    className='py-2 hover:text-green-600 transition-colors'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Edit Profile
+                  </a>
+                  <a 
+                    href="/account/settings" 
+                    className='py-2 hover:text-green-600 transition-colors'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Settings
+                  </a>
+                </div>
               </div>
+
+              {/* About Link */}
+              <a 
+                href="/about" 
+                className='px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors font-medium'
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                About
+              </a>
+
+              {/* Contact Link */}
+              <a 
+                href="/contact" 
+                className='px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors font-medium'
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Contact
+              </a>
             </div>
-
-            {/* About Link */}
-            <a 
-              href="/about" 
-              className='px-4 py-3 hover:bg-gray-100 rounded-md transition-colors font-medium'
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              About
-            </a>
-
-            {/* Contact Link */}
-            <a 
-              href="/contact" 
-              className='px-4 py-3 hover:bg-gray-100 rounded-md transition-colors font-medium'
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Contact
-            </a>
           </div>
+
+          <SheetFooter className="shrink-0 border-t dark:border-gray-700 pt-3">
+            <div className='w-full space-y-3'>
+              {/* Theme Toggle */}
+              <div className='flex items-center justify-center gap-2'>
+                <Sun className='w-4 h-4 text-yellow-500' />
+                <Switch checked={theme === 'dark'} onCheckedChange={toggleTheme} />
+                <Moon className='w-4 h-4 text-blue-500' />
+              </div>
+
+              {/* Auth Buttons */}
+              {!isAuthenticated && (
+                <div className='flex flex-col gap-2 w-full'>
+                  <button className='w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors active:scale-95 font-medium'>
+                    Login
+                  </button>
+                  <button className='w-full px-4 py-2 border-2 border-green-500 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl transition-colors active:scale-95 font-medium'>
+                    Sign-up
+                  </button>
+                </div>
+              )}
+            </div>
+          </SheetFooter>
         </SheetContent>
       </Sheet>
+
     </>
   )
 }
