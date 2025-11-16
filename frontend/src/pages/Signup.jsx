@@ -25,8 +25,11 @@ const Signup = () => {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
-  } = useForm()
+  } = useForm();
+
+  const password = watch('password', '');
 
   const onSubmit = (data) => {
     console.log({ ...data, accountType });
@@ -246,7 +249,8 @@ const Signup = () => {
                     type='password'
                     placeholder='••••••••'
                     {...register("confirmPassword", {
-                      required: { value: true, message: 'Please confirm your password' }
+                      required: { value: true, message: 'Please confirm your password' },
+                      validate: value => value === password || 'Password donot match'
                     })}
                     className='w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors'
                   />
