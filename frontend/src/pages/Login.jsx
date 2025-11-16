@@ -31,10 +31,10 @@ const Login = () => {
     const onSubmit = (data) => console.log(data)
 
   return (
-    <div className='flex flex-col min-h-screen justify-between'>
+    <div className='flex flex-col min-h-screen'>
       <Header />
 
-      <div className='flex items-center justify-center'>
+      <div className='grow flex items-center justify-center py-8 px-4'>
         <Card className='w-full max-w-lg mx-auto px-4 py-8 bg-white shadow-xl rounded-lg md:border md:border-gray-200 dark:bg-gray-900'>
         <CardHeader>
             <CardTitle>Login</CardTitle>
@@ -79,17 +79,17 @@ const Login = () => {
         <CardFooter className='border-t-2 border-t-gray-300 text-center'>
           <div className='flex flex-col gap-2 items-center'>
             <p className='text-sm text-gray-500 py-3'>or login with</p>
-            <div className='flex flex-row gap-5'>
+            <div className='flex flex-row gap-1 sm:gap-5'>
               <button
                 type='button'
-                className='flex items-center gap-2 px-6 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95 transition-all'
+                className='flex items-center gap-2 px-4 sm:px-6 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95 transition-all'
               >
                 <FcGoogle className='h-6 w-6' />
                 <span className='font-medium text-gray-700'>Google</span>
               </button>
               <button
                 type='button'
-                className='flex items-center gap-2 px-6 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95 transition-all'
+                className='flex items-center gap-2 px-4 sm:px-6 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95 transition-all'
               >
                 <IoLogoFacebook className='h-6 w-6 text-blue-600' />
                 <span className='font-medium text-gray-700'>Facebook</span>
