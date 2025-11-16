@@ -78,10 +78,22 @@ const Login = () => {
         </CardContent>
         <CardFooter className='border-t-2 border-t-gray-300 text-center'>
           <div className='flex flex-col gap-2 items-center'>
-            <p>or</p>
+            <p className='text-sm text-gray-500 py-3'>or login with</p>
             <div className='flex flex-row gap-5'>
-              <FcGoogle className='h-10 w-10 bg-gray-300 rounded-lg hover:bg-gray-200 active:scale-95 cursor-pointer' />
-              <IoLogoFacebook className='h-10 w-10 text-blue-600 bg-gray-300 rounded-lg hover:bg-gray-200 active:scale-95 cursor-pointer' />
+              <button
+                type='button'
+                className='flex items-center gap-2 px-6 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95 transition-all'
+              >
+                <FcGoogle className='h-6 w-6' />
+                <span className='font-medium text-gray-700'>Google</span>
+              </button>
+              <button
+                type='button'
+                className='flex items-center gap-2 px-6 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95 transition-all'
+              >
+                <IoLogoFacebook className='h-6 w-6 text-blue-600' />
+                <span className='font-medium text-gray-700'>Facebook</span>
+              </button>
             </div>
           </div>
         </CardFooter>
