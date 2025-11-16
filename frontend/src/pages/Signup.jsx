@@ -6,7 +6,9 @@ const Signup = () => {
   return (
     <div>
       <Header />
-        <p>Hello</p>
+        <div>
+            <h3>Create Account</h3>
+        </div>
       <Footer />
     </div>
   )
