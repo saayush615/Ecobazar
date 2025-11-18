@@ -6,6 +6,8 @@ import { FcGoogle } from "react-icons/fc";
 import { IoLogoFacebook } from "react-icons/io";
 
 import { useForm } from "react-hook-form"
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import {
   Card,
   CardContent,
@@ -16,6 +18,7 @@ import {
 } from "@/components/ui/card"
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [accountType, setAccountType] = useState('buyer'); // 'buyer' or 'seller'
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
@@ -31,8 +34,33 @@ const Signup = () => {
 
   const password = watch('password', '');
 
-  const onSubmit = (data) => {
-    console.log({ ...data, accountType });
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      const { confirmPassword, fullName, ...submitData } = data;
+
+      // console.log({role: accountType, name: data.fullName, ...submitData})
+
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/signup`, {
+        role: accountType, 
+        name: data.fullName, 
+        ...submitData
+      });
+
+      // Add success handling
+      setSuccessMsg('Account created successfully! Redirecting to login...');
+      setErrorMsg('');
+      reset();
+
+      navigate('/login')
+
+    } catch (error) {
+      console.log(error);
+      setErrorMsg(error.response?.data?.error || 'Signup failed. Please try again.');
+      setSuccessMsg('');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

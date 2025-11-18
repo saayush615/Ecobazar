@@ -16,14 +16,50 @@ const userSchema = mongoose.Schema({
         required: function(){
             return !this.googleId;
         },
-        minlength: [6, 'Password should be at least 6 characters']
+        minlength: [6, 'Password should be at least 6 characters'],
+        select: false  // 🔒 Password won't be returned by default
     },
     role: {
         type: String,
         required: true,
-        default: 'user',
-        enum: ['user','admin'] // Restrict the role to this values
+        default: 'buyer',
+        enum: ['buyer','seller','admin'] // Restrict the role to this values
     },
+
+    // Buyer-specific fields (optional)
+    phone: {
+        type: String,
+        required: function() {
+            return this.role === 'buyer' && !this.googleId;
+        }
+    },
+    address: {
+        type: String
+    },
+
+    // Seller-specific fields (optional)
+    shopName: {
+        type: String,
+        required: function() {
+            return this.role === 'seller';
+        }
+    },
+    businessRegNo: {
+        type: String,
+        required: function() {
+            return this.role === 'seller';
+        },
+        unique: true,
+        sparse: true
+    },
+    businessAddress: {
+        type: String,
+        required: function() {
+            return this.role === 'seller';
+        }
+    },
+
+    // Common OAuth fields
     googleId:{
         type: String, 
         unique: true,
