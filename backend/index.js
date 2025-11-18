@@ -12,7 +12,7 @@ import { connectToDB } from './config/database.js'
 
 import { checkAuthentication } from './middlewares/auth.js';
 import { adminOnly } from './middlewares/admin.js';
-import { globalglobalErrorHandler } from './middlewares/errorHandler.js'
+import globalErrorHandler from './middlewares/errorHandler.js'
 
 import userRoute from './routes/user.js';
 import productRoute from './routes/product.js';
@@ -66,7 +66,7 @@ app.use('*', (req,res) => {
     })
 })
 
-app.use(globalglobalErrorHandler);
+app.use(globalErrorHandler);
 
 const port = process.env.PORT || 3000;
 

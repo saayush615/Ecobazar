@@ -1,4 +1,4 @@
-import AppError from "../utils/AppError";
+import AppError from "../utils/AppError.js";
 
 function globalErrorHandler( error, req, res, next) {
     console.error('Error', {
