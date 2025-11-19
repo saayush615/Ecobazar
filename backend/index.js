@@ -59,10 +59,10 @@ app.use('/order', orderRoute);
 app.use('/admin', adminOnly, adminRoute);
 app.use('/oauth', oAuthRoute);
 
-app.use('*', (req,res) => {
+app.use((req,res) => {
     return res.status(404).json({
         success: false,
-        error: `Route not found`
+        error: `Route not found: ${req.originalUrl}`
     })
 })
 
