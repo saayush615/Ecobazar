@@ -29,7 +29,7 @@ async function handleSignup(req,res,next) {
             // Check if business registration number already exists
             const existingBusiness = await User.findOne({ businessRegNo });
             if (existingBusiness) {
-                return next(createDuplicateError('Business registration number already exists'))
+                return next(createDuplicateError('Business registration number'))
             }
         }
 
