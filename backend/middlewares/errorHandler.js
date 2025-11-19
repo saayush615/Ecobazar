@@ -6,7 +6,7 @@ function globalErrorHandler( error, req, res, next) {
         stack: error.stack,
         url: req.url,
         method: req.method,
-        timestamps: new Date.toISOString()
+        timestamps: new Date().toISOString()
     })
 
     // Handle operational error

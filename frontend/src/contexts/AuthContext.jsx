@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
     const checkAuth = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/auth/me`,{
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/me`,{
                 withCredentials: true
             })
 
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
     
     const login = ({ userData }) => {
         setUser(userData);
-        isAuthenticated(true);
+        setIsAuthenticated(true);
     }
 
     const logout = async () => {

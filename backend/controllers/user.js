@@ -3,7 +3,6 @@ import { setPassword, checkPassword } from '../services/hashpass.js';
 import { createToken, checkToken } from '../services/auth.js';
 import AppError from '../utils/AppError.js';
 import { createNotFoundError, createUnauthorizedError, createValidationError, createDuplicateError } from '../utils/ErrorFactory.js'
-import user from '../models/user.js';
 
 async function handleSignup(req,res,next) {
     try {
@@ -72,7 +71,7 @@ async function handleLogin(req,res,next) {
         const { email, password } = req.body;
 
         // Find the user by email
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select('+password');
         if(!user){
             return next(createNotFoundError('User'))
         }
@@ -86,12 +85,22 @@ async function handleLogin(req,res,next) {
         // Create a token with user ID and role
         const token = createToken({ id: user._id, role: user.role });
 
-        res.cookie('uid',token);
+        res.cookie('uid',token, {
+            httpOnly: true,                                          // Prevents JavaScript access (XSS protection)
+            secure: process.env.NODE_ENV === 'production',          // HTTPS only in production
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',  // Allow cross-origin
+            maxAge: 24 * 60 * 60 * 1000                             // 24 hours
+        });
 
         return res.status(200).json({
             success: true,
             message: 'Login Successfully',
-            user
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
         });
     } catch(err) {
         next(err);
@@ -99,4 +108,26 @@ async function handleLogin(req,res,next) {
 
 }
 
-export { handleSignup, handleLogin };
+async function handleAuthentication (req,res,next) {
+    try {
+        // req.user is set by checkAuth middleware if user is authenticated
+        if (req.user) {
+            return res.status(200).json({
+                success: true,
+                user: {
+                    id: req.user.id,
+                    role: req.user.role
+                }
+            });
+        } else {
+            return res.status(401).json({
+                success: false,
+                message: 'Not authenticated'
+            });
+        }
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { handleSignup, handleLogin, handleAuthentication };

@@ -1,10 +1,12 @@
 import express from 'express';
-import { handleSignup, handleLogin} from '../controllers/user.js';
+import { handleSignup, handleLogin, handleAuthentication } from '../controllers/user.js';
 
 const router = express.Router();
 
 router.post('/signup', handleSignup);
 router.post('/login', handleLogin);
+
+router.get('/me', handleAuthentication)
 
 router.get('/logout', (req,res) => { 
     res.clearCookie('uid');

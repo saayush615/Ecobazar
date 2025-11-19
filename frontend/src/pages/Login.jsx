@@ -6,6 +6,9 @@ import { FcGoogle } from "react-icons/fc";
 import { IoLogoFacebook } from "react-icons/io";
 
 import { useForm } from "react-hook-form"
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '@/hooks/useAuth';
 import {
   Card,
   CardAction,
@@ -17,9 +20,12 @@ import {
 } from "@/components/ui/card"
 
 const Login = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  const { login } = useAuth();
 
     const {
         register,
@@ -28,7 +34,30 @@ const Login = () => {
         formState: { errors },
     } = useForm()
 
-    const onSubmit = (data) => console.log(data)
+    const onSubmit = async (data) => {
+      setLoading(true);
+      try {
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/login`, data, {
+          withCredentials: true // CRITICAL: Send cookies with request
+        });
+
+        setSuccessMsg('Login successfully');
+        setErrorMsg('');
+
+        if (response.data?.user?.role === 'buyer') navigate('/');
+        if (response.data?.user?.role === 'seller') navigate('/dashbord');
+        login(response);
+        reset();
+
+
+      } catch (error) {
+        console.log(error);
+        setErrorMsg(error.response?.data?.error || 'Login failed. Please try again.');
+        setSuccessMsg('');
+      } finally {
+        setLoading(false);
+      }
+    }
 
   return (
     <div className='flex flex-col min-h-screen'>
