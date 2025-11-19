@@ -59,6 +59,10 @@ const Login = () => {
       }
     }
 
+  const handleGoogleOauth = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/oauth/google`
+  }
+
   return (
     <div className='flex flex-col min-h-screen'>
       <Header />
@@ -112,6 +116,7 @@ const Login = () => {
               <button
                 type='button'
                 className='flex items-center gap-2 px-4 sm:px-6 py-2 bg-white border-2 border-gray-300 rounded-lg hover:bg-gray-50 active:scale-95 transition-all'
+                onClick={handleGoogleOauth}
               >
                 <FcGoogle className='h-6 w-6' />
                 <span className='font-medium text-gray-700'>Google</span>

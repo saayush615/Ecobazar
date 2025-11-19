@@ -12,7 +12,7 @@ passport.use(new GoogleStrategy({
   },
   async function(accessToken, refreshToken, profile, done) {
     try {
-        console.log('Google profile:', profile);  //Debugging
+        // console.log('Google profile:', profile);  //Debugging
 
         let user = await USER.findOne({ googleId: profile.id });
         if(user) {
@@ -32,7 +32,7 @@ passport.use(new GoogleStrategy({
 
         user = await USER.create({
             googleId: profile.id,
-            name: `${profile.name.givenName} ${profile.name.familyName}`,
+            name: profile.displayName,
             email: profile.emails[0].value,
             authProvider: 'google',
         });
