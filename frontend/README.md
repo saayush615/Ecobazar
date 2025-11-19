@@ -644,3 +644,28 @@ Layer multiple elements on top of an image that appear/animate on hover using th
 - `transition-opacity duration-300` - Smooth animation
 
 --- 
+
+## Note 10: Understanding the `window.location` Object
+```js
+// READ - Get current URL
+const url = window.location.href;
+
+// WRITE - Redirect (with history)
+window.location.href = "https://example.com";
+
+// Replace (no history)
+window.location.replace("https://example.com");
+
+// Reload page
+window.location.reload();
+
+// Get parts of URL
+window.location.protocol   // "https:"
+window.location.hostname   // "example.com"
+window.location.pathname   // "/path"
+window.location.search     // "?query=value"
+window.location.hash       // "#section"
+
+// React Router (internal navigation only)
+navigate('/dashboard'); // ✅ Use for internal routes
+```

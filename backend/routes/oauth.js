@@ -20,6 +20,10 @@ router.get('/google/callback',
     }),
   async function(req, res) {
     try {
+        // req.user from Passport is a Mongoose document
+        // JWT requires a plain object, not a Mongoose document
+
+        // ✅ FIX: Convert Mongoose document to plain object
         const token = createToken({ 
             id: req.user._id,           // Extract only needed fields
             role: req.user.role 
@@ -28,7 +32,7 @@ router.get('/google/callback',
         res.cookie('uid',token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',  // sameSite: 'strict' blocks cookies on these cross-site redirects
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 

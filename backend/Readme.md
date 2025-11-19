@@ -164,3 +164,27 @@ Breaking Down the Regex:
 - **Always add** `req.originalUrl` to help debugging which route was attempted. 
 
 ---
+
+## Note 4 : Mongoose Documents vs Plain Objects
+
+```js
+// Mongoose Document (what req.user is)
+{
+  _id: ObjectId('...'),
+  name: 'Aayush singh',
+  email: 'saayush615@gmail.com',
+  // + 50+ internal Mongoose properties/methods
+  $__: {...},           // Internal state
+  $isNew: false,        // Tracking flag
+  toObject: [Function], // Methods
+  save: [Function],
+  // etc.
+}
+
+// Plain Object (what JWT needs)
+{
+  id: '691df359e99b05a6d59ead8e',
+  role: 'buyer'
+}
+```
+> JWT can't serialize **Mongoose's internal properties**, hence the error.
