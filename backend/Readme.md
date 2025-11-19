@@ -161,3 +161,15 @@ Breaking Down the Regex:
 `$` - End of string (must match until end)
 
 ---
+
+## Note- 3 : Express 5 changes
+- **Express 5 Breaking Change**: The `app.use('*', ...)` syntax is no longer valid in Express 5. Use `app.use(...)` or `app.all('*', ...)` instead.
+
+- **Middleware Order Matters**: The 404 handler must come after all your routes but before the error handler.
+
+- **app.use() vs app.all()**:
+    - `app.use()` - Catches any HTTP method, partial path matches
+    - `app.all()` - Catches any HTTP method, exact path matches
+- **Always add** `req.originalUrl` to help debugging which route was attempted. 
+
+---
