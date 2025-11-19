@@ -130,35 +130,26 @@ const user = await User.findOne({ email }).select('+password');
 
 _5. Email Validation Regex Pattern_
 ```js
-match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+match: [/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, 'Please enter a valid email']
 ```
 Breaking Down the Regex:
 `^` - Start of string (must match from beginning)
 
-`\w+` - One or more word characters (letters, digits, underscore)
+`[A-Z0-9._%+-]+` - Allows alphanumeric, dots, underscores, %, +, -
 
-    Example: john, user123
-`([\.-]?\w+)*` - Optional dots/hyphens followed by word characters, repeated
-
-    - [\.-]? - Optional dot or hyphen
-    - \w+ - Followed by word characters
-    - * - Repeat 0 or more times
-    - Example: john.doe, user-name123
+    supports: user+tag@gmail.com
 `@` - Literal @ symbol (required)
 
-`\w+` - Domain name (one or more word characters)
+`[A-Z0-9.-]+` - Domain can have alphanumeric, dots, hyphens
 
-    Example: gmail, company
-`([\.-]?\w+)*` - Optional subdomains
+    supports: mail.google.com
+`\.` - Literal dot before TLD(Top-Level Domain)
 
-    Example: .mail, -service
-`(\.\w{2,3})+` - Domain extension(s)
+`[A-Z]{2,}` - TLD must be at least 2 chars(covers .co, .com, .info, .museum)
 
-    \. - Literal dot (escaped)
-    \w{2,3} - 2-3 word characters
-    + - One or more times
-    Example: .com, .co.uk
 `$` - End of string (must match until end)
+
+`i` - Case-insensitive flag
 
 ---
 
