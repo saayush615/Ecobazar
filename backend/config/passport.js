@@ -1,5 +1,6 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Strategy as FacebookStrategy } from 'passport-facebook';
 import USER from '../models/user.js'
 import dotenv from 'dotenv';
 
@@ -41,6 +42,52 @@ passport.use(new GoogleStrategy({
     } catch (error) {
         console.error('Google Auth Error:', error);
         done(error, null);
+    }
+  }
+));
+
+passport.use(new FacebookStrategy({
+    clientID: process.env.FACEBOOK_APP_ID,
+    clientSecret: process.env.FACEBOOK_APP_SECRET,
+    callbackURL: "/oauth/facebook/callback",
+    profileFields: ['id', 'displayName', 'name', 'emails']
+  },
+  async function(accessToken, refreshToken, profile, cb) {
+    try {
+        // console.log('facebook profile:', profile);
+
+        const email = profile.emails?.[0]?.value || null;
+
+        let user = await USER.findOne({ facebookId: profile.id });
+        if (user) {
+            if (email && !user.email) {
+                user.email = email;
+                await user.save();
+            }
+            return cb(null,user);
+        }
+
+        if (email) {
+            const emailUser = await USER.findOne({ email });
+            if (emailUser) {
+                emailUser.facebookId = profile.id;
+                emailUser.authProvider = 'facebook';
+                await emailUser.save();
+                return cb(null, emailUser);
+            }
+        }
+
+        user = await USER.create({
+            facebookId: profile.id,
+            name: profile.displayName,
+            email: email,
+            authProvider: 'facebook',
+        });
+
+        cb(null,user);
+    } catch (error) {
+        console.error('Facebook Auth Error:', error);
+        cb(error, null);
     }
   }
 ));

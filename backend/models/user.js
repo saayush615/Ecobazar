@@ -7,14 +7,16 @@ const userSchema = mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
+        required: function() {
+            return this.authProvider === 'local';
+        },
         unique: true,
         match: [/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, 'Please enter a valid email']
     },
     password: {
         type: String,
         required: function(){
-            return !this.googleId;
+            return !this.googleId && !this.facebookId;
         },
         minlength: [6, 'Password should be at least 6 characters'],
         select: false  // 🔒 Password won't be returned by default
@@ -30,7 +32,7 @@ const userSchema = mongoose.Schema({
     phone: {
         type: String,
         required: function() {
-            return this.role === 'buyer' && !this.googleId;
+            return this.role === 'buyer' && !this.googleId && !this.facebookId;
         }
     },
     address: {
@@ -59,7 +61,13 @@ const userSchema = mongoose.Schema({
         }
     },
 
-    // Common OAuth fields
+    //  OAuth fields
+    facebookId:{
+        type: String, 
+        unique: true,
+        sparse: true
+    },
+
     googleId:{
         type: String, 
         unique: true,
@@ -67,7 +75,7 @@ const userSchema = mongoose.Schema({
     },
     authProvider:{
         type: String,
-        enum: ['local','google'],
+        enum: ['local','google','facebook'],
         default: 'local'
     }
 
