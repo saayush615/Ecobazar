@@ -188,3 +188,98 @@ Breaking Down the Regex:
 }
 ```
 > JWT can't serialize **Mongoose's internal properties**, hence the error.
+
+---
+## Note 5:  Optional Chaining Operator (`?.`)
+#### What It Does
+The optional chaining operator (`?.`) allows you to safely access nested object properties without throwing an error if any intermediate value is `null` or `undefined`.
+#### Syntax Examples
+```js
+// 1. Property Access
+obj?.property          // Returns undefined if obj is null/undefined
+obj?.property?.nested  // Chains multiple levels safely
+
+// 2. Array Access
+arr?.[0]              // Returns undefined if arr is null/undefined
+arr?.[index]?.value   // Combines array + property access
+
+// 3. Function Call
+obj?.method()         // Only calls if obj exists
+obj?.method?.()       // Only calls if method exists
+
+// 4. Complex Chaining
+user?.profile?.address?.city  // Stops at first null/undefined
+// If any part is null/undefined → returns undefined
+// If all parts exist → returns the final value
+```
+#### Key Points to Remember
+**1. Returns `undefined`, Not Error**
+```js
+const user = null;
+
+// ❌ Without ?.  → TypeError: Cannot read property 'name' of null
+const name = user.name;
+
+// ✅ With ?.  → undefined (no error)
+const name = user?.name;
+```
+**2. Stops at First `Null/Undefined`**
+```js
+const user = {
+    profile: null
+};
+
+// Stops at profile (which is null), returns undefined
+const city = user?.profile?.address?.city;
+// Doesn't try to access address.city
+```
+**3. Works with Arrays**
+```js
+const emails = undefined;
+
+// ❌ emails[0] → TypeError
+// ✅ emails?.[0] → undefined
+
+const firstEmail = emails?.[0]?.value;
+```
+**4. Combine with Nullish Coalescing (??)**
+```js
+// Provide default values
+const email = profile.emails?.[0]?.value ?? 'no-email@example.com';
+const port = process.env.PORT ?? 3000;
+
+// Note: ?? only triggers for null/undefined, not for 0, '', false
+const count = 0 ?? 10;        // 0 (not 10)
+const count = undefined ?? 10; // 10
+```
+**5. Not the Same as Default Parameters**
+```js
+// Function default parameter
+function greet(name = 'Guest') {
+    // name is 'Guest' if undefined/not provided
+}
+
+// Optional chaining
+const greeting = user?.name;  // undefined if user doesn't exist
+```
+#### Reference Cheat Sheet
+```js
+// Property access
+obj?.prop              // obj.prop if obj exists, else undefined
+obj?.[expr]            // Dynamic property access
+
+// Array access  
+arr?.[0]               // arr[0] if arr exists
+arr?.[index]?.value    // Nested array + property
+
+// Function calls
+obj?.method()          // Call only if obj exists
+obj?.method?.()        // Call only if method exists
+
+// With defaults
+value ?? defaultValue  // Use default if value is null/undefined
+value || defaultValue  // Use default if value is falsy (includes 0, '')
+
+// Combined
+profile.emails?.[0]?.value ?? 'no-email@example.com'
+```
