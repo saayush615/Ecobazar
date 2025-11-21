@@ -283,3 +283,113 @@ value || defaultValue  // Use default if value is falsy (includes 0, '')
 // Combined
 profile.emails?.[0]?.value ?? 'no-email@example.com'
 ```
+---
+## Note-6 : oAuth (passportjs)
+
+#### Step 1: User Clicks "Login with Google" Button
+**File**: Login.jsx
+function: `handleGoogleOauth`
+**What happens**:
+- User clicks the Google button
+- Browser redirects to your backend route: http://localhost:3000/oauth/google
+- This is a _full page redirect_, not an AJAX call
+
+#### Step 2: Backend Initiates OAuth with Google
+**File**: oauth.js
+```js
+router.get('/google',
+    passport.authenticate('google', { 
+        scope: ['profile','email'] 
+    })
+)
+```
+**What happens**:
+- Passport intercepts this route
+- Passport redirects the user to Google's login page
+- URL looks like: https://accounts.google.com/o/oauth2/v2/auth?client_id=YOUR_ID&redirect_uri=...
+- User sees Google's actual login interface
+
+#### Step 3: User Logs in on Google
+**Platform**: Google's servers (not your app)
+**Google asks**: "Allow [Your App] to access your profile and email?"
+
+#### Step 4: Google Redirects Back with Authorization Code
+**What happens**:
+- Google redirects back to your callback URL: `http://localhost:3000/oauth/google/callback?code=AUTHORIZATION_CODE`
+- This code is a temporary token (valid for ~10 minutes)
+- Your app hasn't authenticated the user yet - you just have a code
+
+#### Step 5: Passport Exchanges Code for User Profile
+**File**: oauth.js - /google/callback route
+```js
+router.get('/google/callback', 
+    passport.authenticate('google', { 
+        failureRedirect: `${process.env.FRONTEND_URL}/login?error=auth_failed`,
+        session: false
+    }),
+    async function(req, res) {
+        // This function runs AFTER Passport gets user info
+    }
+)
+```
+- Passport receives the authorization code from Google
+- Passport makes a server-to-server request to Google's token endpoint:
+- Google responds with an access token:
+- Passport uses the access token to fetch user profile:
+- Google returns user profile data:
+- Passport calls your **verify function** (the strategy you defined)
+
+#### Step 6: Your Strategy Function Processes User Data
+**File**: passport.js
+**What happens**:
+
+- Passport passes `profile` object (from Google) to your function
+- You check if user exists in your database
+- If exists: return existing user
+- If not: create new user
+- Call `done(null, user)` - _this attaches user to `req.user`_
+
+Step 7: Callback Route Receives Authenticated User
+**File**: oauth.js
+```js
+router.get('/google/callback', 
+    passport.authenticate('google', {...}),
+    async function(req, res) {
+        // ⭐ req.user is NOW AVAILABLE here
+        // req.user = the Mongoose user document you returned in done(null, user)
+        
+        // req.user contains:
+        // {
+        //   _id: ObjectId('...'),
+        //   name: 'John Doe',
+        //   email: 'user@gmail.com',
+        //   googleId: '1234567890',
+        //   authProvider: 'google',
+        //   role: 'buyer',
+        //   createdAt: ...,
+        //   updatedAt: ...,
+        //   // + 50+ Mongoose internal properties
+        // }
+        
+        const token = createToken({ 
+            id: req.user._id,
+            role: req.user.role 
+        });
+        
+        res.cookie('uid', token, {...});
+        res.redirect(`${process.env.FRONTEND_URL}/?auth=google_success`);
+    }
+);
+```
+**Where does** `req.user` **come from?**
+
+- **Passport attaches** it after your verify function calls `done(null, user)`
+- It's the **exact user object** you returned from your database
+- It's a **full Mongoose document** with all methods and properties
+
+#### Step 8: Create JWT and Set Cookie
+#### Step 9: Redirect Back to Frontend
+#### Step 10: Frontend Verifies Authentication
+**File**: AuthContext.jsx
+
+---
