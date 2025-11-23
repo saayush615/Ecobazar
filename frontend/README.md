@@ -136,7 +136,7 @@ _10. Desktop Navigation Menu Pattern:_
 - `min-w-[200px]` - Sets minimum dropdown width
 - Pattern: Trigger → Content → Links with consistent hover states
 
-_11. Mobile Sheet Menu Pattern:_
+_11. Mobile Sheet(Shadcn) Menu Pattern:_
 **When to use**: Slide-in mobile menus (hamburger navigation)
 ```jsx
 const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
