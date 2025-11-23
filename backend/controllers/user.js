@@ -105,7 +105,8 @@ async function handleLogin(req,res,next) {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                ...(user.role === 'seller' && { shopName: user.shopName, businessRegNo: user.businessRegNo, businessAddress: user.businessAddress })
             }
         });
     } catch(err) {
