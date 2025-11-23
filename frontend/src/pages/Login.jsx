@@ -43,11 +43,12 @@ const Login = () => {
 
         setSuccessMsg('Login successfully');
         setErrorMsg('');
+        login({ userData: response.data?.user });
+        reset();
+
 
         if (response.data?.user?.role === 'buyer') navigate('/');
         if (response.data?.user?.role === 'seller') navigate('/dashbord');
-        login(response);
-        reset();
 
 
       } catch (error) {

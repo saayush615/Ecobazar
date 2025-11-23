@@ -83,7 +83,13 @@ async function handleLogin(req,res,next) {
         }
     
         // Create a token with user ID and role
-        const token = createToken({ id: user._id, role: user.role });
+        const token = createToken({ 
+            id: user._id , 
+            name: user.name, 
+            email: user.email, 
+            role: user.role, 
+            ...(user.role === 'seller' && { shopName: user.shopName, businessRegNo: user.businessRegNo, businessAddress: user.businessAddress })
+        });
 
         res.cookie('uid',token, {
             httpOnly: true,                                          // Prevents JavaScript access (XSS protection)
@@ -116,7 +122,10 @@ async function handleAuthentication (req,res,next) {
                 success: true,
                 user: {
                     id: req.user.id,
-                    role: req.user.role
+                    name: req.user.name,
+                    email: req.user.email,
+                    role: req.user.role,
+                    ...(req.user.role === 'seller' && { shopName: req.user.shopName, businessRegNo: req.user.businessRegNo, businessAddress: req.user.businessAddress })
                 }
             });
         } else {
