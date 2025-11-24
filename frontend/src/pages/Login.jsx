@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
@@ -6,9 +6,10 @@ import { FcGoogle } from "react-icons/fc";
 import { IoLogoFacebook } from "react-icons/io";
 
 import { useForm } from "react-hook-form"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import axios from 'axios';
 import { useAuth } from '@/hooks/useAuth';
+import { toast } from "sonner"
 import {
   Card,
   CardAction,
@@ -20,12 +21,28 @@ import {
 } from "@/components/ui/card"
 
 const Login = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
 
   const { login } = useAuth();
+
+  useEffect(() => {
+    if (location.state?.logoutSuccess){
+      toast.success('Logout Successfully!')
+      navigate(location.pathname, { replace: true, state: {}});
+    }
+  },[])
+
+  useEffect(() => {
+    const authStatus = searchParams.get('auth');
+
+    if (authStatus === 'loginFailed') {
+      toast.error('Login Failed!')
+      setSearchParams({})
+    }
+  }, [searchParams])
 
     const {
         register,
@@ -40,21 +57,16 @@ const Login = () => {
         const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/login`, data, {
           withCredentials: true // CRITICAL: Send cookies with request
         });
-
-        setSuccessMsg('Login successfully');
-        setErrorMsg('');
         login({ userData: response.data?.user });
         reset();
 
 
-        if (response.data?.user?.role === 'buyer') navigate('/');
-        if (response.data?.user?.role === 'seller') navigate('/dashbord');
+        if (response.data?.user?.role === 'buyer') navigate('/', { state: { loginSuccess: true }});
+        if (response.data?.user?.role === 'seller') navigate('/dashbord', { state: { loginSuccess: true } });
 
 
       } catch (error) {
         console.log(error);
-        setErrorMsg(error.response?.data?.error || 'Login failed. Please try again.');
-        setSuccessMsg('');
       } finally {
         setLoading(false);
       }

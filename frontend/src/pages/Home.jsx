@@ -1,4 +1,6 @@
-import React from 'react'
+import React, {useEffect} from 'react'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
+import { toast } from "sonner"
 
 // Popular category
 import fruitCategory from '@/assets/Category/fruitCategory.svg'
@@ -52,6 +54,27 @@ import TestimonySlider from '@/components/TestimonySlider'
 import Footer from '@/components/Footer'
 
 const Home = () => {
+  // const navigate = useNavigate();
+  // const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // useEffect(() => {
+  //   if (location.state?.loginSuccess) {
+  //     toast.success('Logged in Successfully!');
+  //     // Clear state to prevent showing toast on page refresh
+  //     navigate(location.pathname, { replace: true, state: {} })
+  //   }
+  // }, [])
+
+  useEffect(() => {
+    const authStatus = searchParams.get('auth')
+    
+    if (authStatus === 'loginSuccess') {
+      toast.success('Logged in Successfully!');
+      setSearchParams({})
+    }
+  }, [searchParams])
+  
 
   const Categoies = [
     { id: 1, title: 'Fresh Fruits', source: fruitCategory},

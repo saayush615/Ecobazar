@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { toast } from "sonner"
 
 // Icons
 import { Package } from 'lucide-react'
@@ -16,10 +17,20 @@ const Dashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // Success notification
+  useEffect(() => {
+    if (location.state?.loginSuccess) {
+      toast.success('Logged in Successfully!');
+      // Clear state to prevent showing toast on page refresh
+      navigate(location.pathname, { replace: true, state: {} })
+    }
+  }, [])
+  
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login')
   }
 
   const navigationItems = [

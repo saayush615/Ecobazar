@@ -1,4 +1,5 @@
 import React, { useState, useEffect, createContext } from "react";
+import { useNavigate } from 'react-router-dom'
 import axios from "axios";
 
 const AuthContext = createContext(null);
@@ -7,6 +8,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const navigate = useNavigate();
 
     const checkAuth = async () => {
         try {
@@ -43,7 +45,9 @@ export const AuthProvider = ({ children }) => {
             })
 
             if (response.data.success) {
-                console.log('Logout successfully')
+                navigate('/login',{
+                    state: { logoutSuccess: true }
+                });
             }
         } catch (error) {
             console.log(error);
