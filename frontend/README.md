@@ -753,6 +753,28 @@ if (user?.role === 'admin') {
 // ✅ 404 fallback redirects
 <Route path="*" element={<Navigate to="/404" />} />
 ```
+_1. to='/login'_
+> Destination path - Specifies where the user should be redirected. In this case, they're sent to the /login route.
+
+_2. state={{ from: location }}_
+> Passing data through navigation - The state prop allows you to send additional information along with the redirect that won't appear in the URL.
+
+- `from: location` stores the current location (the page the user was trying to access)
+- This enables redirect after login - once authenticated, you can send them back to where they originally wanted to go
+- Access this data in the login component via `useLocation()` hook: `location.state.from`
+
+_3. replace_
+> History manipulation - When true, this replaces the current entry in the browser's history stack instead of adding a new one.
+
+Without replace (false/default):
+- History: Home → Protected Page → Login
+- Clicking "Back" goes: Login → Protected Page (loops back to login!)
+
+With replace (true):
+- History: Home → Login (Protected Page is removed)
+- Clicking "Back" goes to Home (no loop)
+
+> This prevents the authentication redirect loop where users get stuck bouncing between protected routes and login.
 
 **About useNavigate() Hook**
 - It's a hook - Returns a function you call later
