@@ -15,7 +15,7 @@ router.get('/google',
 
 router.get('/google/callback', 
     passport.authenticate('google', { 
-        failureRedirect: `${process.env.FRONTEND_URL}/login?error=auth_failed`,
+        failureRedirect: `${process.env.FRONTEND_URL}/login?error=loginFailed`,
         session: false
     }),
   async function(req, res) {
@@ -36,10 +36,10 @@ router.get('/google/callback',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 
-        res.redirect(`${process.env.FRONTEND_URL}/?auth=google_success`)
+        res.redirect(`${process.env.FRONTEND_URL}/?auth=loginSuccess`)
     } catch (error) {
         console.error(`Google OAuth error: ${error}`);
-        res.redirect(`${process.env.FRONTEND_URL}/login?error=callback_failed`)
+        res.redirect(`${process.env.FRONTEND_URL}/login?error=loginFailed`)
     }
   });
 
@@ -51,7 +51,7 @@ router.get('/facebook',
 
 router.get('/facebook/callback',
   passport.authenticate('facebook', { 
-    failureRedirect: `${process.env.FRONTEND_URL}/login?error=auth_failed`,
+    failureRedirect: `${process.env.FRONTEND_URL}/login?error=loginFailed`,
     session: false 
   }),
   async function(req, res) {
@@ -71,10 +71,10 @@ router.get('/facebook/callback',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 
-        res.redirect(`${process.env.FRONTEND_URL}/?auth=facebook_success`);
+        res.redirect(`${process.env.FRONTEND_URL}/?auth=loginSuccess`);
     } catch (error) {
         console.log(`Facebook OAuth error: ${error}`);
-        res.redirect(`${process.env.FRONTEND_URL}/login?error=callback_failed`)
+        res.redirect(`${process.env.FRONTEND_URL}/login?error=loginFailed`)
     }
   });
 
