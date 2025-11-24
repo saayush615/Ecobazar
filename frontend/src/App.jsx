@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import { Routes, Route } from 'react-router-dom'
+import { Toaster } from "@/components/ui/sonner"
 
 import Home from '@/pages/Home'
 import About from '@/pages/About'
@@ -12,6 +13,7 @@ function App() {
 
   return (
     <>
+      <Toaster />
       <Routes>
         <Route path='/' element={ <Home /> } />
         <Route path='/about' element={ <About /> } />
