@@ -669,3 +669,52 @@ window.location.hash       // "#section"
 // React Router (internal navigation only)
 navigate('/dashboard'); // ✅ Use for internal routes
 ```
+---
+## Note 11: Location State Pattern - Passing Data Between Routes
+#### What It Is
+Location state allows you to pass **temporary** data between routes during navigation without exposing it in the URL. Think of it as a **secure "message" attached to the navigation action**.
+#### How It Works
+1. Sending Data (Navigation Source)
+```jsx
+import { useNavigate } from 'react-router-dom'
+
+const Login = () => {
+  const navigate = useNavigate()
+  
+  const handleLogin = async () => {
+    // After successful login
+    navigate('/dashboard', { 
+      state: { 
+        loginSuccess: true,
+        userName: 'John Doe',
+        timestamp: Date.now()
+      } 
+    })
+  }
+}
+```
+2. Receiving Data (Destination Component)
+```jsx
+import { useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+
+const Dashboard = () => {
+  const location = useLocation()
+  const navigate = useNavigate()
+  
+  useEffect(() => {
+    // Check if state exists
+    if (location.state?.loginSuccess) {
+      toast.success(`Welcome back, ${location.state.userName}!`)
+      
+      // Clean up state to prevent showing toast on page refresh
+      navigate(location.pathname, { 
+        replace: true,  // Don't add to history
+        state: {}       // Clear the state
+      })
+    }
+  }, []) // Run only once on mount
+  
+  return <div>Dashboard Content</div>
+}
+```
