@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { toast } from "sonner"
+import AddProducts from '@/components/seller/AddProducts'
 
 // Icons
 import { Package } from 'lucide-react'
@@ -11,10 +12,14 @@ import { TrendingUp } from 'lucide-react'
 import { LogOut } from 'lucide-react'
 import { Menu } from 'lucide-react'
 import { X } from 'lucide-react'
+import { Plus } from 'lucide-react';
+
+import Products from '@/components/seller/Products'
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('products')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [addProduct, setAddProduct] = useState(false)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -43,7 +48,7 @@ const Dashboard = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'products':
-        return <div className='text-gray-600 dark:text-gray-300'>Products content will go here</div>
+        return <Products />
       case 'orders':
         return <div className='text-gray-600 dark:text-gray-300'>Orders content will go here</div>
       case 'history':
@@ -190,21 +195,29 @@ const Dashboard = () => {
         {/* Top Header */}
         <header className='bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 shadow-sm'>
           <div className='flex items-center justify-between'>
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsSidebarOpen(true)}
-              className='lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'
+
+            <div className='flex items-center gap-2'>
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className='lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'
+              >
+                <Menu className='w-6 h-6 text-gray-600 dark:text-gray-300' />
+              </button>
+
+              {/* Page Title */}
+              <h2 className='text-2xl font-bold text-gray-800 dark:text-white'>
+                {navigationItems.find((item) => item.id === activeTab)?.label}
+              </h2>
+            </div>
+
+            <button 
+              className='p-2 rounded-full bg-green-500 shadow-md cursor-pointer hover:bg-green-400 active:scale-95'
+              onClick={() => setAddProduct(true)}
             >
-              <Menu className='w-6 h-6 text-gray-600 dark:text-gray-300' />
+              <Plus />
             </button>
 
-            {/* Page Title */}
-            <h2 className='text-2xl font-bold text-gray-800 dark:text-white'>
-              {navigationItems.find((item) => item.id === activeTab)?.label}
-            </h2>
-
-            {/* Desktop Logout (Optional) */}
-            <div className='hidden lg:block w-10' /> {/* Spacer for alignment */}
           </div>
         </header>
 
@@ -215,6 +228,9 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+
+      {/* Add product */}
+      <AddProducts open={addProduct} onOpenChange={setAddProduct} />
     </div>
   )
 }
