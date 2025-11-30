@@ -806,3 +806,20 @@ navigate('/path', { state: { data } }); // Pass state
 ```
 
 ---
+
+## Note 13: small doubts
+#### Understanding React Component Naming Conventions
+This is a fundamental React rule about how JSX interprets elements:
+
+_The Rule:_
+- Capitalized tags (`<Products />`) → React treats as custom components
+- Lowercase tags (`<div />`, `<table />`) → React treats as native HTML elements
+
+#### Understanding Import Extensions in Node.js vs React
+This difference comes from how each environment handles module resolution and what build tools are being used.
+
+_Node.js (Backend)_
+Node.js follows the **ECMAScript Module (ESM)** specification strictly, which requires **explicit file extensions** for relative imports.
+
+_React (Frontend with Build Tools)_
+React projects typically use bundlers (like **Vite**, **Webpack**, or **Create React App**) that automatically resolve file extensions, making them optional.
