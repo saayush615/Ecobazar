@@ -1,14 +1,21 @@
 import product from '../models/product.js';
 import cart from '../models/cart.js';
 import Order from '../models/order.js';
-import { createValidationError, createNotFoundError } from '../utils/ErrorFactory.js'
+import { createValidationError, createNotFoundError, createUnauthorizedError } from '../utils/ErrorFactory.js'
 
 async function handlePostProd(req,res,next) {
-    const { name, price, category, stock } = req.body;
-    const seller = req.user.id;
-    const newProduct = await product.create({ name, price, category, stock, seller });
-    // return res.redirect('/adminPage');
-    return res.status(201).json({ success: true, message: 'Product created successfully', product: newProduct });
+    try {
+        const { name, price, category, stock } = req.body;
+        const seller = req.user.id;
+        const newProduct = await product.create({ name, price, category, stock, seller });
+        return res.status(201).json({ 
+            success: true, 
+            message: 'Product created successfully', 
+            product: newProduct 
+        });
+    } catch (error) {
+        next(error)
+    }
 };
 
 async function handleUpdateProd(req,res,next) {
@@ -27,7 +34,26 @@ async function handleDeleteProd(req,res,next) {
 };
 
 async function handleShowAllProd(req,res,next) {
-    
+    try{
+        const products = await product.find({ seller: req.user.id });
+
+         if (!products || products.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No product Added',
+                products: []
+            });
+        }
+
+        // console.log(products);
+        return res.status(200).json({
+            success: true,
+            message: 'Product found!',
+            products
+        })
+    } catch(err) {
+        next(err)
+    }
 };
 
 async function handleUpdateStatus(req, res,next) {
