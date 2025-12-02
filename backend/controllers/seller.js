@@ -29,7 +29,6 @@ async function handleUpdateProd(req,res,next) {
 async function handleDeleteProd(req,res,next) {
     const ProductId = req.params.id;
     const Prod = await product.findByIdAndDelete(ProductId);
-    // return res.redirect('/adminPage');
     return res.status(200).json({ success: true, message: 'Product deleted successfully' });
 };
 
