@@ -823,3 +823,41 @@ Node.js follows the **ECMAScript Module (ESM)** specification strictly, which re
 
 _React (Frontend with Build Tools)_
 React projects typically use bundlers (like **Vite**, **Webpack**, or **Create React App**) that automatically resolve file extensions, making them optional.
+
+---
+## Note 14: React's Special `key` Prop
+
+### 📚 What Is It?
+
+**YES**, `key` is a **special prop** in React with unique behavior. Unlike regular props, it's **not passed to the component** - React uses it internally for its reconciliation algorithm.
+
+### 🎯 Key Significance
+
+#### 1. React's Reconciliation Algorithm
+- React uses `key` to **identify which items have changed, been added, or removed**
+- Helps React **efficiently update the DOM** by tracking element identity
+- Without keys, React re-renders entire lists instead of just changed items
+
+#### 2. Forces Component Remount
+```jsx
+<Products key={refreshProducts} />
+```
+
+#### 3. What happens when key changes (0 → 1 → 2...):
+
+- Unmounts the old component completely
+- Destroys its state and effects
+- Mounts a fresh new component
+- Triggers all useEffect hooks again (perfect for refetching data!)
+
+#### 4. Not Accessible Inside Component
+```jsx
+// ❌ This won't work - key is NOT passed as a prop
+const Products = ({ key }) => {
+  console.log(key) // undefined
+}
+
+// ✅ Key works from outside only
+<Products key={someValue} />
+```
+---
