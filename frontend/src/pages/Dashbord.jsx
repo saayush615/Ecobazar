@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('products')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [addProduct, setAddProduct] = useState(false)
+  const [refreshProducts, setRefreshProducts] = useState(0)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -45,10 +46,16 @@ const Dashboard = () => {
     { id: 'sales', label: 'Sales', icon: TrendingUp },
   ]
 
+    // Add this callback function
+  const handleProductAdded = () => {
+    setRefreshProducts(prev => prev + 1) // Trigger refresh
+    setAddProduct(false) // Close dialog
+  }
+
   const renderContent = () => {
     switch (activeTab) {
       case 'products':
-        return <Products />
+        return <Products key={refreshProducts} />  // Key Prop Pattern: When you change the key prop on a component, React unmounts and remounts it, triggering useEffect hooks
       case 'orders':
         return <div className='text-gray-600 dark:text-gray-300'>Orders content will go here</div>
       case 'history':
@@ -230,7 +237,7 @@ const Dashboard = () => {
       </main>
 
       {/* Add product */}
-      <AddProducts open={addProduct} onOpenChange={setAddProduct} />
+      <AddProducts open={addProduct} onOpenChange={setAddProduct} onProductAdded={handleProductAdded} />
     </div>
   )
 }

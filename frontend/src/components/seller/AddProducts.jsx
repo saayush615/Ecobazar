@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-const AddProducts = ({ open, onOpenChange }) => {
+const AddProducts = ({ open, onOpenChange, onProductAdded }) => {
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -28,7 +28,12 @@ const AddProducts = ({ open, onOpenChange }) => {
       toast.success('Product added successfully!');
 
       reset();
-      onOpenChange(false)
+      // Call the callback to trigger refresh
+      if (onProductAdded) {
+        onProductAdded() // This triggers the refresh
+      } else {
+        onOpenChange(false) // Fallback if callback not provided
+      }
     } catch (error) {
       console.error(error)
       toast.error(error.response?.data?.error || 'Something went wrong!')
