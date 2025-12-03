@@ -393,3 +393,292 @@ router.get('/google/callback',
 **File**: AuthContext.jsx
 
 ---
+
+## Image Upload with Multer
+#### What is Multer?
+- Node.js middleware for handling `multipart/form-data` (file uploads)
+- Works with Express.js
+- Handles single/multiple file uploads
+- Provides file validation and storage configuration
+
+#### Flow:
+- **Frontend**: Add file input and handle image upload
+- **Backend**: Store images using multer middleware
+- **Database**: Store image path/URL in Product model
+- **Display**: Show uploaded images in your product listings
+
+#### Architecture flow
+```
+Frontend                Backend                 Database
+   │                       │                       │
+   │  1. Select Image      │                       │
+   │──────────────────────>│                       │
+   │                       │                       │
+   │  2. FormData + File   │                       │
+   │──────────────────────>│                       │
+   │                       │                       │
+   │                       │  3. Multer processes  │
+   │                       │     & saves to disk   │
+   │                       │                       │
+   │                       │  4. Get file path     │
+   │                       │                       │
+   │                       │  5. Save path to DB   │
+   │                       │──────────────────────>│
+   │                       │                       │
+   │  6. Success response  │                       │
+   │<──────────────────────│                       │
+   │                       │                       │
+   │  7. Display image     │                       │
+   │  (fetch via path)     │                       │
+   │──────────────────────>│                       │
+   ```
+
+####  Step-by-Step Implementation
+#### Step 1: Install Multer
+```bash
+  npm install multer
+```
+#### Step 2: Create Upload Configuration File
+**file**: `upload.js` [Go to docs](https://expressjs.com/en/resources/middleware/multer.html)
+```jsx
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+
+// 1️⃣ Define upload directory
+const uploadDir = 'uploads/products';
+
+// 2️⃣ Create directory if it doesn't exist
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// 3️⃣ Configure storage (WHERE and HOW to save files)
+const storage = multer.diskStorage({
+    // Where to save
+    destination: function (req, file, cb) {
+        cb(null, uploadDir);  // Save to 'uploads/products'
+    },
+    
+    // What to name the file
+    filename: function (req, file, cb) {
+        // Create unique name: Products-1234567890-randomnumber.jpg
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'Products-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+// 4️⃣ File validation (WHAT files to accept)
+const fileFilter = (req, file, cb) => {
+    // Only accept images
+    if (file.mimetype.startsWith('image/')) {
+        cb(null, true);   // Accept file
+    } else {
+        cb(new Error('Only image files are allowed!'), false);  // Reject
+    }
+};
+
+// 5️⃣ Configure multer with all settings
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024,  // 5MB max size
+        files: 1                     // Only 1 file per upload
+    },
+    fileFilter: fileFilter
+});
+
+export { upload };
+```
+#### Step 3: Update Database Schema
+```jsx
+const productSchema = mongoose.Schema({
+    ..,
+    // ⭐ Add image field
+    image: {
+        type: String,      // Stores file PATH, not the actual file
+        default: null      // Optional - can be null
+    },
+}, { timestamps: true });
+```
+**Why store PATH instead of FILE?**
+- Files are too large for database
+- Database stores text efficiently
+- Path is a reference to disk location
+- Example: `/uploads/products/Products-1234-5678.jpg`
+
+#### Step 4: Update Routes with Multer Middleware
+```js
+import { upload } from '../config/upload.js';  // ⭐ Import upload config
+
+// ⭐ Add upload.single('image') middleware BEFORE controller
+// 'image' must match the FormData field name from frontend
+router.post('/product', upload.single('image'), handlePostProd);
+router.put('/edit/:id', upload.single('image'), handleUpdateProd);
+```
+**Multer Methods:**
+
+- `upload.single('fieldname')`, One file ,Profile picture
+- `upload.array('fieldname', max)`, Multiple files (same field), Gallery images
+- `upload.fields([{name, max}])`, Multiple fields, Avatar + cover photo
+- `upload.none()`, No files (text only), Form without files
+
+#### Step 5: Update Controller to Handle Files
+```js
+import product from '../models/product.js';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+// For ES modules (needed for __dirname)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ⭐ CREATE Product with Image
+async function handlePostProd(req, res, next) {
+    try {
+        const { name, price, category, stock } = req.body;
+        const seller = req.user.id;
+        
+        // ⭐ Get image path if file was uploaded
+        // req.file is added by Multer middleware
+        const image = req.file 
+            ? `/uploads/products/${req.file.filename}` 
+            : null;
+        
+        const newProduct = await product.create({ 
+            name, 
+            price, 
+            category, 
+            stock, 
+            image,      // ⭐ Save path to database
+            seller 
+        });
+        
+        return res.status(201).json({ 
+            success: true, 
+            message: 'Product created successfully', 
+            product: newProduct 
+        });
+    } catch (error) {
+        // ⭐ IMPORTANT: Delete uploaded file if database save fails
+        if (req.file) {
+            const filePath = path.join(__dirname, '../uploads/products', req.file.filename);
+            fs.unlink(filePath, (err) => {
+                if (err) console.error('Error deleting file:', err);
+            });
+        }
+        next(error);
+    }
+}
+
+// ⭐ UPDATE Product with Image
+async function handleUpdateProd(req, res, next) {
+    try {
+        const { name, price, category, stock } = req.body;
+        const ProductId = req.params.id;
+        
+        // Find existing product
+        const existingProduct = await product.findById(ProductId);
+        if (!existingProduct) {
+            return next(createNotFoundError('Product'));
+        }
+        
+        const updateData = { name, price, category, stock };
+        
+        // ⭐ If new image uploaded
+        if (req.file) {
+            // Delete old image first
+            if (existingProduct.image) {
+                const oldImagePath = path.join(__dirname, '..', existingProduct.image);
+                fs.unlink(oldImagePath, (err) => {
+                    if (err) console.error('Error deleting old image:', err);
+                });
+            }
+            // Add new image path
+            updateData.image = `/uploads/products/${req.file.filename}`;
+        }
+        
+        const updatedProduct = await product.findByIdAndUpdate(
+            ProductId, 
+            updateData,
+            { new: true }
+        );
+        
+        return res.status(200).json({ 
+            success: true, 
+            message: 'Product updated successfully',
+            product: updatedProduct 
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+// ⭐ DELETE Product and Image
+async function handleDeleteProd(req, res, next) {
+    try {
+        const ProductId = req.params.id;
+        const deletedProduct = await product.findByIdAndDelete(ProductId);
+        
+        // ⭐ Delete associated image file
+        if (deletedProduct && deletedProduct.image) {
+            const imagePath = path.join(__dirname, '..', deletedProduct.image);
+            fs.unlink(imagePath, (err) => {
+                if (err) console.error('Error deleting image:', err);
+            });
+        }
+        
+        return res.status(200).json({ 
+            success: true, 
+            message: 'Product deleted successfully' 
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { handlePostProd, handleUpdateProd, handleDeleteProd };
+```
+**Understanding req.file:**:
+```js
+// When Multer processes upload, it adds req.file object:
+req.file = {
+    fieldname: 'image',                    // Form field name
+    originalname: 'apple.jpg',             // Original filename
+    encoding: '7bit',
+    mimetype: 'image/jpeg',
+    destination: 'uploads/products',       // Where saved
+    filename: 'Products-1234-5678.jpg',    // Generated filename
+    path: 'uploads/products/Products-1234-5678.jpg',
+    size: 245678                           // Bytes
+}
+```
+#### Step 6: Serve Static Files in Main Server
+```jsx
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+
+// ... other middleware ...
+
+// ⭐ Serve uploaded images as static files
+// Makes images accessible via: http://localhost:3000/uploads/products/filename.jpg
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// ... routes ...
+```
+**What this does:**
+```
+Request: GET http://localhost:3000/uploads/products/Products-123.jpg
+         ↓
+Express: Looks in backend/uploads/products/Products-123.jpg
+         ↓
+Response: Sends the image file
+```
+> REST CREATING UPLOAD FORM IS IN FRONTEND README
