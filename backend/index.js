@@ -40,6 +40,10 @@ app.use(cookieParser()); //cookie-parser parses the Cookie header from incoming 
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
+
+// Serve uploaded images as static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.use(checkAuthentication);
 
 

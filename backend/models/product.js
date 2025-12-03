@@ -19,7 +19,7 @@ const productSchema = mongoose.Schema({
     image: {
         type: String,
         default: null
-    }
+    },
     seller: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', // Refers to the 'user' collection
