@@ -861,3 +861,319 @@ const Products = ({ key }) => {
 <Products key={someValue} />
 ```
 ---
+## Note 15: Creating upload form and handling file upload using multer
+#### Step 7: Frontend - Create Upload Form
+file: `AddProduct.jsx`
+```jsx
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { Upload, X } from 'lucide-react';
+
+const AddProducts = ({ open, onOpenChange, onProductAdded }) => {
+  const [loading, setLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageFile, setImageFile] = useState(null);  // ⭐ Store actual file
+  
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
+  // ⭐ Handle image selection
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Only image files (JPEG, PNG, GIF, WebP) are allowed');
+      return;
+    }
+    
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size must be less than 5MB');
+      return;
+    }
+    
+    setImageFile(file);  // ⭐ Store file for upload
+    
+    // Create preview using FileReader
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);  // Base64 string for preview
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
+  // ⭐ Submit form with image
+  const onSubmit = async (data) => {
+    setLoading(true);
+    try {
+      // ⭐ Create FormData (required for file uploads)
+      const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('price', data.price);
+      formData.append('category', data.category);
+      formData.append('stock', data.stock);
+      
+      // ⭐ Append image file (field name must match backend)
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/seller/product`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'multipart/form-data'  // ⭐ Required!
+          }
+        }
+      );
+      
+      toast.success('Product added successfully!');
+      reset();
+      removeImage();
+      
+      if (onProductAdded) {
+        onProductAdded();
+      } else {
+        onOpenChange(false);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.error || 'Something went wrong!');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+      {/* ⭐ Image Upload Section */}
+      <div className='flex flex-col gap-2'>
+        <label className='text-sm font-medium'>Product Image</label>
+        
+        {!imagePreview ? (
+          <label 
+            htmlFor="image-upload"
+            className='border-2 border-dashed rounded-lg p-8 cursor-pointer hover:border-green-500'
+          >
+            <Upload className='w-8 h-8 text-gray-400' />
+            <span className='text-sm text-gray-500'>Click to upload image</span>
+            <span className='text-xs text-gray-400'>PNG, JPG, GIF, WebP up to 5MB</span>
+            <input
+              id="image-upload"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className='hidden'
+            />
+          </label>
+        ) : (
+          <div className='relative rounded-lg overflow-hidden border-2'>
+            <img 
+              src={imagePreview} 
+              alt="Preview" 
+              className='w-full h-64 object-contain'
+            />
+            <button
+              type='button'
+              onClick={removeImage}
+              className='absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full'
+            >
+              <X className='w-4 h-4' />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Other form fields... */}
+      
+      <button type='submit' disabled={loading}>
+        {loading ? 'Adding...' : 'Add Product'}
+      </button>
+    </form>
+  );
+};
+
+export default AddProducts;
+```
+**Key Frontend Concepts:**
+| Concept            | Purpose                           | Code                              |
+|--------------------|------------------------------------|------------------------------------|
+| FormData           | Package files + data for upload    | `new FormData()`                   |
+| FileReader         | Create preview from file           | `reader.readAsDataURL(file)`       |
+| File validation    | Check type/size before upload      | `file.type`, `file.size`           |
+| Content-Type header| Tell server it's multipart data    | `'multipart/form-data'`            |
+
+#### Step 8: Frontend - Display Uploaded Images
+File: `Products.jsx`
+```js
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const Products = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/seller/getProduct`,
+        { withCredentials: true }
+      );
+      setProducts(response.data?.products || []);
+    } catch (error) {
+      console.error('Fetch error:', error);
+    }
+  };
+
+  // ⭐ Helper function to construct full image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    // Combine API URL + image path from database
+    return `${import.meta.env.VITE_API_URL}${imagePath}`;
+    // Example: http://localhost:3000/uploads/products/Products-123.jpg
+  };
+
+  return (
+    <div>
+      {products.map((product) => (
+        <div key={product._id}>
+          {/* ⭐ Display product image */}
+          {product.image ? (
+            <img 
+              src={getImageUrl(product.image)} 
+              alt={product.name}
+              className='w-16 h-16 object-cover rounded-lg'
+            />
+          ) : (
+            <div className='w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center'>
+              <span className='text-xs text-gray-400'>No image</span>
+            </div>
+          )}
+          
+          <h3>{product.name}</h3>
+          <p>₹{product.price}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default Products;
+```
+#### Step 9: Update .gitignore
+```
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Uploaded files (DO NOT commit user uploads)
+uploads/
+
+# Build files
+dist/
+build/
+```
+####  Key Points to Remember
+1. Files Are NOT Stored in Database
+```jsx
+// ❌ Missing header
+axios.post(url, formData);
+
+// ✅ Include header
+axios.post(url, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+});
+```
+2. FormData is Required for File Uploads
+```jsx
+// ❌ Won't work - JSON can't send files
+const data = { name: 'Apple', image: fileObject };
+axios.post(url, data);
+
+// ✅ Works - FormData handles files
+const formData = new FormData();
+formData.append('name', 'Apple');
+formData.append('image', fileObject);
+axios.post(url, formData);
+```
+3. Field Names Must Match
+```jsx
+// Frontend
+formData.append('image', file);  // ⭐ 'image'
+                ↓
+// Backend route
+upload.single('image')           // ⭐ Must match 'image'
+                ↓
+// Backend controller
+req.file.filename                // File is available
+```
+4. Always Clean Up Failed Uploads
+```js
+try {
+    await product.create({ ... });
+} catch (error) {
+    // ⭐ Delete uploaded file if save fails
+    if (req.file) {
+        fs.unlink(req.file.path, (err) => {});
+    }
+}
+```
+5. Delete Old Images When Updating/Deleting
+```js
+// Update: Delete old image before adding new
+if (existingProduct.image) {
+    fs.unlink(existingProduct.image);
+}
+
+// Delete: Remove image when deleting product
+if (product.image) {
+    fs.unlink(product.image);
+}
+```
+#### Complete Upload Flow Summary
+```
+1. USER SELECTS FILE
+   └─> Frontend validates (type, size)
+
+2. CREATE FORM DATA
+   └─> Append file + other fields
+
+3. SEND TO BACKEND
+   └─> Content-Type: multipart/form-data
+
+4. MULTER MIDDLEWARE
+   ├─> Validates file
+   ├─> Saves to disk
+   └─> Adds req.file object
+
+5. CONTROLLER
+   ├─> Gets file path from req.file
+   ├─> Saves path to database
+   └─> Returns success/error
+
+6. CLEANUP (if error)
+   └─> Delete uploaded file
+
+7. FRONTEND RECEIVES RESPONSE
+   ├─> Success: Show success message
+   └─> Error: Show error message
+
+8. DISPLAY IMAGE
+   └─> Fetch path from DB → Construct URL → Show image
+```
