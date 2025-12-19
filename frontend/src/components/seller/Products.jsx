@@ -3,6 +3,8 @@ import axios from 'axios'
 import { toast } from 'sonner'
 import { CirclePlus , CircleMinus , Trash  } from 'lucide-react';
 
+import { TableSkeleton, LoadingOverlay } from '@/components/ui/loading'
+
 import {
   Table,
   TableBody,
@@ -24,9 +26,10 @@ import {
 } from "@/components/ui/alert-dialog"
 
 const Products = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);  // Initial loading
   const [products, setProducts] = useState([]);
   const [deleteDialogue, setDeleteDialogue ] = useState({ open: false, productId: null})
+  const [actionLoading, setActionLoading] = useState(false); // For delete and update operation
 
   useEffect(() => {
     fetchProducts();
@@ -51,7 +54,7 @@ const Products = () => {
   }
 
   const handleDelete = async (productId) => {
-    setLoading(true);
+    setActionLoading(true);
     try{
       await axios.delete(
         `${import.meta.env.VITE_API_URL}/seller/remove/${productId}`,
@@ -64,7 +67,7 @@ const Products = () => {
       console.error('Delete error:', error)
       toast.error(error.response?.data?.error || 'Failed to delete product')
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   }
 
@@ -121,8 +124,19 @@ const Products = () => {
     return `${import.meta.env.VITE_API_URL}${imagePath}`;
   }
 
+  if (loading) {
+    return (
+      <div className='rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden'>
+        <TableSkeleton rows={5} columns={7} />
+      </div>
+    )
+  }
+
   return (
     <>
+      {/* ⭐ Loading overlay for delete/update operations */}
+      <LoadingOverlay show={actionLoading} text="Processing..." />
+
       <div className='rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden'>
         <Table>
         <TableCaption className='py-4'>{products.length} products in your inventory.</TableCaption>

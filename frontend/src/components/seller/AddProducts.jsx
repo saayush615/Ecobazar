@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form"
 import axios from 'axios'
 import { toast } from 'sonner'
 import { Upload, X } from 'lucide-react'
+import { LoadingSpinner } from '@/components/ui/loading'
 import {
   Dialog,
   DialogContent,
@@ -253,7 +254,7 @@ const AddProducts = ({ open, onOpenChange, onProductAdded }) => {
               className='px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
               disabled={loading}
             >
-              {loading ? 'Adding...' : 'Add Product'}
+              {loading ? <LoadingSpinner size="sm" variant="secondary" text="Adding..." /> : 'Add Product'}
             </button>
           </div>
         </form>
