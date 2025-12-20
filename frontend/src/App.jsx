@@ -9,7 +9,7 @@ import Signup from './pages/Signup'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashbord' 
 
-import { SellerOnly, RequireAuth } from '@/components/ProtectedRoute'
+import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
 
 function App() {
 
@@ -17,8 +17,16 @@ function App() {
     <>
       <Toaster />
       <Routes>
-        <Route path='/' element={ <Home /> } />
-        <Route path='/about' element={ <About /> } />
+        <Route path='/' element={ 
+          <BuyerOrPublicRoute>
+            <Home /> 
+          </BuyerOrPublicRoute>
+        } />
+        <Route path='/about' element={ 
+          <BuyerOrPublicRoute>
+            <About /> 
+          </BuyerOrPublicRoute>
+        } />
         <Route path='/signup' element={ <Signup /> } />
         <Route path='/login' element={ <Login /> } />
         <Route 
@@ -34,11 +42,13 @@ function App() {
         <Route 
           path='*' 
           element={
-            <div className='flex flex-col items-center justify-center min-h-screen'>
-              <h1 className='text-4xl font-bold text-gray-800 dark:text-white'>404</h1>
-              <p className='text-gray-600 dark:text-gray-400 mt-2'>Page not found</p>
-              <a href='/' className='mt-4 text-green-600 hover:underline'>Go Home</a>
-            </div>
+            <BuyerOrPublicRoute>
+              <div className='flex flex-col items-center justify-center min-h-screen'>
+                <h1 className='text-4xl font-bold text-gray-800 dark:text-white'>404</h1>
+                <p className='text-gray-600 dark:text-gray-400 mt-2'>Page not found</p>
+                <a href='/' className='mt-4 text-green-600 hover:underline'>Go Home</a>
+              </div>
+            </BuyerOrPublicRoute>
           } 
         />
       </Routes>

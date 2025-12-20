@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     const checkAuth = async () => {
+        setLoading(true)
         try {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/me`,{
                 withCredentials: true
@@ -39,6 +40,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const logout = async () => {
+        setLoading(true)
         try {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/logout`,{
                 withCredentials: true
