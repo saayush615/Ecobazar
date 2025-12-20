@@ -57,4 +57,6 @@ export const BuyerOrPublicRoute = ({ children }) => {
     if (isAuthenticated && user?.role === 'seller') {
         return <Navigate to='/dashbord' replace />
     }
+
+    return children
 }
