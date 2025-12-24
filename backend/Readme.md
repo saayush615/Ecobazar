@@ -394,7 +394,7 @@ router.get('/google/callback',
 
 ---
 
-## Image Upload with Multer
+## Note-7: Image Upload with Multer
 #### What is Multer?
 - Node.js middleware for handling `multipart/form-data` (file uploads)
 - Works with Express.js
@@ -682,3 +682,14 @@ Express: Looks in backend/uploads/products/Products-123.jpg
 Response: Sends the image file
 ```
 > REST CREATING UPLOAD FORM IS IN FRONTEND README
+---
+## Note-8: Js methods
+#### .reduce() [Array method]
+**What it does**: Loops through array and "reduces" it to a single value (number, object, string, etc.)
+
+**Syntax**
+```js
+array.reduce((accumulator, currentItem) => {
+    // return updated accumulator
+}, initialValue)
+```
