@@ -61,7 +61,8 @@ const AddProducts = ({ open, onOpenChange, onProductAdded }) => {
       // Create FormData to send file + text data
       const formData = new FormData();
       formData.append('name', data.name);
-      formData.append('price', data.price);
+      formData.append('originalPrice', data.originalPrice);
+      formData.append('discountPrice', data.discountPrice);
       formData.append('category', data.category);
       formData.append('stock', data.stock);
       
@@ -173,7 +174,7 @@ const AddProducts = ({ open, onOpenChange, onProductAdded }) => {
 
           {/* Price and Stock in Grid */}
           <div className='grid grid-cols-2 gap-4'>
-            {/* Price */}
+            {/* Original Price */}
             <div className='flex flex-col gap-1'>
               <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                 Price (₹) <span className='text-red-500'>*</span>
@@ -182,15 +183,35 @@ const AddProducts = ({ open, onOpenChange, onProductAdded }) => {
                 type='number'
                 step='0.01'
                 placeholder='e.g., 99.99'
-                {...register('price',{
+                {...register('originalPrice',{
                   required: { value: true, message: 'Price is required'},
                   min: { value: 0.01, message: 'Price must be greater than 0'},
                   valueAsNumber: true
                 })}
                 className='border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors'
               />
-              {errors.price && (
-                <p className='text-xs text-red-500 mt-1'>{errors.price.message}</p>
+              {errors.originalPrice && (
+                <p className='text-xs text-red-500 mt-1'>{errors.originalPrice.message}</p>
+              )}
+            </div>
+
+            {/* Discounted Price */}
+            <div className='flex flex-col gap-1'>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                Discount Price (₹)
+              </label>
+              <input 
+                type='number'
+                step='0.01'
+                placeholder='e.g., 90.99'
+                {...register('discountPrice',{
+                  min: { value: 0.01, message: 'Discount Price must be greater than 0'},
+                  valueAsNumber: true
+                })}
+                className='border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors'
+              />
+              {errors.discountPrice && (
+                <p className='text-xs text-red-500 mt-1'>{errors.discountPrice.message}</p>
               )}
             </div>
 

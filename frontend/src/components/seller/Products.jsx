@@ -42,7 +42,7 @@ const Products = () => {
         `${import.meta.env.VITE_API_URL}/seller/getProduct`,
         { withCredentials: true }
       )
-
+      console.log(response.data?.products)
       setProducts(response.data?.products || [])
     }catch (error){
       console.error('Fetch Data error', error);
@@ -147,6 +147,7 @@ const Products = () => {
               <TableHead className='font-semibold'>Product Name</TableHead>
               <TableHead className='font-semibold'>Category</TableHead>
               <TableHead className='font-semibold'>Price</TableHead>
+              <TableHead className='font-semibold'>Discount Price</TableHead>
               <TableHead className='font-semibold'>Stock</TableHead>
               <TableHead className="font-semibold">Actions</TableHead>
             </TableRow>
@@ -177,7 +178,10 @@ const Products = () => {
                 {product.category}
               </TableCell>
               <TableCell className='font-semibold text-green-600 dark:text-green-400'>
-                ₹{product.price.toFixed(2)}
+                ₹{product.originalPrice?.toFixed(2)}
+              </TableCell>
+              <TableCell className='font-semibold text-green-600 dark:text-green-400'>
+                ₹{ product.discountPrice ? product.discountPrice?.toFixed(2) : 'No Discount'}
               </TableCell>
               <TableCell className='font-medium'>
                 <div className='flex flex-row items-center gap-1'>
