@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 
 async function handlePostProd(req, res, next) {
     try {
-        const { name, price, category, stock } = req.body;
+        const { name, originalPrice, discountPrice, category, stock } = req.body;
         const seller = req.user.id;
         
         // Get image path if uploaded
@@ -19,7 +19,8 @@ async function handlePostProd(req, res, next) {
         
         const newProduct = await product.create({ 
             name, 
-            price, 
+            originalPrice,
+            discountPrice,
             category, 
             stock, 
             image,
