@@ -11,7 +11,7 @@ import './config/passport.js'
 import { connectToDB } from './config/database.js'
 
 import { checkAuthentication } from './middlewares/auth.js';
-import { sellerOnly } from './middlewares/authorization.js';
+import { sellerOnly, buyerOnly } from './middlewares/authorization.js';
 import globalErrorHandler from './middlewares/errorHandler.js'
 
 import userRoute from './routes/user.js';
@@ -58,7 +58,7 @@ app.get('/', (req,res) => {
 
 app.use('/user', userRoute);
 app.use('/product', productRoute);
-app.use('/cart', cartRoute);
+app.use('/cart', buyerOnly, cartRoute);
 app.use('/order', orderRoute);
 app.use('/seller', sellerOnly, sellerRoute);
 app.use('/oauth', oAuthRoute);

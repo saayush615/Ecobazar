@@ -1,6 +1,6 @@
 import { createUnauthorizedError, createForbiddenError } from '../utils/ErrorFactory.js'
 
-function sellerOnly(req,res,next) {
+function sellerOnly(req,_res,next) {
     const user = req.user;
     // console.log(user.role);
     if(!user){
@@ -12,7 +12,7 @@ function sellerOnly(req,res,next) {
     next();
 }
 
-function buyerOnly(req,res,next) {
+function buyerOnly(req,_res,next) {
     const user = req.user;
     if(!user){
         return next(createUnauthorizedError())
@@ -23,4 +23,4 @@ function buyerOnly(req,res,next) {
     next();
 }
 
-export { sellerOnly };
+export { sellerOnly, buyerOnly };

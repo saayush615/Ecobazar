@@ -1,6 +1,6 @@
 import { checkToken } from '../services/auth.js';
 
-async function checkAuthentication(req,res,next) {
+async function checkAuthentication(req,_res,next) {
     const userUid = req.cookies?.uid;
 
     // Set default user to null
