@@ -16,4 +16,23 @@ async function handleGetProdByName(req,res,next) {
     }
 }
 
-export { handleGetProdByName };
+async function handleGetAllProd(_req,res,next) {
+    try {
+        const products = await Product.find();
+        if (!products) {
+            return res.status(204).json({
+                success: true,
+                message: 'No Product Added'
+            })
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'Product reterived successfully',
+            products
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { handleGetProdByName, handleGetAllProd };
