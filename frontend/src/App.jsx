@@ -15,7 +15,7 @@ function App() {
 
   return (
     <>
-      <Toaster />
+      <Toaster position="top-right" richColors closeButton />
       <Routes>
         <Route path='/' element={ 
           <BuyerOrPublicRoute>
