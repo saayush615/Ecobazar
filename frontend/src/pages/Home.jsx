@@ -55,7 +55,7 @@ const Home = () => {
     setLoading(true);
     try {
       const prod = await axios.get(`${import.meta.env.VITE_API_URL}/product/getAllProd`);
-      console.log(prod.data?.products)
+      // console.log(prod.data?.products)
       setAllProducts(prod.data?.products);
     } catch (error) {
       console.error(error);
@@ -136,6 +136,7 @@ const Home = () => {
               {allProducts.map((product) => {
                 return <ProductCard 
                   key={product._id}
+                  prodId={product._id}
                   name={product.name}
                   source={product.image}
                   originalPrice={product.originalPrice}

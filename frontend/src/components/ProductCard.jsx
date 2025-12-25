@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { ShoppingBag } from 'lucide-react';
 import { Heart } from 'lucide-react';
+import { toast } from 'sonner';
 
 import {
   Card,
@@ -12,8 +13,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import axios from 'axios';
 
-const ProductCard = ({ name, source, originalPrice, discountedPrice}) => {
+const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) => {
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const handleAddToCart = async () => {
+        if (isLoading) return;
+
+        setIsLoading(true)
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/cart/${prodId}`, {}, { withCredentials: true });
+            // console.log(response);
+            
+            if (response.status === 201) {
+                toast.success('Product Added to Cart',{ description: 'Continue Shopping', duration: 3000 })
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error( 'Failed to add product to Cart', { description: `${error.response?.data?.error}` , duration: 3000 })
+        } finally {
+            setIsLoading(false);
+        }
+    }
   return (
     <div>
         <Card className={`cursor-pointer transition-all duration-300 ease-in-out hover:border-green-700 group`}>
@@ -49,9 +71,13 @@ const ProductCard = ({ name, source, originalPrice, discountedPrice}) => {
                         )}
                     </div>
 
-                    <ShoppingBag 
-                        className='size-9 p-2 bg-gray-200 dark:text-black transition-colors duration-300 hover:bg-green-500 rounded-2xl hover:scale-105 active:scale-95' 
-                    />
+                    <button 
+                        onClick={handleAddToCart}
+                        className='size-9 p-2 bg-gray-200 dark:text-black transition-colors duration-300 cursor-pointer hover:bg-green-500 rounded-2xl hover:scale-105 active:scale-95'
+                        aria-label="Add to cart"
+                    >
+                        <ShoppingBag className='w-full h-full' />
+                    </button>
                 </div>
 
             </CardContent>
