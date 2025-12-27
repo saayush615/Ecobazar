@@ -35,6 +35,20 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
       setLoading(false)
     }
   }
+
+  const handleRemoveFromCart = async (Itemid) => {
+    setLoading(true);
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/cart/remove/${Itemid}`, { withCredentials: true });
+      toast.success('Cart Removed');
+      setCartData(prev => prev.filter(item => item._id !== Itemid));
+    } catch (error) {
+      console.error(error);
+      toast.error('Something went wrong!', { description: 'Try Again!', duration: 3000 })
+    } finally {
+      setLoading(false);
+    }
+  }
   
 
   return (
@@ -47,12 +61,14 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
               </SheetDescription>
               </SheetHeader>
               {cartData.map((item) => <CartCard key={item._id} 
+                  id={item._id}
                   Pname={item.product?.name} 
                   source={`${import.meta.env.VITE_API_URL}${item.product?.image}`} 
                   category={item.product?.category} 
                   discountPrice={item.product?.discountPrice} 
                   originalPrice={item.product?.originalPrice}
-                  quantity={item.product?.stock}
+                  quantity={item.quantity}
+                  onDelete={handleRemoveFromCart}
                 />)
               }
           </SheetContent>
