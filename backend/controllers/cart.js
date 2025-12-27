@@ -66,6 +66,47 @@ async function handleProdRemove(req,res,next) {
     }
 }
 
+async function handleUpdateQuantity(req,res,next) {
+    try {
+        const userId = req.user.id;
+        const cartId = req.params.id;
+        const { quantity } = req.body;
+
+        if (!quantity || quantity < 1 || !Number.isInteger(quantity)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Quantity must be positive'
+            })
+        }
+
+        const cartItem = await findOne({ user: userId, _id: cartId });
+        if (!cartItem) {
+            return res.status(404).json({
+                success: false,
+                message: 'Cart Item not Found'
+            })
+        }
+
+        const product = await Product.findById(cartId.product)
+        if (product && product.stock < quantity) {
+            return res.status(400).json({
+                success: false,
+                message: `Only ${product.stock} items are available in stock`
+            })
+        }
+
+        const newcart = await Cart.findOneAndUpdate({ _id: cartId }, { quantity: quantity }, {new: true}).populate('product');
+        return res.status(200).json({
+            success: true,
+            message: 'Cart quantity updated successfully',
+            newcart
+        })
+
+    } catch (error) {
+        next(error);
+    }
+}
+
 async function handleGetCartItems(req,res,next) {
     try {
         const userId = req.user.id;
@@ -96,4 +137,4 @@ async function handleGetCartItems(req,res,next) {
     }
 }
 
-export { handleAddToCart, handleProdRemove, handleGetCartItems };
+export { handleAddToCart, handleProdRemove, handleUpdateQuantity, handleGetCartItems };
