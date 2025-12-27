@@ -11,7 +11,7 @@ import CartCard from './CartCard'
 import axios from 'axios'
 import { toast } from 'sonner'
 
-const SheetSidebar = ({ contentType, open, onOpenChange }) => {
+const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
   const [loading, setLoading] = useState(true);
   const [cartData, setCartData] = useState([]);
 
@@ -28,6 +28,7 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/cart/`, { withCredentials: true })
       // console.log(response);
       setCartData(response.data?.cartItems);
+      setCartQuantity(response.data?.cartItems.length);
     } catch (error) {
       console.log(error)
       toast.error('Something went wrong!', {description: 'Retry!', duration: 3000 });
@@ -42,6 +43,7 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
       await axios.delete(`${import.meta.env.VITE_API_URL}/cart/remove/${Itemid}`, { withCredentials: true });
       toast.success('Cart Removed');
       setCartData(prev => prev.filter(item => item._id !== Itemid));
+      setCartQuantity(response.data?.cartItems.length);
     } catch (error) {
       console.error(error);
       toast.error('Something went wrong!', { description: 'Try Again!', duration: 3000 })

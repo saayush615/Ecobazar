@@ -15,6 +15,7 @@ import { Search } from 'lucide-react';
 const Header = () => {
   const [showSheet, setShowSheet] = useState(false);
   const [sheetContentType, setSheetContentType] = useState('');
+  const [cartQuantity, setCartQuantity] = useState(0);
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate(); 
@@ -81,7 +82,7 @@ const Header = () => {
                       className='w-6 h-6 text-gray-700 dark:text-gray-100' 
                       onClick={() => handleOpenSheet('Cart')}
                     />
-                    <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>0</span>
+                    <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>{cartQuantity}</span>
                   </button>
                 </div>
               </div>
@@ -110,6 +111,7 @@ const Header = () => {
         contentType={sheetContentType}
         open={showSheet}
         onOpenChange={setShowSheet}
+        setCartQuantity={setCartQuantity}
       />
     </>
   )
