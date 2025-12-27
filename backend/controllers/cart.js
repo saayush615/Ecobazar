@@ -79,7 +79,7 @@ async function handleUpdateQuantity(req,res,next) {
             })
         }
 
-        const cartItem = await findOne({ user: userId, _id: cartId });
+        const cartItem = await Cart.findOne({ user: userId, _id: cartId });
         if (!cartItem) {
             return res.status(404).json({
                 success: false,
