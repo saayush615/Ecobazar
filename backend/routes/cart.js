@@ -3,8 +3,8 @@ import { handleAddToCart,handleProdRemove, handleGetCartItems } from '../control
 
 const router = express.Router();
 
-router.post('/remove/:id', handleProdRemove);
 router.post('/:id', handleAddToCart);
-router.get('/', handleGetCartItems)
+router.get('/', handleGetCartItems);
+router.delete('/remove/:id', handleProdRemove);
 
 export default router;

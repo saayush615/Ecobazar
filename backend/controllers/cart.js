@@ -54,12 +54,7 @@ async function handleProdRemove(req,res,next) {
             })
         }
 
-        if (cartItem.quantity > 1) {
-            cartItem.quantity -= 1;
-            await cartItem.save();
-        } else {
-            await Cart.findByIdAndDelete(cartItem._id);
-        }
+        await Cart.findByIdAndDelete(cartItem._id);
         
         return res.status(200).json({
             success: true,
