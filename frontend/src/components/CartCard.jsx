@@ -6,10 +6,29 @@ import {
   CardHeader,
 } from "@/components/ui/card"
 import { Minus, Plus, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 
-const CartCard = ({ id, Pname, source, category, discountPrice, originalPrice, quantity, onDelete}) => {
+const CartCard = ({ id, Pname, source, category, stock, discountPrice, originalPrice, quantity, onDelete, onUpdate}) => {
   const handleDeleteCart = () => {
     onDelete(id)
+  }
+
+  const handleDecreaseQuantity = () => {
+    const newQuantity = quantity - 1;
+    if(newQuantity >= 1){
+      onUpdate(id, newQuantity);
+    } else{
+      toast.error('Quantity should be 1 or more', {duration: 2000})
+    }
+  }
+
+  const handleIncreaseQuantity = () => {
+    const newQuantity = quantity + 1;
+    if(newQuantity <= stock){
+      onUpdate(id, newQuantity);
+    } else{
+      toast.error(`${stock} Product are in stock!`, {duration: 2000})
+    }
   }
 
   return (
@@ -35,12 +54,14 @@ const CartCard = ({ id, Pname, source, category, discountPrice, originalPrice, q
             <div className='flex flex-row items-center mt-2'>
               <button 
                 className="text-gray-400 hover:text-red-500 border border-gray-200 dark:border-gray-600 hover:border-red-200 dark:hover:border-red-500 p-1 rounded-md hover:shadow-sm transition-all duration-150 cursor-pointer"
+                onClick={handleDecreaseQuantity}
               >
                 <Minus size={20} />
               </button>
               <p className='bg-gray-200 dark:bg-gray-700 dark:text-gray-100 px-3 py-1 font-semibold'>{quantity}</p>
               <button 
                 className="text-gray-400 hover:text-green-500 border border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-500 p-1 rounded-md hover:shadow-sm transition-all duration-150 cursor-pointer"
+                onClick={handleIncreaseQuantity}
               > 
                 <Plus size={20} />
               </button>

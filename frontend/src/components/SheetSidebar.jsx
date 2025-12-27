@@ -26,7 +26,7 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
     setLoading(true);
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/cart/`, { withCredentials: true })
-      console.log(response);
+      // console.log(response);
       setCartData(response.data?.cartItems);
     } catch (error) {
       console.log(error)
@@ -49,6 +49,23 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
       setLoading(false);
     }
   }
+
+  const handleUpdateQuantity = async (itemId, newQuantity) => {
+    setLoading(true);
+    try{
+      await axios.put(`${import.meta.env.VITE_API_URL}/cart/update/${itemId}`, { quantity: newQuantity}, { withCredentials: true });
+      setCartData(prev => 
+        prev.map(item => 
+          item._id === itemId ? {...item, quantity: newQuantity} : item
+        )
+      )
+    } catch(error){
+      console.error(error);
+      toast.error('Something went wrong!', { description: 'Try Again!', duration: 2000 })
+    } finally{
+      setLoading(false);
+    }
+  }
   
 
   return (
@@ -65,10 +82,12 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
                   Pname={item.product?.name} 
                   source={`${import.meta.env.VITE_API_URL}${item.product?.image}`} 
                   category={item.product?.category} 
+                  stock={item.product?.stock} 
                   discountPrice={item.product?.discountPrice} 
                   originalPrice={item.product?.originalPrice}
                   quantity={item.quantity}
                   onDelete={handleRemoveFromCart}
+                  onUpdate={handleUpdateQuantity}
                 />)
               }
           </SheetContent>
