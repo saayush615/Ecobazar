@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card"
 import { Minus, Plus, Trash2 } from 'lucide-react'
 
-const CartCard = ({ Pname, source, category, price, quantity}) => {
+const CartCard = ({ Pname, source, category, discountPrice, originalPrice, quantity}) => {
 
   return (
     <Card>
@@ -24,7 +24,10 @@ const CartCard = ({ Pname, source, category, price, quantity}) => {
             <div>
               <p className='font-semibold text-base text-gray-900 leading-tight'>{Pname} </p>
               <p className='text-xs text-muted-foreground'>{category}</p>
-              <p className='font-bold text-lg text-green-600'>₹{price}</p>
+              <div className='flex flex-row items-center gap-2'>
+                <p className='font-bold text-lg text-green-600'>₹{discountPrice}</p>
+                <p className='text-sm text-gray-400 line-through'>₹{originalPrice}</p>
+              </div>
             </div>
             <div className='flex flex-row items-center mt-2'>
               <button className="text-gray-400 hover:text-red-500 border border-gray-200 hover:border-red-200 p-1 rounded-md hover:shadow-sm transition-all duration-150 cursor-pointer"><Minus size={20} /></button>
