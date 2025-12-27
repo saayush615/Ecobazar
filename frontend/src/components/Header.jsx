@@ -14,13 +14,13 @@ import { Search } from 'lucide-react';
 
 const Header = () => {
   const [showSheet, setShowSheet] = useState(false);
-  const [sheetContent, setSheetContent] = useState('');
+  const [sheetContentType, setSheetContentType] = useState('');
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate(); 
 
-  const handleOpenSheet = (content) => {
-    setSheetContent(content),
+  const handleOpenSheet = (type) => {
+    setSheetContentType(type);
     setShowSheet(true);
   }
 
@@ -73,13 +73,13 @@ const Header = () => {
                   <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors hover:scale-105 active:scale-95'>
                     <Heart 
                       className='w-6 h-6 text-gray-700 dark:text-gray-100' 
-                      onClick={() => handleOpenSheet("Wishlist 💖")}
+                      onClick={() => handleOpenSheet('Whishlist')}
                     />
                   </button>
                   <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors relative hover:scale-105 active:scale-95'>
                     <ShoppingCart 
                       className='w-6 h-6 text-gray-700 dark:text-gray-100' 
-                      onClick={() => handleOpenSheet("Shopping Cart 🛒")}
+                      onClick={() => handleOpenSheet('Cart')}
                     />
                     <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>0</span>
                   </button>
@@ -107,7 +107,7 @@ const Header = () => {
       </div>
 
       <SheetSidebar 
-        content={sheetContent}
+        contentType={sheetContentType}
         open={showSheet}
         onOpenChange={setShowSheet}
       />
