@@ -19,6 +19,7 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
     switch(contentType){
       case 'Cart':
         getCart();
+      case 'Wishlist':
     }
   }, [open, contentType])
 

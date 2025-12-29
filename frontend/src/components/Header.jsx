@@ -74,7 +74,7 @@ const Header = () => {
                   <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors hover:scale-105 active:scale-95'>
                     <Heart 
                       className='w-6 h-6 text-gray-700 dark:text-gray-100' 
-                      onClick={() => handleOpenSheet('Whishlist')}
+                      onClick={() => handleOpenSheet('Wishlist')}
                     />
                   </button>
                   <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors relative hover:scale-105 active:scale-95'>
