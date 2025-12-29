@@ -20,6 +20,7 @@ import cartRoute from './routes/cart.js';
 import sellerRoute from './routes/seller.js';
 import orderRoute from './routes/order.js';
 import oAuthRoute from './routes/oauth.js';
+import favRoute from './routes/favorite.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,7 +50,7 @@ app.use(checkAuthentication);
 
 connectToDB();
 
-app.get('/', (req,res) => {
+app.get('/', (_req,res) => {
     return res.status(200).json({
         success: true,
         message: 'Welcome to Ecobazar'
@@ -59,6 +60,7 @@ app.get('/', (req,res) => {
 app.use('/user', userRoute);
 app.use('/product', productRoute);
 app.use('/cart', buyerOnly, cartRoute);
+app.use('/fav', buyerOnly, favRoute);
 app.use('/order', orderRoute);
 app.use('/seller', sellerOnly, sellerRoute);
 app.use('/oauth', oAuthRoute);
