@@ -10,11 +10,13 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashbord' 
 
 import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
+import { WishlistProvider } from '@/contexts/WishlistContext'
 
 function App() {
 
   return (
     <>
+      <WishlistProvider>
       <Toaster position="top-right" richColors closeButton />
       <Routes>
         <Route path='/' element={ 
@@ -52,6 +54,7 @@ function App() {
           } 
         />
       </Routes>
+      </WishlistProvider>
     </>
   )
 }
