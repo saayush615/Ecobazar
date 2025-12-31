@@ -4,6 +4,8 @@ import { ShoppingBag } from 'lucide-react';
 import { Heart } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { useWishlist } from '@/hooks/useWishlist';
+
 import {
   Card,
   CardAction,
@@ -17,6 +19,7 @@ import axios from 'axios';
 
 const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) => {
     const [isLoading, setIsLoading] = useState(false);
+    const { loading, wishlistItems, addToWishlist, removeFromWishlist, isInWishlist, getWishlistItem } = useWishlist();
     
     const handleAddToCart = async () => {
         if (isLoading) return;
@@ -36,6 +39,39 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
             setIsLoading(false);
         }
     }
+
+    const handleToggleWishlist = async () => {
+        if(isLoading) return;
+
+        setIsLoading(true);
+        try{
+            if(isInWishlist(prodId)){
+                const wishlistItem = getWishlistItem(prodId);
+                const result = await removeFromWishlist(wishlistItem._id);
+
+                if (result.success){
+                    toast.success('Removed product from wishlist', { duration: 2000 });
+                }
+                else{
+                    toast.error(result.error, { duration: 3000 });
+                }
+            } else {
+                const result = await addToWishlist(prodId);
+
+                if (result.success){
+                    toast.success('Added to wishlist', { duration: 2000 });
+                }
+                else{
+                    toast.error(result.error, { duration: 3000 });
+                }
+            }
+        } catch(error) {
+            console.error(error);
+            toast.error('Something went wrong!', { duration: 3000 });
+        } finally {
+            setIsLoading(true);
+        }
+    }
   return (
     <div>
         <Card className={`cursor-pointer transition-all duration-300 ease-in-out hover:border-green-700 group`}>
@@ -44,11 +80,18 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
                 <img src={`${import.meta.env.VITE_API_URL}${source}`} alt="Category" className='w-full h-20 sm:h-24 md:h-28 object-contain' />
 
                 {/* Favourite */}
-                <div className='absolute top-2 right-2'>
+                <button 
+                    onClick={handleToggleWishlist}
+                    className='absolute top-2 right-2'
+                    aria-label={isInWishlist(prodId) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                    disable={isLoading.toString()}
+                >
                     <Heart 
-                        className='size-8 p-1.5 bg-white dark:bg-gray-900 rounded-2xl transition-all duration-300 hover:fill-red-500 hover:text-red-500 hover:scale-110 active:scale-90' 
+                        className={`size-8 p-1.5 bg-white dark:bg-gray-900 rounded-2xl transition-all duration-300 active:scale-90 cursor-pointer
+                                ${isInWishlist(prodId) ? 'fill-red-500 text-red-500' : 'hover:text-red-500'}
+                            }`} 
                     />
-                </div>
+                </button>
 
                 {/* save */}
                 {originalPrice !== discountedPrice && (
