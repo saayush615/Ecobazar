@@ -69,7 +69,7 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
             console.error(error);
             toast.error('Something went wrong!', { duration: 3000 });
         } finally {
-            setIsLoading(true);
+            setIsLoading(false);
         }
     }
   return (
