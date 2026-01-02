@@ -8,18 +8,24 @@ import {
 } from "@/components/ui/sheet"
 
 import CartCard from './CartCard'
+import FavCard from './FavCard';
 import axios from 'axios'
 import { toast } from 'sonner'
+
+import { useWishlist } from '@/hooks/useWishlist'
 
 const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
   const [loading, setLoading] = useState(true);
   const [cartData, setCartData] = useState([]);
+
+  const { wishlistItems, loading: wishlistLoading, removeFromWishlist, wishlistCount } = useWishlist();
 
   useEffect(() => {
     switch(contentType){
       case 'Cart':
         getCart();
       case 'Wishlist':
+        break;
     }
   }, [open, contentType])
 
@@ -69,6 +75,16 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
       setLoading(false);
     }
   }
+
+    const handleRemoveFromWishlist = async (favoriteId) => {
+    const result = await removeFromWishlist(favoriteId);
+    
+    if (result.success) {
+      toast.success('Removed from Wishlist');
+    } else {
+      toast.error(result.error || 'Failed to remove');
+    }
+  }
   
 
   return (
@@ -80,19 +96,37 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
                   This is your {contentType}
               </SheetDescription>
               </SheetHeader>
-              {cartData.map((item) => <CartCard key={item._id} 
+              { contentType === 'Cart' && (
+                cartData.map((item) => 
+                  (<CartCard key={item._id} 
+                    id={item._id}
+                    Pname={item.product?.name} 
+                    source={`${import.meta.env.VITE_API_URL}${item.product?.image}`} 
+                    category={item.product?.category} 
+                    stock={item.product?.stock} 
+                    discountPrice={item.product?.discountPrice} 
+                    originalPrice={item.product?.originalPrice}
+                    quantity={item.quantity}
+                    onDelete={handleRemoveFromCart}
+                    onUpdate={handleUpdateQuantity}
+                  />))
+              )}
+
+              { contentType === 'Wishlist' && (
+                wishlistItems.map((item) => (
+                <FavCard 
+                  key={item._id}
                   id={item._id}
-                  Pname={item.product?.name} 
-                  source={`${import.meta.env.VITE_API_URL}${item.product?.image}`} 
-                  category={item.product?.category} 
-                  stock={item.product?.stock} 
-                  discountPrice={item.product?.discountPrice} 
+                  productId={item.product?._id}
+                  name={item.product?.name}
+                  source={`${import.meta.env.VITE_API_URL}${item.product?.image}`}
+                  category={item.product?.category}
+                  discountPrice={item.product?.discountPrice}
                   originalPrice={item.product?.originalPrice}
-                  quantity={item.quantity}
-                  onDelete={handleRemoveFromCart}
-                  onUpdate={handleUpdateQuantity}
-                />)
-              }
+                  stock={item.product?.stock}
+                  onRemove={handleRemoveFromWishlist}
+                />))
+              )}
           </SheetContent>
       </Sheet>
   )
