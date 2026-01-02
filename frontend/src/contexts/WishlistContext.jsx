@@ -11,7 +11,7 @@ export const WishlistProvider = ({ children }) => {
         setLoading(true)
         try{
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/fav/`, { withCredentials: true });
-            console.log(response);
+            // console.log(response);
             setWishlistItems(response.data?.data || []);
         } catch(error) {
             console.error('Failed to fetch wishlist:',error);
@@ -24,7 +24,7 @@ export const WishlistProvider = ({ children }) => {
     const addToWishlist = async (productId) => {
         try{
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/fav/`, { productId }, { withCredentials: true });
-            console.log(response);
+            // console.log(response);
             if (response.status === 201) {
                 setWishlistItems(prev => [...prev, response.data.favcard]);
                 return { success: true };
