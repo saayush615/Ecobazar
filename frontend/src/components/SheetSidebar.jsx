@@ -5,6 +5,7 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
+  SheetFooter
 } from "@/components/ui/sheet"
 
 import CartCard from './CartCard'
@@ -17,6 +18,7 @@ import { useWishlist } from '@/hooks/useWishlist'
 const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
   const [loading, setLoading] = useState(true);
   const [cartData, setCartData] = useState([]);
+  const [total, setTotal] = useState(0);
 
   const { wishlistItems, loading: wishlistLoading, removeFromWishlist, wishlistCount } = useWishlist();
 
@@ -36,6 +38,7 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
       // console.log(response);
       setCartData(response.data?.cartItems);
       setCartQuantity(response.data?.cartItems.length);
+      setTotal(response.data?.total);
     } catch (error) {
       console.log(error)
       toast.error('Something went wrong!', {description: 'Retry!', duration: 3000 });
@@ -47,10 +50,13 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
   const handleRemoveFromCart = async (Itemid) => {
     setLoading(true);
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/cart/remove/${Itemid}`, { withCredentials: true });
+      const response = await axios.delete(`${import.meta.env.VITE_API_URL}/cart/remove/${Itemid}`, { withCredentials: true });
       toast.success('Cart Removed');
+
+      const removedItem = response.data?.cartItem;
       setCartData(prev => prev.filter(item => item._id !== Itemid));
-      setCartQuantity(response.data?.cartItems.length);
+      setCartQuantity(prev => prev - 1 );
+      setTotal(prev => prev - (removedItem.quantity * removedItem.product?.discountPrice));
     } catch (error) {
       console.error(error);
       toast.error('Something went wrong!', { description: 'Try Again!', duration: 3000 })
@@ -62,12 +68,22 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
   const handleUpdateQuantity = async (itemId, newQuantity) => {
     setLoading(true);
     try{
-      await axios.put(`${import.meta.env.VITE_API_URL}/cart/update/${itemId}`, { quantity: newQuantity}, { withCredentials: true });
+      const response = await axios.put(`${import.meta.env.VITE_API_URL}/cart/update/${itemId}`, { quantity: newQuantity}, { withCredentials: true });
+      // console.log(response)
+      const updatedItem = response.data?.newcart;
+
+      const oldItem = cartData.find(item => item._id === itemId);
+      const oldPrice = oldItem.quantity * oldItem.product?.discountPrice;
+
       setCartData(prev => 
         prev.map(item => 
-          item._id === itemId ? {...item, quantity: newQuantity} : item
+          item._id === itemId ? updatedItem : item
         )
-      )
+      );
+
+      const newPrice = updatedItem.quantity * updatedItem.product?.discountPrice;
+
+      setTotal(prev => prev - oldPrice + newPrice);
     } catch(error){
       console.error(error);
       toast.error('Something went wrong!', { description: 'Try Again!', duration: 2000 })
@@ -127,6 +143,20 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
                   onRemove={handleRemoveFromWishlist}
                 />))
               )}
+
+            <SheetFooter>
+              { contentType === 'Cart' && (
+                <div className='w-full space-y-3'>
+                  <div className='flex justify-between items-center border-t pt-3'>
+                    <p className='text-lg font-semibold'>Total:</p>
+                    <p className='text-2xl font-bold text-green-600'>₹{total?.toFixed(2)}</p>
+                  </div>
+                  <button className='w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-2 rounded-lg transition-colors'>
+                    Proceed to Pay
+                  </button>
+                </div>
+              )}
+            </SheetFooter>
           </SheetContent>
       </Sheet>
   )
