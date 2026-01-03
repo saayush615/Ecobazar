@@ -45,7 +45,7 @@ async function handleProdRemove(req,res,next) {
     try {
         const userId = req.user.id;
         const cartId = req.params.id;
-        const cartItem = await Cart.findOne({ user: userId, _id: cartId });
+        const cartItem = await Cart.findOne({ user: userId, _id: cartId }).populate('product');
 
         if (!cartItem) {
             return res.status(404).json({
