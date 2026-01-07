@@ -1,32 +1,147 @@
+import razorpayInstance from '../config/razorpay.js';
 import Order from '../models/order.js';
 import Cart from '../models/cart.js';
-import user from '../models/user.js';
+import crypto from 'crypto';
+import { createValidationError, createNotFoundError } from '../utils/ErrorFactory.js';
 
-async function handleBuyNow(req, res, next) {
-    try{
+// Step 1: Create Razorpay Order
+async function handleCreateOrder(req, res, next) {
+    try {
         const userId = req.user.id;
+        
+        const cartItems = await Cart.find({ user: userId }).populate('product');
+        
+        if (cartItems.length === 0) {
+            return next(createValidationError('Cart is empty'));
+        }
 
-        const findCart = await Cart.find({ user: userId});
+        // total amount
+        const totalAmount = cartItems.reduce((sum, item) => {
+            const price = item.product?.discountPrice || item.product?.originalPrice;
+            return sum + (item.quantity * price);
+        }, 0);
 
-        const newCart = findCart.map((x) => { 
-            return {
-                product: x.product, 
-                quantity: x.quantity
-            }; 
+        // Razorpay order option
+        const options = {
+            amount: totalAmount * 100, // Razorpay expects amount in paise (smallest currency unit)
+            currency: "INR",
+            receipt: `receipt_${Date.now()}`,
+            notes: {
+                userId: userId.toString(),
+                orderType: 'ecommerce'
+            }
+        };
+
+        // Create razorpay order
+        const razorpayOrder = await razorpayInstance.orders.create(options);
+
+        // Create order in database
+        const newCart = cartItems.map(item => ({
+            product: item.product._id,
+            quantity: item.quantity
+        }));
+
+        const order = await Order.create({
+            user: userId,
+            carts: newCart,
+            totalAmount,
+            paymentMethod: 'razorpay',
+            razorpayOrderId: razorpayOrder.id,
+            paymentStatus: 'pending',
+            status: 'Pending'
         });
 
-        const stackInOrder = await Order.create({ user: userId, carts: newCart});
-        // Delete all items in the cart after creating the order
-        await Cart.deleteMany({ user: userId });
-        // res.redirect('/mycart')
         return res.status(201).json({
             success: true,
-            message: 'Order Placed Successfully!'
-        })
+            message: 'Order created successfully',
+            order: {
+                id: razorpayOrder.id,
+                amount: razorpayOrder.amount,
+                currency: razorpayOrder.currency
+            },
+            orderId: order._id,
+            key: process.env.RAZORPAY_API_KEY
+        });
 
-    } catch(err) {
-        next(err);
+    } catch (error) {
+        next(error);
     }
 }
 
-export { handleBuyNow };
+// Step 2: Verify Payment Signature
+async function handleVerifyPayment(req, res, next) {
+    try {
+        const { 
+            razorpay_order_id, 
+            razorpay_payment_id, 
+            razorpay_signature,
+            orderId 
+        } = req.body;
+
+        // Create signature for verification
+        const generated_signature = crypto
+            .createHmac('sha256', process.env.RAZORPAY_SECRET_KEY)
+            .update(razorpay_order_id + "|" + razorpay_payment_id)
+            .digest('hex');
+
+        // Verify signature
+        if (generated_signature !== razorpay_signature) {
+            return next(createValidationError('Payment verification failed'));
+        }
+
+        // Update order with payment details
+        const order = await Order.findByIdAndUpdate(
+            orderId,
+            {
+                razorpayPaymentId: razorpay_payment_id,
+                razorpaySignature: razorpay_signature,
+                paymentStatus: 'completed',
+                status: 'Confirmed'
+            },
+            { new: true }
+        );
+
+        if (!order) {
+            return next(createNotFoundError('Order'));
+        }
+
+        // Clear cart after successful payment
+        await Cart.deleteMany({ user: req.user.id });
+
+        return res.status(200).json({
+            success: true,
+            message: 'Payment verified successfully',
+            order
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+// Step 3: Handle Payment Failure
+async function handlePaymentFailure(req, res, next) {
+    try {
+        const { orderId } = req.body;
+
+        const order = await Order.findByIdAndUpdate(
+            orderId,
+            {
+                paymentStatus: 'failed',
+                status: 'Cancelled'
+            },
+            { new: true }
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: 'Payment failure recorded',
+            order
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { handleCreateOrder, handleVerifyPayment, handlePaymentFailure };
