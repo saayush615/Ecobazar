@@ -106,6 +106,13 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
   const handlePayment = async () => {
     setLoading(true);
     try {
+      // Step 0: get the user data from backend
+      const userData = await axios.get(`${import.meta.env.VITE_API_URL}/user/me`,{
+          withCredentials: true
+      })
+
+      const { name, email, phone } = userData.data?.user;
+
       // Step 1: Create order on backend
       const orderResponse = await axios.post(
         `${import.meta.env.VITE_API_URL}/order/create-order`,
@@ -154,14 +161,14 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
 
         // Prefill user details
         prefill: {
-          name: "Customer Name",
-          email: "customer@example.com",
-          contact: "9999999999"
+          name: name,
+          email: email,
+          contact: phone
         },
 
         // Theme customization
         theme: {
-          color: "#22c55e" // Green color matching your theme
+          color: "#22c55e"
         },
 
         // Modal settings

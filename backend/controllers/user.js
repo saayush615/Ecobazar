@@ -125,6 +125,7 @@ async function handleAuthentication (req,res,next) {
                     id: req.user.id,
                     name: req.user.name,
                     email: req.user.email,
+                    phone: req.user.phone,
                     role: req.user.role,
                     ...(req.user.role === 'seller' && { shopName: req.user.shopName, businessRegNo: req.user.businessRegNo, businessAddress: req.user.businessAddress })
                 }
