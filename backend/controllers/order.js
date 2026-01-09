@@ -144,4 +144,50 @@ async function handlePaymentFailure(req, res, next) {
     }
 }
 
-export { handleCreateOrder, handleVerifyPayment, handlePaymentFailure };
+async function handleCODOrder(req,res,next) {
+    try{
+        const userId = req.user.id;
+
+        const cartItems = await Cart.find({ user: userId }).populate('product');
+        if (cartItems.length === 0) {
+            return next(createValidationError('Cart is empty'));
+        }
+
+        const totalAmount = cartItems.reduce((sum, item) => {
+            const price = item.product?.discountPrice || item.product?.originalPrice;
+            return sum + (item.quantity * price);
+        }, 0);
+
+        const newCart = cartItems.map(item => ({
+            product: item.product._id,
+            quantity: item.quantity
+        }));
+
+        const order = await Order.create({
+            user: userId,
+            carts: newCart,
+            totalAmount,
+            paymentMethod: 'cod',
+            paymentStatus: 'pending',
+            status: 'Confirmed'
+        });
+
+        await Cart.deleteMany({ user: userId });
+
+        return res.status(201).json({
+            success: true,
+            message: 'Order placed successfully with Cash on Delivery',
+            order: {
+                id: order._id,
+                totalAmount: order.totalAmount,
+                paymentMethod: order.paymentMethod,
+                status: order.status
+            }
+        });
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { handleCreateOrder, handleVerifyPayment, handlePaymentFailure, handleCODOrder };
