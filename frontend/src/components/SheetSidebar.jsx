@@ -10,6 +10,7 @@ import {
 
 import CartCard from './CartCard'
 import FavCard from './FavCard';
+import PaymentMethodDialog from './PaymentMethodDialog';
 import axios from 'axios'
 import { toast } from 'sonner'
 
@@ -19,6 +20,7 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
   const [loading, setLoading] = useState(true);
   const [cartData, setCartData] = useState([]);
   const [total, setTotal] = useState(0);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
 
   const { wishlistItems, loading: wishlistLoading, removeFromWishlist, wishlistCount } = useWishlist();
 
@@ -102,8 +104,16 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
     }
   }
 
+  const handleProceedToPay = () => {
+    if (cartData.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+    setPaymentDialogOpen(true);
+  }
+
   // Razorpay Payment Handler
-  const handlePayment = async () => {
+  const handleRazorpayPayment = async () => {
     setLoading(true);
     try {
       // Step 0: get the user data from backend
@@ -203,7 +213,8 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
   
 
   return (
-      <Sheet open={open} onOpenChange={onOpenChange}>
+      <>
+        <Sheet open={open} onOpenChange={onOpenChange}>
           <SheetContent>
               <SheetHeader>
               <SheetTitle>Your {contentType}</SheetTitle>
@@ -251,7 +262,7 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
                     <p className='text-2xl font-bold text-green-600'>₹{total?.toFixed(2)}</p>
                   </div>
                   <button 
-                    onClick={handlePayment}
+                    onClick={handleProceedToPay}
                     disabled={loading}
                     className='w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-2 rounded-lg transition-colors'
                   >
@@ -262,6 +273,13 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
             </SheetFooter>
           </SheetContent>
       </Sheet>
+
+      <PaymentMethodDialog 
+        open={paymentDialogOpen}
+        onOpenChange={setPaymentDialogOpen}
+        loading={loading}
+      />
+    </>
   )
 }
 
