@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -7,8 +7,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { CreditCard, HandCoins } from 'lucide-react'
+import axios from 'axios'
+import { toast } from 'sonner'
 
-const PaymentMethodDialog = ({ open, onOpenChange, loading }) => {
+const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading, setCartData, setCartQuantity, setTotal }) => {
+  const [loading, setLoading] = useState(false)
   
   const paymentMethods = [
     {
@@ -27,7 +30,147 @@ const PaymentMethodDialog = ({ open, onOpenChange, loading }) => {
       color: 'bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 border-green-200 dark:border-green-800',
       iconColor: 'text-green-600 dark:text-green-400'
     }
-  ]
+  ];
+
+  const handlePaymentMethodSelect = async (method) => {
+    onOpenChange(false);
+    
+    if (method === 'online') {
+      handleRazorpayPayment();
+    } else if (method === 'cod') {
+      handleCODPayment();
+    }
+  }
+
+  // Razorpay Payment Handler
+  const handleRazorpayPayment = async () => {
+    setLoading(true);
+    try {
+      // Step 0: get the user data from backend
+      const userData = await axios.get(`${import.meta.env.VITE_API_URL}/user/me`,{
+          withCredentials: true
+      })
+
+      const { name, email, phone } = userData.data?.user;
+
+      // Step 1: Create order on backend
+      const orderResponse = await axios.post(
+        `${import.meta.env.VITE_API_URL}/order/create-order`,
+        {},
+        { withCredentials: true }
+      );
+
+      const { order, orderId, key } = orderResponse.data;
+
+      // Step 2: Configure Razorpay options
+      const options = {
+        key: key,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Ecobazar",
+        description: "Product Purchase",
+        order_id: order.id,
+        
+        // Success handler
+        handler: async function (response) {
+          try {
+            // Step 3: Verify payment on backend
+            const verifyResponse = await axios.post(
+              `${import.meta.env.VITE_API_URL}/order/verify-payment`,
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                orderId: orderId
+              },
+              { withCredentials: true }
+            );
+
+            if (verifyResponse.data.success) {
+              toast.success('Payment successful!');
+              setCartData([]);
+              setCartQuantity(0);
+              setTotal(0);
+              onOpenChange(false);
+            }
+          } catch (error) {
+            toast.error('Payment verification failed');
+            console.error('Verification error:', error);
+          }
+        },
+
+        // Prefill user details
+        prefill: {
+          name: name,
+          email: email,
+          contact: phone
+        },
+
+        // Theme customization
+        theme: {
+          color: "#22c55e"
+        },
+
+        // Modal settings
+        modal: {
+          ondismiss: async function() {
+            // Handle payment cancellation
+            try {
+              await axios.post(
+                `${import.meta.env.VITE_API_URL}/order/payment-failure`,
+                { orderId: orderId },
+                { withCredentials: true }
+              );
+              toast.error('Payment cancelled');
+            } catch (error) {
+              console.error('Error recording cancellation:', error);
+            }
+          }
+        }
+      };
+
+      // Step 4: Open Razorpay checkout
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error(error.response?.data?.error || 'Failed to initiate payment');
+    } finally {
+      setLoading(false);
+      sheetLoading(false);
+    }
+  };
+
+  const handleCODPayment = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/order/cod-order`,
+        {},
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        toast.success('Order placed successfully!', {
+          description: 'You can pay when your order is delivered',
+          duration: 4000
+        });
+        
+        // Clear cart and close sidebar
+        setCartData([]);
+        setCartQuantity(0);
+        setTotal(0);
+        onOpenChange(false);
+      }
+    } catch (error) {
+      console.error('COD order error:', error);
+      toast.error(error.response?.data?.error || 'Failed to place order');
+    } finally {
+      setLoading(false);
+      sheetLoading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -45,7 +188,7 @@ const PaymentMethodDialog = ({ open, onOpenChange, loading }) => {
             return (
               <button
                 key={method.id}
-                // onClick={() => }
+                onClick={() => handlePaymentMethodSelect(method.id)}
                 disabled={loading}
                 className={`w-full p-4 border-2 rounded-lg transition-all duration-200 flex items-start gap-4 ${method.color} hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed`}
               >

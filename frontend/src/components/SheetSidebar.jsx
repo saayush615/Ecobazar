@@ -110,106 +110,8 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
       return;
     }
     setPaymentDialogOpen(true);
-  }
-
-  // Razorpay Payment Handler
-  const handleRazorpayPayment = async () => {
     setLoading(true);
-    try {
-      // Step 0: get the user data from backend
-      const userData = await axios.get(`${import.meta.env.VITE_API_URL}/user/me`,{
-          withCredentials: true
-      })
-
-      const { name, email, phone } = userData.data?.user;
-
-      // Step 1: Create order on backend
-      const orderResponse = await axios.post(
-        `${import.meta.env.VITE_API_URL}/order/create-order`,
-        {},
-        { withCredentials: true }
-      );
-
-      const { order, orderId, key } = orderResponse.data;
-
-      // Step 2: Configure Razorpay options
-      const options = {
-        key: key,
-        amount: order.amount,
-        currency: order.currency,
-        name: "Ecobazar",
-        description: "Product Purchase",
-        order_id: order.id,
-        
-        // Success handler
-        handler: async function (response) {
-          try {
-            // Step 3: Verify payment on backend
-            const verifyResponse = await axios.post(
-              `${import.meta.env.VITE_API_URL}/order/verify-payment`,
-              {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                orderId: orderId
-              },
-              { withCredentials: true }
-            );
-
-            if (verifyResponse.data.success) {
-              toast.success('Payment successful!');
-              setCartData([]);
-              setCartQuantity(0);
-              setTotal(0);
-              onOpenChange(false);
-            }
-          } catch (error) {
-            toast.error('Payment verification failed');
-            console.error('Verification error:', error);
-          }
-        },
-
-        // Prefill user details
-        prefill: {
-          name: name,
-          email: email,
-          contact: phone
-        },
-
-        // Theme customization
-        theme: {
-          color: "#22c55e"
-        },
-
-        // Modal settings
-        modal: {
-          ondismiss: async function() {
-            // Handle payment cancellation
-            try {
-              await axios.post(
-                `${import.meta.env.VITE_API_URL}/order/payment-failure`,
-                { orderId: orderId },
-                { withCredentials: true }
-              );
-              toast.error('Payment cancelled');
-            } catch (error) {
-              console.error('Error recording cancellation:', error);
-            }
-          }
-        }
-      };
-
-      // Step 4: Open Razorpay checkout
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
-
-    } catch (error) {
-      console.error('Payment error:', error);
-      toast.error(error.response?.data?.error || 'Failed to initiate payment');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }
   
 
   return (
@@ -277,7 +179,10 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
       <PaymentMethodDialog 
         open={paymentDialogOpen}
         onOpenChange={setPaymentDialogOpen}
-        loading={loading}
+        sheetLoading={setLoading}
+        setCartData={setCartData}
+        setCartQuantity={setCartQuantity}
+        setTotal={setTotal}
       />
     </>
   )
