@@ -24,15 +24,6 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
 
   const { wishlistItems, loading: wishlistLoading, removeFromWishlist, wishlistCount } = useWishlist();
 
-  useEffect(() => {
-    switch(contentType){
-      case 'Cart':
-        getCart();
-      case 'Wishlist':
-        break;
-    }
-  }, [open, contentType])
-
   const handleRemoveFromCart = async (Itemid) => {
     setLoading(true);
     try {
