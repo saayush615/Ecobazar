@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react'
 import axios from 'axios';
+import { toast } from 'sonner'
 
 const CartContext = createContext(null);
 
@@ -74,6 +75,11 @@ export const CartProvider = ({ children }) => {
     }, [])
     
     const value ={
+        cartData,
+        total,
+        cartQuantity,
+        handleRemoveFromCart,
+        handleUpdateQuantity
 
     }
     return(
