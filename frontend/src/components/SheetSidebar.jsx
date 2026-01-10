@@ -18,7 +18,6 @@ import { useWishlist } from '@/hooks/useWishlist'
 
 const SheetSidebar = ({ contentType, open, onOpenChange }) => {
   const [loading, setLoading] = useState(true);
-  const [cartData, setCartData] = useState([]);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
 
   const { wishlistItems, loading: wishlistLoading, removeFromWishlist, wishlistCount } = useWishlist();
@@ -109,7 +108,6 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
         open={paymentDialogOpen}
         onOpenChange={setPaymentDialogOpen}
         sheetLoading={setLoading}
-        setCartData={setCartData}
       />
     </>
   )
