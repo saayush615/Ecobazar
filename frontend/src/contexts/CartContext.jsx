@@ -14,13 +14,37 @@ export const CartProvider = ({ children }) => {
         setLoading(true);
         try {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/cart/`, { withCredentials: true });
-            console.log(response.data);
-            setCartData(response.data?.cartItems);
+            // console.log(response.data);
+
+            const getCartItems = response.data?.cartItems;
+            setCartData(getCartItems);
             setCartQuantity(response.data?.itemCount);
+            setTotal(response.data?.total)
         } catch (error) {
             console.error('Failed to fetch cartData', error);
             setCartData([]);
             setCartQuantity(0);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const handleAddToCart = async (prodId) => {
+        if (loading) return;
+
+        setLoading(true)
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/cart/${prodId}`, {}, { withCredentials: true });
+            // console.log(response.data);
+
+            const newItem = response.data?.updatedCart;
+            setCartData(newItem);
+            setCartQuantity(newItem.length);
+            setTotal(response.data?.total);
+            toast.success('Product Added to Cart',{ description: 'Continue Shopping', duration: 3000 })
+        } catch (error) {
+            console.log(error);
+            toast.error( 'Failed to add product to Cart', { description: `${error.response?.data?.error}` , duration: 3000 })
         } finally {
             setLoading(false);
         }
@@ -78,9 +102,9 @@ export const CartProvider = ({ children }) => {
         cartData,
         total,
         cartQuantity,
+        handleAddToCart,
         handleRemoveFromCart,
         handleUpdateQuantity
-
     }
     return(
         <CartContext.Provider value={value}>
