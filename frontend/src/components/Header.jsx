@@ -89,7 +89,9 @@ const Header = () => {
                     <ShoppingCart 
                       className='w-6 h-6 text-gray-700 dark:text-gray-100' 
                     />
-                    <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>{cartQuantity}</span>
+                    { (cartQuantity > 0) &&
+                      <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>{cartQuantity}</span>
+                    }
                   </button>
                 </div>
               </div>
