@@ -11,12 +11,16 @@ import { ShoppingCart } from 'lucide-react';
 import { Sun } from 'lucide-react';
 import { Moon } from 'lucide-react';
 import { Search } from 'lucide-react';
+import { useCart } from '@/hooks/useCart';
 
 const Header = () => {
   const [showSheet, setShowSheet] = useState(false);
   const [sheetContentType, setSheetContentType] = useState('');
+
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated } = useAuth();
+  const { cartQuantity } = useCart();
+
   const navigate = useNavigate(); 
 
   const handleOpenSheet = (type) => {
@@ -70,16 +74,20 @@ const Header = () => {
             ) : (
               <div className='flex items-center gap-4'>
                 <div className='hidden sm:flex items-center gap-4'>
-                  <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors hover:scale-105 active:scale-95'>
+                  <button 
+                    className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors hover:scale-105 active:scale-95'
+                    onClick={() => handleOpenSheet('Wishlist')}
+                  >
                     <Heart 
                       className='w-6 h-6 text-gray-700 dark:text-gray-100' 
-                      onClick={() => handleOpenSheet('Wishlist')}
                     />
                   </button>
-                  <button className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors relative hover:scale-105 active:scale-95'>
+                  <button 
+                    className='p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full transition-colors relative hover:scale-105 active:scale-95'
+                    onClick={() => handleOpenSheet('Cart')}
+                  >
                     <ShoppingCart 
                       className='w-6 h-6 text-gray-700 dark:text-gray-100' 
-                      onClick={() => handleOpenSheet('Cart')}
                     />
                     <span className='absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>{cartQuantity}</span>
                   </button>
