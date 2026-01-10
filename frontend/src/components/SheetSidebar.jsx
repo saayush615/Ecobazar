@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetFooter
@@ -20,7 +19,7 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
 
   const { wishlistItems, removeFromWishlist, wishlistCount } = useWishlist();
-  const { cartData, total, handleRemoveFromCart, handleUpdateQuantity } = useCart();
+  const { cartData, total } = useCart();
 
     const handleRemoveFromWishlist = async (favoriteId) => {
     const result = await removeFromWishlist(favoriteId);
@@ -60,8 +59,6 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
                     discountPrice={item.product?.discountPrice} 
                     originalPrice={item.product?.originalPrice}
                     quantity={item.quantity}
-                    onDelete={handleRemoveFromCart}
-                    onUpdate={handleUpdateQuantity}
                   />))
               )}
 

@@ -7,8 +7,12 @@ import {
 } from "@/components/ui/card"
 import { Minus, Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useCart } from '@/hooks/useCart'
 
-const CartCard = ({ id, Pname, source, category, stock, discountPrice, originalPrice, quantity, onDelete, onUpdate}) => {
+const CartCard = ({ id, Pname, source, category, stock, discountPrice, originalPrice, quantity }) => {
+
+  const { handleRemoveFromCart: onDelete, handleUpdateQuantity: onUpdate } = useCart();
+  
   const handleDeleteCart = () => {
     onDelete(id)
   }
