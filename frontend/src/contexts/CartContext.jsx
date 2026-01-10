@@ -43,6 +43,32 @@ export const CartProvider = ({ children }) => {
         }
     }
 
+    const handleUpdateQuantity = async (itemId, newQuantity) => {
+        setLoading(true);
+        try{
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/cart/update/${itemId}`, { quantity: newQuantity}, { withCredentials: true });
+            // console.log(response)
+            const updatedItem = response.data?.newcart;
+
+            const oldItem = cartData.find(item => item._id === itemId);
+            const oldPrice = oldItem.quantity * oldItem.product?.discountPrice;
+
+            setCartData(prev => 
+                prev.map(item => 
+                item._id === itemId ? updatedItem : item
+                )
+            );
+
+            const newPrice = updatedItem.quantity * updatedItem.product?.discountPrice;
+            setTotal(prev => prev - oldPrice + newPrice);
+        } catch(error){
+            console.error(error);
+            toast.error('Something went wrong!', { description: 'Try Again!', duration: 2000 })
+        } finally{
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
       fetchCart()
     }, [])
