@@ -11,16 +11,16 @@ import {
 import CartCard from './CartCard'
 import FavCard from './FavCard';
 import PaymentMethodDialog from './PaymentMethodDialog';
-import axios from 'axios'
-import { toast } from 'sonner'
 
 import { useWishlist } from '@/hooks/useWishlist'
+import { useCart } from '@/hooks/useCart'
 
 const SheetSidebar = ({ contentType, open, onOpenChange }) => {
   const [loading, setLoading] = useState(true);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
 
-  const { wishlistItems, loading: wishlistLoading, removeFromWishlist, wishlistCount } = useWishlist();
+  const { wishlistItems, removeFromWishlist, wishlistCount } = useWishlist();
+  const { cartData, total, handleRemoveFromCart, handleUpdateQuantity } = useCart();
 
     const handleRemoveFromWishlist = async (favoriteId) => {
     const result = await removeFromWishlist(favoriteId);
@@ -45,12 +45,9 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
   return (
       <>
         <Sheet open={open} onOpenChange={onOpenChange}>
-          <SheetContent>
+          <SheetContent aria-describedby={undefined}>
               <SheetHeader>
               <SheetTitle>Your {contentType}</SheetTitle>
-              <SheetDescription>
-                  This is your {contentType}
-              </SheetDescription>
               </SheetHeader>
               { contentType === 'Cart' && (
                 cartData.map((item) => 
