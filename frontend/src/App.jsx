@@ -11,11 +11,13 @@ import Dashboard from './pages/Dashbord'
 
 import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
 import { WishlistProvider } from '@/contexts/WishlistContext'
+import { CartProvider } from '@/contexts/CartContext'
 
 function App() {
 
   return (
     <>
+      <CartProvider>
       <WishlistProvider>
       <Toaster position="top-right" richColors closeButton />
       <Routes>
@@ -55,6 +57,7 @@ function App() {
         />
       </Routes>
       </WishlistProvider>
+      </CartProvider>
     </>
   )
 }
