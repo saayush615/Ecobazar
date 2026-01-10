@@ -15,7 +15,6 @@ import { Search } from 'lucide-react';
 const Header = () => {
   const [showSheet, setShowSheet] = useState(false);
   const [sheetContentType, setSheetContentType] = useState('');
-  const [cartQuantity, setCartQuantity] = useState(0);
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate(); 
@@ -111,7 +110,6 @@ const Header = () => {
         contentType={sheetContentType}
         open={showSheet}
         onOpenChange={setShowSheet}
-        setCartQuantity={setCartQuantity}
       />
     </>
   )

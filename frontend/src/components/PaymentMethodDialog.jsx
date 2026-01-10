@@ -10,7 +10,7 @@ import { CreditCard, HandCoins } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'sonner'
 
-const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading, setCartData, setCartQuantity, setTotal }) => {
+const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading, setCartData, setTotal }) => {
   const [loading, setLoading] = useState(false)
   
   const paymentMethods = [
@@ -89,7 +89,6 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading, setCartData, se
             if (verifyResponse.data.success) {
               toast.success('Payment successful!');
               setCartData([]);
-              setCartQuantity(0);
               setTotal(0);
               onOpenChange(false);
             }
@@ -159,7 +158,6 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading, setCartData, se
         
         // Clear cart and close sidebar
         setCartData([]);
-        setCartQuantity(0);
         setTotal(0);
         onOpenChange(false);
       }

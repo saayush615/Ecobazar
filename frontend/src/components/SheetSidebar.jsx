@@ -16,7 +16,7 @@ import { toast } from 'sonner'
 
 import { useWishlist } from '@/hooks/useWishlist'
 
-const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
+const SheetSidebar = ({ contentType, open, onOpenChange }) => {
   const [loading, setLoading] = useState(true);
   const [cartData, setCartData] = useState([]);
   const [total, setTotal] = useState(0);
@@ -39,7 +39,6 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/cart/`, { withCredentials: true })
       // console.log(response);
       setCartData(response.data?.cartItems);
-      setCartQuantity(response.data?.cartItems.length);
       setTotal(response.data?.total);
     } catch (error) {
       console.log(error)
@@ -57,7 +56,6 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
 
       const removedItem = response.data?.cartItem;
       setCartData(prev => prev.filter(item => item._id !== Itemid));
-      setCartQuantity(prev => prev - 1 );
       setTotal(prev => prev - (removedItem.quantity * removedItem.product?.discountPrice));
     } catch (error) {
       console.error(error);
@@ -181,7 +179,6 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
         onOpenChange={setPaymentDialogOpen}
         sheetLoading={setLoading}
         setCartData={setCartData}
-        setCartQuantity={setCartQuantity}
         setTotal={setTotal}
       />
     </>
