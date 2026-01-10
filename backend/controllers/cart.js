@@ -29,12 +29,17 @@ async function handleAddToCart(req,res,next) {
             await cartItem.save();
         }
 
-        await cartItem.populate('product');
+        const updatedCart = await Cart.find({ user: userId }).populate('product');
+
+        const total = updatedCart.reduce((sum,item) => {
+            return sum + (item.quantity * (item.product?.discountPrice ? item.product?.discountPrice : item.product?.originalPrice))
+        }, 0)
 
         return res.status(201).json({
             success: true,
             message: 'Product added to cart',
-            cartItem
+            updatedCart,
+            total
         })
     } catch (error) {
         next(error);
