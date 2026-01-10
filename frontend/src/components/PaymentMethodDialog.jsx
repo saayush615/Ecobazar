@@ -10,7 +10,7 @@ import { CreditCard, HandCoins } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'sonner'
 
-const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading, setCartData, setTotal }) => {
+const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading, setCartData }) => {
   const [loading, setLoading] = useState(false)
   
   const paymentMethods = [

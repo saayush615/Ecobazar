@@ -7,6 +7,7 @@ export const CartProvider = ({ children }) => {
     const [loading, setLoading] = useState(false);
     const [cartData, setCartData] = useState([]);
     const [cartQuantity, setCartQuantity] = useState(0);
+    const [total, setTotal] = useState(0);
 
     const fetchCart  = async () => {
         setLoading(true);
@@ -33,6 +34,7 @@ export const CartProvider = ({ children }) => {
             const removedItem = response.data?.cartItem;
             setCartData(prev => prev.filter(item => item._id !== Itemid));
             setCartQuantity(prev => prev - 1 );
+            setTotal(prev => prev - (removedItem.quantity * removedItem.product?.discountPrice));
         } catch (error) {
             console.error(error);
             toast.error('Something went wrong!', { description: 'Try Again!', duration: 3000 })
