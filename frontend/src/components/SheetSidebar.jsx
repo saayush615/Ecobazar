@@ -33,21 +33,6 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
     }
   }, [open, contentType])
 
-  const getCart = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/cart/`, { withCredentials: true })
-      // console.log(response);
-      setCartData(response.data?.cartItems);
-      setTotal(response.data?.total);
-    } catch (error) {
-      console.log(error)
-      toast.error('Something went wrong!', {description: 'Retry!', duration: 3000 });
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleRemoveFromCart = async (Itemid) => {
     setLoading(true);
     try {
