@@ -24,6 +24,23 @@ export const CartProvider = ({ children }) => {
         }
     }
 
+    const handleRemoveFromCart = async (Itemid) => {
+        setLoading(true);
+        try {
+            const response = await axios.delete(`${import.meta.env.VITE_API_URL}/cart/remove/${Itemid}`, { withCredentials: true });
+            toast.success('Cart Removed');
+
+            const removedItem = response.data?.cartItem;
+            setCartData(prev => prev.filter(item => item._id !== Itemid));
+            setCartQuantity(prev => prev - 1 );
+        } catch (error) {
+            console.error(error);
+            toast.error('Something went wrong!', { description: 'Try Again!', duration: 3000 })
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
       fetchCart()
     }, [])
