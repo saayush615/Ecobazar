@@ -102,6 +102,9 @@ export const CartProvider = ({ children }) => {
         cartData,
         total,
         cartQuantity,
+        setCartData,
+        setCartQuantity,
+        setTotal,
         handleAddToCart,
         handleRemoveFromCart,
         handleUpdateQuantity

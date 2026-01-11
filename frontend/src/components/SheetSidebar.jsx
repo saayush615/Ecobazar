@@ -15,13 +15,13 @@ import { useWishlist } from '@/hooks/useWishlist'
 import { useCart } from '@/hooks/useCart'
 
 const SheetSidebar = ({ contentType, open, onOpenChange }) => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
 
   const { wishlistItems, removeFromWishlist, wishlistCount } = useWishlist();
   const { cartData, total } = useCart();
 
-    const handleRemoveFromWishlist = async (favoriteId) => {
+  const handleRemoveFromWishlist = async (favoriteId) => {
     const result = await removeFromWishlist(favoriteId);
     
     if (result.success) {
@@ -83,7 +83,9 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
                 <div className='w-full space-y-3'>
                   <div className='flex justify-between items-center border-t pt-3'>
                     <p className='text-lg font-semibold'>Total:</p>
-                    <p className='text-2xl font-bold text-green-600'>₹{total?.toFixed(2)}</p>
+                    { (total > 0) &&
+                      <p className='text-2xl font-bold text-green-600'>₹{total?.toFixed(2)}</p>
+                    }
                   </div>
                   <button 
                     onClick={handleProceedToPay}
