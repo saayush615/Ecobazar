@@ -9,9 +9,12 @@ import {
 import { CreditCard, HandCoins } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'sonner'
+import { useCart } from '@/hooks/useCart'
 
-const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading, setCartData, setCartQuantity, setTotal }) => {
-  const [loading, setLoading] = useState(false)
+const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
+  const [loading, setLoading] = useState(false);
+
+  const { setCartData, setCartQuantity, setTotal } = useCart()
   
   const paymentMethods = [
     {

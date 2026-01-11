@@ -15,30 +15,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import axios from 'axios';
+import { useCart } from '@/hooks/useCart';
 
 const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) => {
     const [isLoading, setIsLoading] = useState(false);
     const { loading, wishlistItems, addToWishlist, removeFromWishlist, isInWishlist, getWishlistItem } = useWishlist();
-    
-    const handleAddToCart = async () => {
-        if (isLoading) return;
-
-        setIsLoading(true)
-        try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/cart/${prodId}`, {}, { withCredentials: true });
-            // console.log(response);
-            
-            if (response.status === 201) {
-                toast.success('Product Added to Cart',{ description: 'Continue Shopping', duration: 3000 })
-            }
-        } catch (error) {
-            console.log(error);
-            toast.error( 'Failed to add product to Cart', { description: `${error.response?.data?.error}` , duration: 3000 })
-        } finally {
-            setIsLoading(false);
-        }
-    }
+    const { handleAddToCart } = useCart();
 
     const handleToggleWishlist = async () => {
         if(isLoading) return;
@@ -97,7 +79,7 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
                 {originalPrice !== discountedPrice && (
                     <div className='absolute top-2 left-2'>
                         <div className='bg-red-500 py-1 px-2 rounded-lg text-xs'>
-                            {`Save ₹${Math.round(((originalPrice - discountedPrice) / originalPrice) * 100)}%`}
+                            {`Save ${Math.round(((originalPrice - discountedPrice) / originalPrice) * 100)}%`}
                         </div>
                     </div>
                 )}
@@ -115,7 +97,7 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
                     </div>
 
                     <button 
-                        onClick={handleAddToCart}
+                        onClick={() => handleAddToCart(prodId)}
                         className='size-9 p-2 bg-gray-200 dark:text-black transition-colors duration-300 cursor-pointer hover:bg-green-500 rounded-2xl hover:scale-105 active:scale-95'
                         aria-label="Add to cart"
                     >

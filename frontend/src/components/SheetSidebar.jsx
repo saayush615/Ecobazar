@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetFooter
@@ -11,90 +10,18 @@ import {
 import CartCard from './CartCard'
 import FavCard from './FavCard';
 import PaymentMethodDialog from './PaymentMethodDialog';
-import axios from 'axios'
-import { toast } from 'sonner'
 
 import { useWishlist } from '@/hooks/useWishlist'
+import { useCart } from '@/hooks/useCart'
 
-const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
-  const [loading, setLoading] = useState(true);
-  const [cartData, setCartData] = useState([]);
-  const [total, setTotal] = useState(0);
+const SheetSidebar = ({ contentType, open, onOpenChange }) => {
+  const [loading, setLoading] = useState(false);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
 
-  const { wishlistItems, loading: wishlistLoading, removeFromWishlist, wishlistCount } = useWishlist();
+  const { wishlistItems, removeFromWishlist, wishlistCount } = useWishlist();
+  const { cartData, total } = useCart();
 
-  useEffect(() => {
-    switch(contentType){
-      case 'Cart':
-        getCart();
-      case 'Wishlist':
-        break;
-    }
-  }, [open, contentType])
-
-  const getCart = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/cart/`, { withCredentials: true })
-      // console.log(response);
-      setCartData(response.data?.cartItems);
-      setCartQuantity(response.data?.cartItems.length);
-      setTotal(response.data?.total);
-    } catch (error) {
-      console.log(error)
-      toast.error('Something went wrong!', {description: 'Retry!', duration: 3000 });
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleRemoveFromCart = async (Itemid) => {
-    setLoading(true);
-    try {
-      const response = await axios.delete(`${import.meta.env.VITE_API_URL}/cart/remove/${Itemid}`, { withCredentials: true });
-      toast.success('Cart Removed');
-
-      const removedItem = response.data?.cartItem;
-      setCartData(prev => prev.filter(item => item._id !== Itemid));
-      setCartQuantity(prev => prev - 1 );
-      setTotal(prev => prev - (removedItem.quantity * removedItem.product?.discountPrice));
-    } catch (error) {
-      console.error(error);
-      toast.error('Something went wrong!', { description: 'Try Again!', duration: 3000 })
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const handleUpdateQuantity = async (itemId, newQuantity) => {
-    setLoading(true);
-    try{
-      const response = await axios.put(`${import.meta.env.VITE_API_URL}/cart/update/${itemId}`, { quantity: newQuantity}, { withCredentials: true });
-      // console.log(response)
-      const updatedItem = response.data?.newcart;
-
-      const oldItem = cartData.find(item => item._id === itemId);
-      const oldPrice = oldItem.quantity * oldItem.product?.discountPrice;
-
-      setCartData(prev => 
-        prev.map(item => 
-          item._id === itemId ? updatedItem : item
-        )
-      );
-
-      const newPrice = updatedItem.quantity * updatedItem.product?.discountPrice;
-
-      setTotal(prev => prev - oldPrice + newPrice);
-    } catch(error){
-      console.error(error);
-      toast.error('Something went wrong!', { description: 'Try Again!', duration: 2000 })
-    } finally{
-      setLoading(false);
-    }
-  }
-
-    const handleRemoveFromWishlist = async (favoriteId) => {
+  const handleRemoveFromWishlist = async (favoriteId) => {
     const result = await removeFromWishlist(favoriteId);
     
     if (result.success) {
@@ -117,12 +44,9 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
   return (
       <>
         <Sheet open={open} onOpenChange={onOpenChange}>
-          <SheetContent>
+          <SheetContent aria-describedby={undefined}>
               <SheetHeader>
               <SheetTitle>Your {contentType}</SheetTitle>
-              <SheetDescription>
-                  This is your {contentType}
-              </SheetDescription>
               </SheetHeader>
               { contentType === 'Cart' && (
                 cartData.map((item) => 
@@ -135,8 +59,6 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
                     discountPrice={item.product?.discountPrice} 
                     originalPrice={item.product?.originalPrice}
                     quantity={item.quantity}
-                    onDelete={handleRemoveFromCart}
-                    onUpdate={handleUpdateQuantity}
                   />))
               )}
 
@@ -161,7 +83,9 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
                 <div className='w-full space-y-3'>
                   <div className='flex justify-between items-center border-t pt-3'>
                     <p className='text-lg font-semibold'>Total:</p>
-                    <p className='text-2xl font-bold text-green-600'>₹{total?.toFixed(2)}</p>
+                    { (total > 0) &&
+                      <p className='text-2xl font-bold text-green-600'>₹{total?.toFixed(2)}</p>
+                    }
                   </div>
                   <button 
                     onClick={handleProceedToPay}
@@ -180,9 +104,6 @@ const SheetSidebar = ({ contentType, open, onOpenChange, setCartQuantity }) => {
         open={paymentDialogOpen}
         onOpenChange={setPaymentDialogOpen}
         sheetLoading={setLoading}
-        setCartData={setCartData}
-        setCartQuantity={setCartQuantity}
-        setTotal={setTotal}
       />
     </>
   )
