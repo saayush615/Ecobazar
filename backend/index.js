@@ -61,7 +61,7 @@ app.use('/user', userRoute);
 app.use('/product', productRoute);
 app.use('/cart', buyerOnly, cartRoute);
 app.use('/fav', buyerOnly, favRoute);
-app.use('/order', orderRoute);
+app.use('/order', buyerOnly, orderRoute);
 app.use('/seller', sellerOnly, sellerRoute);
 app.use('/oauth', oAuthRoute);
 
