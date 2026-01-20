@@ -190,4 +190,45 @@ async function handleCODOrder(req,res,next) {
     }
 }
 
-export { handleCreateOrder, handleVerifyPayment, handlePaymentFailure, handleCODOrder };
+async function handleGetMyOrders(req,res,next) {
+    try {
+        const userId = req.user.id;
+
+        const orders = await Order.find({ user: userId }).populate('carts.product').sort({ createdAt: -1 });
+        return res.status(200).json({
+            success: true,
+            message: 'Fetched order success',
+            orders
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function handleCancelOrder(req, res, next) {
+  try {
+    const order = await Order.findById(req.params.id);
+    
+    if (!order) {
+      return next(createNotFoundError('Order not found'));
+    }
+    
+    if (order.user.toString() !== req.user.id) {
+      return next(createUnauthorizedError('Not authorized'));
+    }
+    
+    if (!['Pending', 'Confirmed'].includes(order.status)) {
+      return next(createValidationError('Order cannot be cancelled'));
+    }
+    
+    order.status = 'Cancelled';
+    await order.save();
+    
+    res.status(200).json({ success: true, message: 'Order cancelled', order });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { handleCreateOrder, handleVerifyPayment, handlePaymentFailure, handleCODOrder, handleGetMyOrders, handleCancelOrder };
