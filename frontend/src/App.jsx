@@ -8,6 +8,7 @@ import About from '@/pages/About'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashbord' 
+import Orders from './pages/Orders'
 
 import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
 import { WishlistProvider } from '@/contexts/WishlistContext'
@@ -33,6 +34,18 @@ function App() {
         } />
         <Route path='/signup' element={ <Signup /> } />
         <Route path='/login' element={ <Login /> } />
+
+        <Route 
+          path='/orders' 
+          element={ 
+            <RequireAuth>
+              <BuyerOrPublicRoute>
+                <Orders /> 
+              </BuyerOrPublicRoute>
+            </RequireAuth>
+          } 
+        />
+
         <Route 
           path='/dashbord' 
           element={ 
