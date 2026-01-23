@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -31,10 +31,6 @@ const OrderCard = ({
 }) => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-
-  useEffect(() => {
-    console.log(paymentStatus)
-  }, [])
   
 
   const statusSteps = [
