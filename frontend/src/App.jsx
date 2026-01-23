@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner"
 
 import Home from '@/pages/Home'
 import About from '@/pages/About'
+import Contact from '@/pages/Contact'
 import Signup from './pages/Signup'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashbord' 
@@ -27,9 +28,16 @@ function App() {
             <Home /> 
           </BuyerOrPublicRoute>
         } />
+
         <Route path='/about' element={ 
           <BuyerOrPublicRoute>
             <About /> 
+          </BuyerOrPublicRoute>
+        } />
+
+        <Route path='/contact' element={ 
+          <BuyerOrPublicRoute>
+            <Contact /> 
           </BuyerOrPublicRoute>
         } />
         <Route path='/signup' element={ <Signup /> } />
