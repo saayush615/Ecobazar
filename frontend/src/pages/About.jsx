@@ -42,24 +42,24 @@ const About = () => {
     <div className='flex flex-col min-h-screen dark:bg-gray-900'>
       <Header />
 
-      <div className='flex-1'>
+      <div>
         {/* Hero Section */}
-        <div className='bg-gradient-to-r from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-700 py-16'>
-          <div className='container mx-auto xl:max-w-mainComponent px-4'>
-            <div className='text-center'>
-              <h1 className='text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4'>
+        <div className='bg-linear-to-r from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-700 py-16'>
+          <div className='container mx-auto px-4'>
+          
+              <h1 className='text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 text-center'>
                 About Ecobazar
               </h1>
-              <p className='text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto'>
+              <p className='text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto text-center'>
                 Your trusted marketplace for fresh, organic groceries and daily essentials. 
                 Connecting local farmers and sellers with conscious consumers.
               </p>
-            </div>
+
           </div>
         </div>
 
         {/* Story Section */}
-        <div className='container mx-auto xl:max-w-mainComponent px-4 py-16'>
+        <div className='container mx-auto px-4 py-16'>
           <div className='grid md:grid-cols-2 gap-12 items-center'>
             <div>
               <h2 className='text-3xl font-bold text-gray-900 dark:text-white mb-4'>
@@ -89,7 +89,7 @@ const About = () => {
 
         {/* Features Section */}
         <div className='bg-gray-50 dark:bg-gray-800 py-16'>
-          <div className='container mx-auto xl:max-w-mainComponent px-4'>
+          <div className='container mx-auto px-4'>
             <h2 className='text-3xl font-bold text-center text-gray-900 dark:text-white mb-12'>
               Why Choose Us
             </h2>
@@ -118,7 +118,7 @@ const About = () => {
         </div>
 
         {/* Stats Section */}
-        <div className='container mx-auto xl:max-w-mainComponent px-4 py-16'>
+        <div className='container mx-auto px-4 py-16'>
           <div className='grid grid-cols-2 lg:grid-cols-4 gap-8'>
             {stats.map((stat) => (
               <div key={stat.id} className='text-center'>
@@ -135,7 +135,7 @@ const About = () => {
 
         {/* Mission Section */}
         <div className='bg-green-600 dark:bg-green-700 py-16'>
-          <div className='container mx-auto xl:max-w-mainComponent px-4 text-center'>
+          <div className='container mx-auto px-4 text-center'>
             <h2 className='text-3xl font-bold text-white mb-4'>
               Our Mission
             </h2>
@@ -148,7 +148,7 @@ const About = () => {
         </div>
 
         {/* CTA Section */}
-        <div className='container mx-auto xl:max-w-mainComponent px-4 py-16'>
+        <div className='container mx-auto px-4 py-16'>
           <div className='bg-linear-to-r from-green-50 to-green-100 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-12 text-center'>
             <h2 className='text-3xl font-bold text-gray-900 dark:text-white mb-4'>
               Ready to Start Shopping?
