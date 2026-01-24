@@ -1,6 +1,7 @@
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import farmer from '@/assets/farmer.png'
 import { Leaf, Users, ShieldCheck, Truck } from 'lucide-react'
 
 const About = () => {
@@ -79,10 +80,8 @@ const About = () => {
                 Join us in creating a healthier, more sustainable future—one grocery at a time.
               </p>
             </div>
-            <div className='relative'>
-              <div className='aspect-square bg-green-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center'>
-                <Leaf className='w-32 h-32 text-green-600 dark:text-green-400' />
-              </div>
+            <div>
+              <img src={farmer} alt="farmer" className='w-full h-auto max-w-md rounded-lg shadow-md' />
             </div>
           </div>
         </div>
