@@ -14,7 +14,7 @@ export const WishlistProvider = ({ children }) => {
             // console.log(response);
             setWishlistItems(response.data?.data || []);
         } catch(error) {
-            console.error('Failed to fetch wishlist:',error);
+            // console.error('Failed to fetch wishlist:',error);
             setWishlistItems([]);
         } finally {
             setLoading(false)
