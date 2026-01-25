@@ -21,6 +21,7 @@ import sellerRoute from './routes/seller.js';
 import orderRoute from './routes/order.js';
 import oAuthRoute from './routes/oauth.js';
 import favRoute from './routes/favorite.js';
+import contactRoute from './routes/contact.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,6 +65,7 @@ app.use('/fav', buyerOnly, favRoute);
 app.use('/order', buyerOnly, orderRoute);
 app.use('/seller', sellerOnly, sellerRoute);
 app.use('/oauth', oAuthRoute);
+app.use('/contact', contactRoute);
 
 app.use((req,res) => {
     return res.status(404).json({

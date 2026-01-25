@@ -21,7 +21,7 @@ export const CartProvider = ({ children }) => {
             setCartQuantity(response.data?.itemCount);
             setTotal(response.data?.total)
         } catch (error) {
-            console.error('Failed to fetch cartData', error);
+            // console.error('Failed to fetch cartData', error);
             setCartData([]);
             setCartQuantity(0);
         } finally {
