@@ -5,18 +5,19 @@ import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react'
 import { toast } from "sonner"
 
 import { useForm } from "react-hook-form"
+import axios from 'axios'
 
 const Contact = () => {
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm()
+  } = useForm();
 
-  const onSubmit = (data) => console.log(data)
-
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const contactInfo = [
     {
@@ -45,33 +46,20 @@ const Contact = () => {
     }
   ]
 
-
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault()
-  //   setIsSubmitting(true)
-  //   setSubmitStatus(null)
-
-  //   // Simulate API call
-  //   try {
-  //     await new Promise(resolve => setTimeout(resolve, 1500))
-      
-  //     // Here you would typically make an API call to your backend
-  //     // await axios.post('/api/contact', formData)
-      
-  //     setSubmitStatus('success')
-  //     setFormData({
-  //       name: '',
-  //       email: '',
-  //       subject: '',
-  //       message: ''
-  //     })
-  //   } catch (error) {
-  //     setSubmitStatus('error')
-  //   } finally {
-  //     setIsSubmitting(false)
-  //   }
-  // }
+  
+  const onSubmit = async (data) => {
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/contact/`, {...data}, { withCredentials: true });
+      // console.log(response.data?.message);
+      toast.success(response.data?.message, { description: 'you can expect our response within 24 hours'});
+    } catch (error) {
+      // console.error(error);
+      toast.error(error.response?.data?.error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
     <div className='flex flex-col min-h-screen dark:bg-gray-900'>
@@ -239,7 +227,7 @@ const Contact = () => {
 
             {/* Map Section */}
             <div>
-              
+
             </div>
           </div>
         </div>
