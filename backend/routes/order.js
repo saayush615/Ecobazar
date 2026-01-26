@@ -9,7 +9,7 @@ router.post('/payment-failure', handlePaymentFailure);
 
 router.post('/cod-order', handleCODOrder);
 
-router.get('/my-orders', handleGetMyOrders);
-router.put('/cancel/:id', handleCancelOrder);
+router.get('/', handleGetMyOrders);
+router.put('/:id', handleCancelOrder);
 
 export default router;
