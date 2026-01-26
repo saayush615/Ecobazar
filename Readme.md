@@ -235,12 +235,9 @@ App will run on `http://localhost:5173`
 - **GET** `/oauth/facebook` — Initiate Facebook OAuth  
 - **GET** `/oauth/facebook/callback` — Facebook OAuth callback  
 
-### Products [**❌ Yet to improve**]
+### Products
 - **GET** `/product/all` — Get all products  
 - **GET** `/product/:id` — Get a single product.
-- **POST** `/seller/product` — Add a product *(Seller only)*  
-- **PUT** `/seller/product/:id` — Update a product *(Seller only)* .[**❌ Not Yet Made**]
-- **DELETE** `/seller/product/:id` — Delete a product *(Seller only)*. [**❌ Not Yet Made**]
 
 ### Cart & Wishlist [**❌ Yet to improve**]
 - **GET** `/cart` — Get user cart  
