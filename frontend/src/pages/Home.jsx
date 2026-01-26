@@ -54,7 +54,7 @@ const Home = () => {
   async function getAllProdct() {
     setLoading(true);
     try {
-      const prod = await axios.get(`${import.meta.env.VITE_API_URL}/product/getAllProd`);
+      const prod = await axios.get(`${import.meta.env.VITE_API_URL}/product/all`);
       // console.log(prod.data?.products)
       setAllProducts(prod.data?.products);
     } catch (error) {
