@@ -229,6 +229,7 @@ App will run on `http://localhost:5173`
 - **POST** `/user/signup` — User registration  
 - **POST** `/user/login` — User login  
 - **POST** `/user/logout` — User logout  
+- **GET** `/user/me` — Get user detail.
 - **GET** `/oauth/google` — Initiate Google OAuth  
 - **GET** `/oauth/google/callback` — Google OAuth callback  
 - **GET** `/oauth/facebook` — Initiate Facebook OAuth  
