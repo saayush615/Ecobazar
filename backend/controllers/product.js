@@ -1,5 +1,25 @@
 import Product from '../models/product.js';
 
+async function handleGetAllProd(_req,res,next) {
+    try {
+        const products = await Product.find();
+        if (products.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No Product Added',
+                products: []
+            })
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'Product reterived successfully',
+            products
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
 async function handleGetProdByName(req,res,next) {
     try{
         const searchQuery = req.body.search;
@@ -16,23 +36,5 @@ async function handleGetProdByName(req,res,next) {
     }
 }
 
-async function handleGetAllProd(_req,res,next) {
-    try {
-        const products = await Product.find();
-        if (!products) {
-            return res.status(204).json({
-                success: true,
-                message: 'No Product Added'
-            })
-        }
-        return res.status(200).json({
-            success: true,
-            message: 'Product reterived successfully',
-            products
-        })
-    } catch (error) {
-        next(error);
-    }
-}
 
-export { handleGetProdByName, handleGetAllProd };
+export { handleGetAllProd, handleGetProdByName };
