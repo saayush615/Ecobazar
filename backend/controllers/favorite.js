@@ -53,7 +53,7 @@ async function handleGetFav(req,res,next) {
 async function handleDeleteFav(req,res,next) {
     try {
         const userId = req.user.id;
-        const { favoriteId } = req.body;
+        const { favoriteId } = req.params;
         if (!favoriteId) {
             return next(createValidationError('favoriteId not found'));
         }
