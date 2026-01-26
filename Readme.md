@@ -245,9 +245,9 @@ App will run on `http://localhost:5173`
 - **PUT** `/cart/:id` — Update cart product Quantity  
 - **DELETE** `/cart/:id` — Remove item from cart  
 
-- **GET** `/favorite` — Get wishlist items  
-- **POST** `/favorite` — Add item to wishlist  
-- **DELETE** `/favorite/:id` — Remove item from wishlist  
+- **GET** `/fav` — Get wishlist items  
+- **POST** `/fav` — Add item to wishlist  
+- **DELETE** `/fav/:favoriteId` — Remove item from wishlist  
 
 ### Orders [**❌ Yet to improve**]
 - **POST** `/order` — Create an order  
