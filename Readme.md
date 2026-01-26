@@ -239,9 +239,10 @@ App will run on `http://localhost:5173`
 - **GET** `/product/all` — Get all products  
 - **GET** `/product/:id` — Get a single product.
 
-### Cart & Wishlist [**❌ Yet to improve**]
+### Cart & Wishlist
 - **GET** `/cart` — Get user cart  
-- **POST** `/cart` — Add item to cart  
+- **POST** `/cart/:id` — Add item to cart  
+- **PUT** `/cart/:id` — Update cart product Quantity  
 - **DELETE** `/cart/:id` — Remove item from cart  
 
 - **GET** `/favorite` — Get wishlist items  
