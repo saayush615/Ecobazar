@@ -261,11 +261,10 @@ App will run on `http://localhost:5173`
 - **POST** `/contact` — Submit contact form
 
 ### Seller
-- **GET** `/seller/getProduct` — Get product posted by seller
-- **POST** `/seller/product` — Post the product.
-- **PUT** `/seller/edit/:id` — Edit the product info
-- **PUT** `/seller/status/:id` — 
-- **Delete** `/seller/remove/:id` — Remove the product
+- **GET** `/seller/` — Get all product posted by seller.
+- **POST** `/seller/` — Post the product.
+- **PUT** `/seller/:id` — Edit the product info
+- **Delete** `/seller/:id` — Remove the product
 
 ## UI Components (shadcn/ui)
 
