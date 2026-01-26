@@ -53,7 +53,7 @@ export const CartProvider = ({ children }) => {
     const handleRemoveFromCart = async (Itemid) => {
         setLoading(true);
         try {
-            const response = await axios.delete(`${import.meta.env.VITE_API_URL}/cart/remove/${Itemid}`, { withCredentials: true });
+            const response = await axios.delete(`${import.meta.env.VITE_API_URL}/cart/${Itemid}`, { withCredentials: true });
             toast.success('Cart Removed');
 
             const removedItem = response.data?.cartItem;
@@ -71,7 +71,7 @@ export const CartProvider = ({ children }) => {
     const handleUpdateQuantity = async (itemId, newQuantity) => {
         setLoading(true);
         try{
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/cart/update/${itemId}`, { quantity: newQuantity}, { withCredentials: true });
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/cart/${itemId}`, { quantity: newQuantity}, { withCredentials: true });
             // console.log(response)
             const updatedItem = response.data?.newcart;
 

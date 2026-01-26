@@ -8,7 +8,7 @@ router.post('/login', handleLogin);
 
 router.get('/me', handleAuthentication)
 
-router.get('/logout', (req,res) => { 
+router.post('/logout', (_req,res) => { 
     res.clearCookie('uid');
     return res.status(200).json({
         success: true,

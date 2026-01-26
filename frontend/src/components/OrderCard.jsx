@@ -58,7 +58,7 @@ const OrderCard = ({
     setIsLoading(true)
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/order/cancel/${orderId}`,
+        `${import.meta.env.VITE_API_URL}/order/${orderId}`,
         {},
         { withCredentials: true }
       )

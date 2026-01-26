@@ -229,41 +229,42 @@ App will run on `http://localhost:5173`
 - **POST** `/user/signup` — User registration  
 - **POST** `/user/login` — User login  
 - **POST** `/user/logout` — User logout  
+- **GET** `/user/me` — Get user detail.
 - **GET** `/oauth/google` — Initiate Google OAuth  
 - **GET** `/oauth/google/callback` — Google OAuth callback  
 - **GET** `/oauth/facebook` — Initiate Facebook OAuth  
 - **GET** `/oauth/facebook/callback` — Facebook OAuth callback  
 
-### Products [**❌ Yet to improve**]
+### Products
 - **GET** `/product/all` — Get all products  
-- **GET** `/product/:id` — Get a single product.[**❌ Not Yet Made**]  
-- **POST** `/seller/product` — Add a product *(Seller only)*  
-- **PUT** `/seller/product/:id` — Update a product *(Seller only)* .[**❌ Not Yet Made**]
-- **DELETE** `/seller/product/:id` — Delete a product *(Seller only)*. [**❌ Not Yet Made**]
+- **GET** `/product/:id` — Get a single product.
 
-### Cart & Wishlist [**❌ Yet to improve**]
+### Cart & Wishlist
 - **GET** `/cart` — Get user cart  
-- **POST** `/cart` — Add item to cart  
+- **POST** `/cart/:id` — Add item to cart  
+- **PUT** `/cart/:id` — Update cart product Quantity  
 - **DELETE** `/cart/:id` — Remove item from cart  
 
-- **GET** `/favorite` — Get wishlist items  
-- **POST** `/favorite` — Add item to wishlist  
-- **DELETE** `/favorite/:id` — Remove item from wishlist  
+- **GET** `/fav` — Get wishlist items  
+- **POST** `/fav` — Add item to wishlist  
+- **DELETE** `/fav/:favoriteId` — Remove item from wishlist  
 
-### Orders [**❌ Yet to improve**]
-- **POST** `/order` — Create an order  
-- **GET** `/order` — Get user orders  
-- **POST** `/order/verify-payment` — Verify Razorpay payment  
+### Orders
+- **POST** `/order/cod-order` — Create an order with cash on delivery payment option. 
+- **GET** `/order` — Get user orders
+- **PUT** `/order/:id` - Cancel Order  
+- **POST** `/order/create-order` — Create an order with payment done online with razorpay.  
+- **POST** `/order/verify-payment` — Verify Razorpay payment signature.
+- **POST** `/order/payment-failure` — Handle payment failure  
 
 ### Contact
 - **POST** `/contact` — Submit contact form
 
 ### Seller
-- **GET** `/seller/getProduct` — Get product posted by seller
-- **POST** `/seller/product` — Post the product.
-- **PUT** `/seller/edit/:id` — Edit the product info
-- **PUT** `/seller/status/:id` — 
-- **Delete** `/seller/remove/:id` — Remove the product
+- **GET** `/seller/` — Get all product posted by seller.
+- **POST** `/seller/` — Post the product.
+- **PUT** `/seller/:id` — Edit the product info
+- **Delete** `/seller/:id` — Remove the product
 
 ## UI Components (shadcn/ui)
 

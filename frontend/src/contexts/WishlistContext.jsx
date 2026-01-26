@@ -40,7 +40,7 @@ export const WishlistProvider = ({ children }) => {
 
     const removeFromWishlist = async (favoriteId) => {
         try{
-            await axios.delete(`${import.meta.env.VITE_API_URL}/fav/`,{ data: {favoriteId}, withCredentials: true });
+            await axios.delete(`${import.meta.env.VITE_API_URL}/fav/${favoriteId}`,{ withCredentials: true });
 
             setWishlistItems(prev => prev.filter(item => item._id !== favoriteId));
             return { success: true };

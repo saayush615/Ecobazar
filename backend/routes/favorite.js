@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post('/', handlePostFav);
 router.get('/', handleGetFav);
-router.delete('/', handleDeleteFav);
+router.delete('/:favoriteId', handleDeleteFav);
 
 export default router;
