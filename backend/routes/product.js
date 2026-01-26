@@ -1,12 +1,9 @@
 import express from 'express';
-import { handleGetAllProd, handleGetProdById, handleGetProdByName } from '../controllers/product.js';
+import { handleGetAllProd, handleGetProdById } from '../controllers/product.js';
 
 const router = express.Router();
 
 router.get('/all', handleGetAllProd);
-router.get('/:id', handleGetProdById)
-router.post('/', handleGetProdByName);
-// 🔴 seach by categories is left
-// router.get('/category/:category', handleGetProdById);
+router.get('/:id', handleGetProdById);
 
 export default router;
