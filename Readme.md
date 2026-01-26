@@ -249,10 +249,13 @@ App will run on `http://localhost:5173`
 - **POST** `/fav` — Add item to wishlist  
 - **DELETE** `/fav/:favoriteId` — Remove item from wishlist  
 
-### Orders [**❌ Yet to improve**]
-- **POST** `/order` — Create an order  
-- **GET** `/order` — Get user orders  
-- **POST** `/order/verify-payment` — Verify Razorpay payment  
+### Orders
+- **POST** `/order/cod-order` — Create an order with cash on delivery payment option. 
+- **GET** `/order` — Get user orders
+- **PUT** `/order/:id` - Cancel Order  
+- **POST** `/order/create-order` — Create an order with payment done online with razorpay.  
+- **POST** `/order/verify-payment` — Verify Razorpay payment signature.
+- **POST** `/order/payment-failure` — Handle payment failure  
 
 ### Contact
 - **POST** `/contact` — Submit contact form
