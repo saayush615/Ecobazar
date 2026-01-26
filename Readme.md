@@ -237,7 +237,7 @@ App will run on `http://localhost:5173`
 
 ### Products [**❌ Yet to improve**]
 - **GET** `/product/all` — Get all products  
-- **GET** `/product/:id` — Get a single product.[**❌ Not Yet Made**]  
+- **GET** `/product/:id` — Get a single product.
 - **POST** `/seller/product` — Add a product *(Seller only)*  
 - **PUT** `/seller/product/:id` — Update a product *(Seller only)* .[**❌ Not Yet Made**]
 - **DELETE** `/seller/product/:id` — Delete a product *(Seller only)*. [**❌ Not Yet Made**]
