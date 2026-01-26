@@ -72,7 +72,7 @@ const AddProducts = ({ open, onOpenChange, onProductAdded }) => {
       }
 
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/seller/product`,
+        `${import.meta.env.VITE_API_URL}/seller/`,
         formData,
         {
           withCredentials: true,

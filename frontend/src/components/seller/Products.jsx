@@ -39,7 +39,7 @@ const Products = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/seller/getProduct`,
+        `${import.meta.env.VITE_API_URL}/seller/`,
         { withCredentials: true }
       )
       console.log(response.data?.products)
@@ -57,7 +57,7 @@ const Products = () => {
     setActionLoading(true);
     try{
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}/seller/remove/${productId}`,
+        `${import.meta.env.VITE_API_URL}/seller/${productId}`,
         { withCredentials: true }
       )
       setProducts(prev => prev.filter(p => p._id !== productId))
@@ -105,7 +105,7 @@ const Products = () => {
       };
 
       await axios.put(
-        `${import.meta.env.VITE_API_URL}/seller/edit/${productId}`,
+        `${import.meta.env.VITE_API_URL}/seller/${productId}`,
         updatedProduct,
         { withCredentials: true }
       );
