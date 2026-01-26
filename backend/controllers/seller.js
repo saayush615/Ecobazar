@@ -130,33 +130,4 @@ async function handleShowAllProd(req, res, next) {
     }
 }
 
-async function handleUpdateStatus(req, res, next) {
-    try {
-        const { status } = req.body;
-        const orderId = req.params.id;
-        
-        if (!status) {
-            return next(createValidationError('Status is required'));
-        }
-
-        const order = await Order.findByIdAndUpdate(
-            orderId,
-            { status }, 
-            { new: true }
-        );
-
-        if (!order) {
-            return next(createNotFoundError('Order'));
-        }
-
-        res.status(200).json({ 
-            success: true, 
-            message: 'Order status updated successfully', 
-            order 
-        });
-    } catch (err) {
-        next(err);
-    }
-}
-
-export { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd, handleUpdateStatus };
+export { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd };
