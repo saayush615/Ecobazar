@@ -1,12 +1,6 @@
 import React from 'react'
 import LoadingSpinner from './LoadingSpinner'
 
-/**
- * Full-page or container overlay with loading spinner
- * @param {boolean} show - Controls visibility
- * @param {string} text - Loading message
- * @param {boolean} fullPage - If true, covers entire viewport
- */
 const LoadingOverlay = ({ 
   show, 
   text = 'Loading...', 

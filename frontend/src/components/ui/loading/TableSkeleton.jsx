@@ -8,11 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-/**
- * Skeleton loading for tables
- * @param {number} rows - Number of skeleton rows to show
- * @param {number} columns - Number of columns
- */
+
 const TableSkeleton = ({ rows = 5, columns = 7 }) => {
   return (
     <Table>

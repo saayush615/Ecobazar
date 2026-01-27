@@ -1,14 +1,7 @@
 import React from 'react'
 
-/**
- * A reusable loading spinner component
- * @param {string} size - 'sm' | 'md' | 'lg' | 'xl'
- * @param {string} variant - 'primary' | 'secondary' | 'success'
- * @param {string} text - Optional loading text
- */
 const LoadingSpinner = ({ 
-  size = 'md', 
-  variant = 'primary',
+  size = 'md',
   text = '' 
 }) => {
   const sizeClasses = {
@@ -18,18 +11,12 @@ const LoadingSpinner = ({
     xl: 'w-16 h-16 border-4'
   }
 
-  const variantClasses = {
-    primary: 'border-green-600 border-t-transparent',
-    secondary: 'border-gray-600 border-t-transparent',
-    success: 'border-green-500 border-t-transparent'
-  }
-
   return (
     <div className="flex flex-col items-center justify-center gap-2">
       <div 
         className={`
           ${sizeClasses[size]} 
-          ${variantClasses[variant]}
+          border-green-600 border-t-transparent
           rounded-full 
           animate-spin
         `}
