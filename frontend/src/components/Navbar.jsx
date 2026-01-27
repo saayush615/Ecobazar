@@ -80,7 +80,7 @@ const Navbar = () => {
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link to = '/category/meat' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                        <Link to = '/category/meat-eggs' className='px-4 py-2 hover:bg-gray-200 rounded'>
                           Meat & Eggs
                         </Link>
                       </NavigationMenuLink>
@@ -151,46 +151,46 @@ const Navbar = () => {
           <div className='flex-1 overflow-y-auto px-1'>
             <div className='flex flex-col gap-2'>
               {/* Home Link */}
-              <a 
-                href="/" 
+              <Link
+                to="/" 
                 className='px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors font-medium'
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Home
-              </a>
+              </Link>
 
               {/* Category Section */}
               <div className='px-4 py-3'>
                 <h3 className='font-semibold text-gray-900 mb-2 dark:text-white'>Category</h3>
                 <div className='flex flex-col gap-1 ml-4'>
-                  <a 
-                    href="/category/vegetable" 
+                  <Link 
+                    to="/category/vegetable" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Vegetable
-                  </a>
-                  <a 
-                    href="/category/fruits" 
+                  </Link>
+                  <Link 
+                    to="/category/fruits" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Fruits
-                  </a>
-                  <a 
-                    href="/category/dairy" 
+                  </Link>
+                  <Link 
+                    to="/category/dairy" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Dairy
-                  </a>
-                  <a 
-                    href="/category/meat-eggs" 
+                  </Link>
+                  <Link 
+                    to="/category/meat-eggs" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Meat & Eggs
-                  </a>
+                  </Link>
                 </div>
               </div>
 
@@ -198,54 +198,54 @@ const Navbar = () => {
               <div className='px-4 py-3'>
                 <h3 className='font-semibold text-gray-900 mb-2 dark:text-white'>My Account</h3>
                 <div className='flex flex-col gap-1 ml-4'>
-                  <a 
-                    href="/account/orders" 
+                  <Link 
+                    to="/orders" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Orders
-                  </a>
-                  <a 
-                    href="/account/wishlist" 
+                  </Link>
+                  <Link 
+                    to="/wishlist" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Wishlist
-                  </a>
-                  <a 
-                    href="/account/profile" 
+                  </Link>
+                  <Link 
+                    to="/cart" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Edit Profile
-                  </a>
-                  <a 
-                    href="/account/settings" 
+                    Cart
+                  </Link>
+                  <Link 
+                    to="/settings" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Settings
-                  </a>
+                  </Link>
                 </div>
               </div>
 
               {/* About Link */}
-              <a 
-                href="/about" 
+              <Link 
+                to="/about" 
                 className='px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors font-medium'
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 About
-              </a>
+              </Link>
 
               {/* Contact Link */}
-              <a 
-                href="/contact" 
+              <Link 
+                to="/contact" 
                 className='px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors font-medium'
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Contact
-              </a>
+              </Link>
             </div>
           </div>
 
