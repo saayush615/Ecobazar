@@ -76,7 +76,7 @@ const Signup = () => {
       <Header />
 
       <div className='grow flex items-center justify-center py-8 px-4'>
-        <Card className='w-full max-w-2xl bg-white shadow-xl rounded-lg border border-gray-200 p-4'>
+        <Card className='w-full max-w-2xl bg-white shadow-xl rounded-lg border border-gray-200 p-4 dark:bg-gray-900'>
           <CardHeader>
             <CardTitle className='text-2xl font-bold text-center'>Create Account</CardTitle>
             <CardDescription className='text-center'>Join us as a buyer or seller</CardDescription>
@@ -90,10 +90,10 @@ const Signup = () => {
               className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
                 accountType === 'buyer'
                   ? 'bg-green-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  : 'bg-gray-300 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              🛒 Buyer
+               Buyer
             </button>
             <button
               type='button'
@@ -101,10 +101,10 @@ const Signup = () => {
               className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-all duration-200 ${
                 accountType === 'seller'
                   ? 'bg-green-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  : 'bg-gray-300 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              🏪 Seller
+               Seller
             </button>
           </div>
 
@@ -115,7 +115,7 @@ const Signup = () => {
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 {/* Full Name */}
                 <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>
+                  <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                     Full Name <span className='text-red-500'>*</span>
                   </label>
                   <input
@@ -134,7 +134,7 @@ const Signup = () => {
 
                 {/* Email */}
                 <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>
+                  <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                     Email <span className='text-red-500'>*</span>
                   </label>
                   <input
@@ -161,7 +161,7 @@ const Signup = () => {
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                     {/* Shop Name */}
                     <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-1'>
+                      <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                         Shop Name <span className='text-red-500'>*</span>
                       </label>
                       <input
@@ -179,7 +179,7 @@ const Signup = () => {
 
                     {/* Business Registration Number */}
                     <div>
-                      <label className='block text-sm font-medium text-gray-700 mb-1'>
+                      <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                         Business Registration No. <span className='text-red-500'>*</span>
                       </label>
                       <input
@@ -198,7 +198,7 @@ const Signup = () => {
 
                   {/* Business Address */}
                   <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-1'>
+                    <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                       Business Address <span className='text-red-500'>*</span>
                     </label>
                     <textarea
@@ -221,7 +221,7 @@ const Signup = () => {
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   {/* Phone Number */}
                   <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-1'>
+                    <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                       Phone Number
                     </label>
                     <input
@@ -242,7 +242,7 @@ const Signup = () => {
 
                   {/* Address */}
                   <div>
-                    <label className='block text-sm font-medium text-gray-700 mb-1'>
+                    <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                       Delivery Address
                     </label>
                     <input
@@ -259,7 +259,7 @@ const Signup = () => {
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                 {/* Password */}
                 <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>
+                  <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                     Password <span className='text-red-500'>*</span>
                   </label>
                   <input
@@ -278,7 +278,7 @@ const Signup = () => {
 
                 {/* Confirm Password */}
                 <div>
-                  <label className='block text-sm font-medium text-gray-700 mb-1'>
+                  <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                     Confirm Password <span className='text-red-500'>*</span>
                   </label>
                   <input
@@ -306,7 +306,7 @@ const Signup = () => {
                   })}
                   className='mt-1 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded'
                 />
-                <label htmlFor='terms' className='text-sm text-gray-600'>
+                <label htmlFor='terms' className='text-sm text-gray-600 dark:text-gray-400'>
                   I agree to the <span className='text-green-600 hover:underline cursor-pointer'>Terms & Conditions</span> and <span className='text-green-600 hover:underline cursor-pointer'>Privacy Policy</span>
                 </label>
               </div>
@@ -329,7 +329,7 @@ const Signup = () => {
           {accountType === 'buyer' && (
             <CardFooter className='border-t-2 border-t-gray-200 pt-6'>
               <div className='flex flex-col gap-4 items-center w-full'>
-                <p className='text-gray-500 text-sm'>or sign up with</p>
+                <p className='text-gray-500 dark:text-gray-400 text-sm'>or sign up with</p>
                 <div className='flex flex-row gap-1 sm:gap-4'>
                   <button
                     type='button'
@@ -354,7 +354,7 @@ const Signup = () => {
 
           {/* Login Link */}
           <div className='text-center pb-6 px-6'>
-            <p className='text-sm text-gray-600'>
+            <p className='text-sm text-gray-600 dark:text-gray-400'>
               Already have an account? <a href='/login' className='text-green-600 font-semibold hover:underline'>Login</a>
             </p>
           </div>
