@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Menu } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -49,98 +50,87 @@ const Navbar = () => {
             <NavigationMenu>
               <NavigationMenuList>
 
-                <NavigationMenuItem className='hover:bg-gray-700 p-4 transition-colors'>
-                  <NavigationMenuLink 
-                    href="/" 
-                    className="text-white hover:text-gray-100 font-medium"
-                  >
-                    Home
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link to = '/' className=" p-4 font-medium text-[16px] text-white hover:text-gray-100 hover:bg-gray-700 transition-colors">
+                      Home
+                    </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
-                <NavigationMenuItem className='hover:bg-gray-700 p-4 transition-colors'>
-                  <NavigationMenuTrigger className="text-white hover:text-gray-100 font-medium">
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className=" p-4 font-medium text-white hover:text-gray-100 hover:bg-gray-700 transition-colors">
                     Category
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className='flex flex-col p-2 min-w-[200px]'>
-                      <NavigationMenuLink 
-                        href="/category/vegetable"
-                        className='px-4 py-2 hover:bg-gray-200 rounded'
-                      >
-                        Vegetable
+                      <NavigationMenuLink asChild>
+                        <Link to = '/category/vegetable' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                          Vegetable
+                        </Link>
                       </NavigationMenuLink>
-                      <NavigationMenuLink 
-                        href="/category/fruits"
-                        className='px-4 py-2 hover:bg-gray-200 rounded'
-                      >
-                        Fruits
+                      <NavigationMenuLink asChild>
+                        <Link to = '/category/fruits' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                          Fruits
+                        </Link>
                       </NavigationMenuLink>
-                      <NavigationMenuLink 
-                        href="/category/dairy"
-                        className='px-4 py-2 hover:bg-gray-200 rounded'
-                      >
-                        Dairy
+                      <NavigationMenuLink asChild>
+                        <Link to = '/category/dairy' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                          Dairy
+                        </Link>
                       </NavigationMenuLink>
-                      <NavigationMenuLink 
-                        href="/category/meat-eggs"
-                        className='px-4 py-2 hover:bg-gray-200 rounded'
-                      >
-                        Meat & Eggs
+                      <NavigationMenuLink asChild>
+                        <Link to = '/category/meat' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                          Meat & Eggs
+                        </Link>
                       </NavigationMenuLink>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
 
-                <NavigationMenuItem className='hover:bg-gray-700 p-4 transition-colors'>
-                  <NavigationMenuTrigger className="text-white hover:text-gray-100 font-medium">
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="p-4 font-medium text-white hover:text-gray-100 hover:bg-gray-700 transition-colors">
                     My Account
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className='flex flex-col p-2 min-w-[200px]'>
-                      <NavigationMenuLink 
-                        href="/orders"
-                        className='px-4 py-2 hover:bg-gray-200 rounded'
-                      >
-                        Orders
+                      <NavigationMenuLink asChild>
+                        <Link to = '/orders' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                          Orders
+                        </Link>
                       </NavigationMenuLink>
-                      <NavigationMenuLink 
-                        href="/account/wishlist"
-                        className='px-4 py-2 hover:bg-gray-200 rounded'
-                      >
-                        Wishlist
+                      <NavigationMenuLink asChild>
+                        <Link to = '/cart' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                          Cart
+                        </Link>
                       </NavigationMenuLink>
-                      <NavigationMenuLink 
-                        href="/account/profile"
-                        className='px-4 py-2 hover:bg-gray-200 rounded'
-                      >
-                        Edit Profile
+                      <NavigationMenuLink asChild>
+                        <Link to = '/whishlist' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                          Whishlist
+                        </Link>
                       </NavigationMenuLink>
-                      <NavigationMenuLink 
-                        href="/account/settings"
-                        className='px-4 py-2 hover:bg-gray-200 rounded'
-                      >
-                        Settings
+                      <NavigationMenuLink asChild>
+                        <Link to = '/settings' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                          Settings
+                        </Link>
                       </NavigationMenuLink>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
 
-                <NavigationMenuItem className='hover:bg-gray-700 p-4 transition-colors'>
-                  <NavigationMenuLink 
-                    href="/about" 
-                    className="text-white hover:text-gray-100 font-medium"
-                  >
-                    About
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link to = '/about' className=" p-4 font-medium text-[16px] text-white hover:text-gray-100 hover:bg-gray-700 transition-colors">
+                      About
+                    </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
-                <NavigationMenuItem className='hover:bg-gray-700 p-4 transition-colors'>
-                  <NavigationMenuLink 
-                    href="/contact" 
-                    className="text-white hover:text-gray-100 font-medium"
-                  >
-                    Contact
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link to = '/contact' className=" p-4 font-medium text-[16px] text-white hover:text-gray-100 hover:bg-gray-700 transition-colors">
+                      Contact
+                    </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
