@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Menu } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -27,6 +27,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -261,10 +262,16 @@ const Navbar = () => {
               {/* Auth Buttons */}
               {!isAuthenticated && (
                 <div className='flex flex-col gap-2 w-full'>
-                  <button className='w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors active:scale-95 font-medium'>
+                  <button
+                    onClick={() => navigate('/login')} 
+                    className='w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl transition-colors active:scale-95 font-medium'
+                  >
                     Login
                   </button>
-                  <button className='w-full px-4 py-2 border-2 border-green-500 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl transition-colors active:scale-95 font-medium'>
+                  <button
+                    onClick={() => navigate('/signup')} 
+                    className='w-full px-4 py-2 border-2 border-green-500 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-xl transition-colors active:scale-95 font-medium'
+                  >
                     Sign-up
                   </button>
                 </div>
