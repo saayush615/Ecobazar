@@ -10,6 +10,7 @@ import Signup from './pages/Signup'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashbord' 
 import Orders from './pages/Orders'
+import Category from './pages/Category'
 
 import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
 import { WishlistProvider } from '@/contexts/WishlistContext'
@@ -40,6 +41,13 @@ function App() {
             <Contact /> 
           </BuyerOrPublicRoute>
         } />
+
+        <Route path='/category' element={ 
+          <BuyerOrPublicRoute>
+            <Category /> 
+          </BuyerOrPublicRoute>
+        } />
+
         <Route path='/signup' element={ <Signup /> } />
         <Route path='/login' element={ <Login /> } />
 
