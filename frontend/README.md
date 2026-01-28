@@ -412,6 +412,71 @@ Cheat sheet for responsive image
 }
 ```
 
+_3. Image sizes in React:_
+**Method 1: Using height={} and width={} Props**
+⚠️ Important: Only Works with <img> Tag, Not Imported Images
+```jsx
+// ❌ WRONG - Props don't work with imported images
+import Vegetable_Banner from '@/assets/Category_banner/vegetable_banner.jpg'
+
+<img 
+  src={Vegetable_Banner} 
+  height={400}  // ❌ Won't work!
+  width={800}   // ❌ Won't work!
+/>
+
+// ✅ CORRECT - Props work with URL strings
+<img 
+  src="/images/banner.jpg"  // Direct URL path
+  height={400}   // ✅ 400px tall
+  width={800}    // ✅ 1200px wide
+  alt="Banner"
+/>
+
+// String values (any CSS unit)
+<img 
+  src="/banner.jpg" 
+  height="50vh"     // 50% of viewport height
+  width="100%"      // 100% of parent width
+  alt="Banner"
+/>
+```
+✅ Best Practices for Props Method
+```jsx
+// 1. Use for performance (helps browser layout)
+<img 
+  src="/banner.jpg"
+  width={1200}   // Actual image dimensions
+  height={400}   // Prevents layout shift
+  alt="Banner"
+  className="w-full h-auto"  // Responsive with Tailwind
+/>
+
+// 2. Maintains aspect ratio
+<img 
+  src="/product.jpg"
+  width={500}    // 500x500 = 1:1 ratio
+  height={500}   // Perfect square
+  alt="Product"
+/>
+```
+**Method 2: Using Tailwind CSS (Recommended for Your Case)**
+Fixed Dimensions:
+```jsx
+// Fixed pixel sizes
+<img 
+  src={Vegetable_Banner} 
+  alt="Vegetable Banner"
+  className="w-64 h-48"  // Width: 256px, Height: 192px
+/>
+
+// Common fixed sizes
+className="w-32 h-32"   // 128x128px (small square)
+className="w-48 h-32"   // 192x128px (rectangular)
+className="w-96 h-64"   // 384x256px (medium banner)
+className="w-full h-96" // Full width, 384px height
+```
+
 #### Swiper js
 **For code Read HeroSlider.jsx component and examples in docs**
 
