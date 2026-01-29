@@ -66,23 +66,23 @@ const Navbar = () => {
                   <NavigationMenuContent>
                     <div className='flex flex-col p-2 min-w-[200px]'>
                       <NavigationMenuLink asChild>
-                        <Link to = '/category/vegetable' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                        <Link to = '/category/fresh-vegetables' className='px-4 py-2 hover:bg-gray-200 rounded'>
                           Vegetable
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link to = '/category/fruits' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                        <Link to = '/category/fresh-fruits' className='px-4 py-2 hover:bg-gray-200 rounded'>
                           Fruits
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link to = '/category/dairy' className='px-4 py-2 hover:bg-gray-200 rounded'>
-                          Dairy
+                        <Link to = '/category/snacks' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                          Snacks
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link to = '/category/meat-eggs' className='px-4 py-2 hover:bg-gray-200 rounded'>
-                          Meat & Eggs
+                        <Link to = '/category/meat-and-fish' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                          Meat & Fish
                         </Link>
                       </NavigationMenuLink>
                     </div>
@@ -165,32 +165,32 @@ const Navbar = () => {
                 <h3 className='font-semibold text-gray-900 mb-2 dark:text-white'>Category</h3>
                 <div className='flex flex-col gap-1 ml-4'>
                   <Link 
-                    to="/category/vegetable" 
+                    to="/category/fresh-vegetables" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Vegetable
                   </Link>
                   <Link 
-                    to="/category/fruits" 
+                    to="/category/fresh-fruits" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Fruits
                   </Link>
                   <Link 
-                    to="/category/dairy" 
+                    to="/category/snacks" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Dairy
+                    Snacks
                   </Link>
                   <Link 
-                    to="/category/meat-eggs" 
+                    to="/category/meat-and-fish" 
                     className='py-2 hover:text-green-600 transition-colors'
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    Meat & Eggs
+                    Meat & Fish
                   </Link>
                 </div>
               </div>
