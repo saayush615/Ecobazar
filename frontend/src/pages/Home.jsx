@@ -18,6 +18,20 @@ import oils from '@/assets/Category/oils.svg'
 import diabitic from '@/assets/Category/diabitic.svg'
 import dishwash from '@/assets/Category/dishwash.svg'
 
+// Category banner
+import vegetable_category_banner from '@/assets/Category_banner/vegetable.jpg'
+import backery_category_banner from '@/assets/Category_banner/backery.jpg'
+import baking_needs_category_banner from '@/assets/Category_banner/baking_needs.jpg'
+import beauty_health_category_banner from '@/assets/Category_banner/beauty_health.jpg'
+import bevrages_category_banner from '@/assets/Category_banner/bevrages.jpg'
+import cooking_category_banner from '@/assets/Category_banner/cooking.jpg'
+import diabetic_food_category_banner from '@/assets/Category_banner/diabetic_food.jpg'
+import dishwash_category_banner from '@/assets/Category_banner/dishwash.jpg'
+import fruits_category_banner from '@/assets/Category_banner/fruits.jpg'
+import meat_fish_category_banner from '@/assets/Category_banner/meat_egg_fish.jpg'
+import oils_category_banner from '@/assets/Category_banner/oils.jpg'
+import snacks_category_banner from '@/assets/Category_banner/snacks.jpg'
+
 // Instagram posts
 import Post1 from '@/assets/InstaPost/Post1.svg'
 import Post2 from '@/assets/InstaPost/Post2.svg'
@@ -79,18 +93,18 @@ const Home = () => {
   
 
   const Categoies = [
-    { id: 1, title: 'Fresh Fruits', source: fruitCategory},
-    { id: 2, title: 'Fresh Vegetables', source: vegeCategory},
-    { id: 3, title: 'Meat & Fish', source: meatCategory},
-    { id: 4, title: 'Snacks', source: snackCategory},
-    { id: 5, title: 'Beverages', source: bevrageCategory},
-    { id: 6, title: 'Bread Bakery', source: breadCategory},
-    { id: 7, title: 'Baking Needs', source: needsCategory},
-    { id: 8, title: 'Cooking', source: cookCategory},
-    { id: 9, title: 'Beauty & Health', source: beauty},
-    { id: 10, title: 'Oils', source: oils},
-    { id: 11, title: 'Diabitic Food', source: diabitic},
-    { id: 12, title: 'Dishwash', source: dishwash},
+    { id: 1, title: 'Fresh Fruits', source: fruitCategory, banner: fruits_category_banner},
+    { id: 2, title: 'Fresh Vegetables', source: vegeCategory, banner: vegetable_category_banner},
+    { id: 3, title: 'Meat & Fish', source: meatCategory, banner: meat_fish_category_banner},
+    { id: 4, title: 'Snacks', source: snackCategory, banner: snacks_category_banner},
+    { id: 5, title: 'Beverages', source: bevrageCategory, banner: bevrages_category_banner},
+    { id: 6, title: 'Bread Bakery', source: breadCategory, banner: backery_category_banner},
+    { id: 7, title: 'Baking Needs', source: needsCategory, banner: baking_needs_category_banner},
+    { id: 8, title: 'Cooking', source: cookCategory, banner: cooking_category_banner},
+    { id: 9, title: 'Beauty & Health', source: beauty, banner: beauty_health_category_banner},
+    { id: 10, title: 'Oils', source: oils, banner: oils_category_banner},
+    { id: 11, title: 'Diabitic Food', source: diabitic, banner: diabetic_food_category_banner},
+    { id: 12, title: 'Dishwash', source: dishwash, banner: dishwash_category_banner},
   ]
 
   const Sales = [
@@ -124,6 +138,7 @@ const Home = () => {
                   key={category.id}
                   title={category.title}
                   source={category.source}
+                  banner={category.banner}
                 />
               })}
             </div>
