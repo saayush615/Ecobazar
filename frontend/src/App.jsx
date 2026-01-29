@@ -15,6 +15,8 @@ import Category from './pages/Category'
 import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
 import { WishlistProvider } from '@/contexts/WishlistContext'
 import { CartProvider } from '@/contexts/CartContext'
+import Wishlist from './pages/Wishlist'
+import Cart from './pages/Cart'
 
 function App() {
 
@@ -57,6 +59,28 @@ function App() {
             <RequireAuth>
               <BuyerOrPublicRoute>
                 <Orders /> 
+              </BuyerOrPublicRoute>
+            </RequireAuth>
+          } 
+        />
+
+        <Route 
+          path='/wishlist' 
+          element={ 
+            <RequireAuth>
+              <BuyerOrPublicRoute>
+                <Wishlist /> 
+              </BuyerOrPublicRoute>
+            </RequireAuth>
+          } 
+        />
+
+        <Route 
+          path='/cart' 
+          element={ 
+            <RequireAuth>
+              <BuyerOrPublicRoute>
+                <Cart /> 
               </BuyerOrPublicRoute>
             </RequireAuth>
           } 
