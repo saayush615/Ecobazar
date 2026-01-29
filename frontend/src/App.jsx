@@ -42,7 +42,7 @@ function App() {
           </BuyerOrPublicRoute>
         } />
 
-        <Route path='/category' element={ 
+        <Route path='/category/:categoryslug' element={ 
           <BuyerOrPublicRoute>
             <Category /> 
           </BuyerOrPublicRoute>
