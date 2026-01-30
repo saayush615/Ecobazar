@@ -1,7 +1,7 @@
 import React from 'react'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
-
+import { toast } from 'sonner'
 import { useWishlist } from '@/hooks/useWishlist'
 import FavCard from '@/components/FavCard'
 
@@ -23,21 +23,23 @@ const Wishlist = () => {
       <div>
         <Header />
         <div className='container mx-auto px-4'>
-            {wishlistItems.map((item) => (
-                <FavCard 
-                  key={item._id}
-                  id={item._id}
-                  productId={item.product?._id}
-                  name={item.product?.name}
-                  source={`${import.meta.env.VITE_API_URL}${item.product?.image}`}
-                  category={item.product?.category}
-                  discountPrice={item.product?.discountPrice}
-                  originalPrice={item.product?.originalPrice}
-                  stock={item.product?.stock}
-                  onRemove={handleRemoveFromWishlist}
-                />
-            ))
-            }
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
+              {wishlistItems.map((item) => (
+                  <FavCard 
+                    key={item._id}
+                    id={item._id}
+                    productId={item.product?._id}
+                    name={item.product?.name}
+                    source={`${import.meta.env.VITE_API_URL}${item.product?.image}`}
+                    category={item.product?.category}
+                    discountPrice={item.product?.discountPrice}
+                    originalPrice={item.product?.originalPrice}
+                    stock={item.product?.stock}
+                    onRemove={handleRemoveFromWishlist}
+                  />
+              ))
+              }
+            </div>
         </div>
       </div>
       <Footer />
