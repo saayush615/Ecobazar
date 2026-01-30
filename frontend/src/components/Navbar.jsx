@@ -106,8 +106,8 @@ const Navbar = () => {
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link to = '/whishlist' className='px-4 py-2 hover:bg-gray-200 rounded'>
-                          Whishlist
+                        <Link to = '/wishlist' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                          Wishlist
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>

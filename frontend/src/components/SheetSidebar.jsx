@@ -31,7 +31,7 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
     }
   }
 
-  const handleProceedToPay = () => {
+  const handleProceedToOrder = () => {
     if (cartData.length === 0) {
       toast.error('Your cart is empty');
       return;
@@ -88,11 +88,11 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
                     }
                   </div>
                   <button 
-                    onClick={handleProceedToPay}
+                    onClick={handleProceedToOrder}
                     disabled={loading}
                     className='w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-2 rounded-lg transition-colors'
                   >
-                    {loading ? 'Processing...' : 'Proceed to Pay'}
+                    {loading ? 'Processing...' : 'Proceed to Order'}
                   </button>
                 </div>
               )}
