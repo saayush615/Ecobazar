@@ -810,3 +810,33 @@ To populate `productId`, then go inside it to populate `sellerId`, while selecti
 ```
 
 ---
+
+## Note-10: JavaScript Object Access: Dot vs. Bracket Notation
+
+**1. Dot Notation (obj.property)**
+Used for static keys where you know the exact name of the property. It is cleaner and easier to read but cannot handle variables.
+Example: 
+```js
+    const name = user.name;
+```
+
+**2. Bracket Notation (obj[variable])**
+Required when the property name is dynamic or stored in a variable. JavaScript evaluates the content inside the brackets first before looking for the key in the object.
+Example:
+```js
+    const key = "email"; 
+    const value = user[key];
+```
+
+**3. Why Brackets are used in Grouping**
+In the logic `groups[sellerId]`, `sellerId` is a variable containing a unique string (like "s1").
+
+* **Correct:** `groups[sellerId]` looks for the value stored in the `sellerId` variable.
+* **Incorrect:** `groups.sellerId` would literally look for a property named "sellerId" inside the object, which doesn't exist.
+
+**4. Summary Rule**
+
+* Use **Dot Notation** when the key is a fixed name you typed yourself.
+* Use **Bracket Notation** when the key comes from a variable, a loop, or contains special characters/numbers.
+---
+
