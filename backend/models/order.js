@@ -6,6 +6,15 @@ const orderSchema = mongoose.Schema({
         ref: 'User',
         required: true
     },
+    seller: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    checkoutSessionId: {
+        type: String,
+        required: true
+    },
     carts: [{
         product: {
             type: mongoose.Schema.Types.ObjectId,
