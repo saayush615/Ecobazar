@@ -781,13 +781,32 @@ const signature = hmac.digest('hex');
 // Output: "8f3e2a1d9c7b6e4f5a3d2c1b0e9d8c7a6b5e4d3c2b1a0f9e8d7c6b5a4e3d2c1b0"
 ```
 ---
-## Note-9: Js methods
-#### .reduce() [Array method]
-**What it does**: Loops through array and "reduces" it to a single value (number, object, string, etc.)
+## Note-9: .populate in mongoose with example
 
-**Syntax**
+**1. Populate Only Product**
+To fetch the cart and fill in the product details based on `productId`.
 ```js
-array.reduce((accumulator, currentItem) => {
-    // return updated accumulator
-}, initialValue)
+    const cart = await Cart.find().populate('productId');
 ```
+
+**2. Populate Multiple Parallel Fields (Product and Seller)**
+Use this if `productId` and `sellerId` are both top-level fields in your Cart schema.
+```js
+    const cart = await Cart.find().populate(['productId', 'sellerId']);
+```
+
+**3. Deep Nested Population with Field Selection**
+To populate `productId`, then go inside it to populate `sellerId`, while selecting only specific fields (e.g., `price` from product and `name` from seller).
+**Note:** You must include `sellerId` in the first `select` so Mongoose can find the reference.
+```js
+    const cart = await Cart.find().populate({ 
+        path: 'productId', 
+        select: 'price quantity sellerId', 
+        populate: { 
+            path: 'sellerId', 
+            model: 'User', 
+            select: 'name' 
+        } });
+```
+
+---
