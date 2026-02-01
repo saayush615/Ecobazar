@@ -199,42 +199,80 @@ async function handlePaymentFailure(req, res, next) {
 async function handleCODOrder(req,res,next) {
     try{
         const userId = req.user.id;
+        const checkoutSessionId = uuidv4();
 
-        const cartItems = await Cart.find({ user: userId }).populate('product');
+        const cartItems = await Cart.find({ user: userId })
+            .populate({
+                path: 'product',
+                populate: {
+                    path: 'seller',
+                    select: 'name email shopName'
+                }
+            });
         if (cartItems.length === 0) {
             return next(createValidationError('Cart is empty'));
         }
+
+        const sellerGroups = cartItems.reduce((groups, cartItem) => {
+            const sellerId = cartItem.product?.seller?._id.toString();
+
+            if(!groups[sellerId]) {
+                groups[sellerId] = {
+                    seller: cartItem.product?.seller,
+                    items: []
+                };
+            }
+
+            groups[sellerId].items.push(cartItem);
+
+            return groups;
+        }, {});
 
         const totalAmount = cartItems.reduce((sum, item) => {
             const price = item.product?.discountPrice || item.product?.originalPrice;
             return sum + (item.quantity * price);
         }, 0);
 
-        const newCart = cartItems.map(item => ({
-            product: item.product._id,
-            quantity: item.quantity
-        }));
+        const createdOrders = [];
 
-        const order = await Order.create({
-            user: userId,
-            carts: newCart,
-            totalAmount,
-            paymentMethod: 'cod',
-            paymentStatus: 'pending',
-            status: 'Confirmed'
-        });
+        for (const [sellerId, groupData] of Object.entries(sellerGroups)) {
+            const sellerSubtotal = groupData.items.reduce((sum, item) => {
+                const price = item.product?.discountPrice || item.product?.originalPrice;
+                return sum + (item.quantity * price);
+            },0);
+
+            const sellerCartItems = groupData.items.map(item => ({
+                product: item.product._id,
+                quantity: item.quantity
+            }));
+
+            const order = await Order.create({
+                user: userId,
+                seller: sellerId,
+                sellerShopName: groupData.seller?.shopName,
+                checkoutSessionId: checkoutSessionId,
+                carts: sellerCartItems,
+                totalAmount: sellerSubtotal,
+                paymentMethod: 'cod',
+                paymentStatus: 'pending',
+                status: 'Confirmed'
+            });
+
+            createdOrders.push(order);
+        }
 
         await Cart.deleteMany({ user: userId });
 
         return res.status(201).json({
             success: true,
             message: 'Order placed successfully with Cash on Delivery',
-            order: {
+            order: createdOrders.map(order => ({
                 id: order._id,
-                totalAmount: order.totalAmount,
-                paymentMethod: order.paymentMethod,
-                status: order.status
-            }
+                seller: order.sellerShopName,
+                amount: order.totalAmount
+            })),
+            grandTotalAmount: totalAmount,
+            checkoutSessionId: checkoutSessionId
         });
         
     } catch (error) {
