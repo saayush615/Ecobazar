@@ -127,7 +127,7 @@ async function handleVerifyPayment(req, res, next) {
             razorpay_order_id, 
             razorpay_payment_id, 
             razorpay_signature,
-            orderId 
+            checkoutSessionId 
         } = req.body;
 
         // Create signature for verification
@@ -142,28 +142,29 @@ async function handleVerifyPayment(req, res, next) {
         }
 
         // Update order with payment details
-        const order = await Order.findByIdAndUpdate(
-            orderId,
+        const updateResult = await Order.updateMany(
+            { 
+                checkoutSessionId: checkoutSessionId,
+                paymentStatus: 'pending'
+            },
             {
                 razorpayPaymentId: razorpay_payment_id,
                 razorpaySignature: razorpay_signature,
                 paymentStatus: 'completed',
                 status: 'Confirmed'
-            },
-            { new: true }
+            }
         );
 
-        if (!order) {
-            return next(createNotFoundError('Order'));
-        }
 
-        // Clear cart after successful payment
+        const orders = await Order.find({ checkoutSessionId: checkoutSessionId });
+
         await Cart.deleteMany({ user: req.user.id });
 
         return res.status(200).json({
             success: true,
             message: 'Payment verified successfully',
-            order
+            orders: orders,
+            ordersCount: updateResult.modifiedCount
         });
 
     } catch (error) {
@@ -174,21 +175,26 @@ async function handleVerifyPayment(req, res, next) {
 // Step 3: Handle Payment Failure
 async function handlePaymentFailure(req, res, next) {
     try {
-        const { orderId } = req.body;
+        const { checkoutSessionId } = req.body;
 
-        const order = await Order.findByIdAndUpdate(
-            orderId,
+        const updateResult = await Order.updateMany(
+            { 
+                checkoutSessionId: checkoutSessionId,
+                paymentStatus: 'pending'
+            },
             {
                 paymentStatus: 'failed',
                 status: 'Cancelled'
-            },
-            { new: true }
+            }
         );
+
+        const orders = await Order.find({ checkoutSessionId: checkoutSessionId });
 
         return res.status(200).json({
             success: true,
             message: 'Payment failure recorded',
-            order
+            orders: orders,
+            ordersCount: updateResult.modifiedCount
         });
 
     } catch (error) {
