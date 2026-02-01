@@ -11,6 +11,10 @@ const orderSchema = mongoose.Schema({
         ref: 'User',
         required: true
     },
+    sellerShopName: {
+        type: String,
+        required: true
+    },
     checkoutSessionId: {
         type: String,
         required: true
