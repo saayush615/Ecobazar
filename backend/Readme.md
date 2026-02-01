@@ -840,3 +840,24 @@ In the logic `groups[sellerId]`, `sellerId` is a variable containing a unique st
 * Use **Bracket Notation** when the key comes from a variable, a loop, or contains special characters/numbers.
 ---
 
+## Note-11: Object Iteration and Variable Declaration
+
+**1. Iterating Over Objects with Object.entries()**
+Since objects cannot be looped directly with `for...of`, use `Object.entries(yourObject)`. This method transforms an object into an array of arrays, where each inner array is a `[key, value]` pair. This is the standard way to handle multi-vendor groupings or maps in a MERN backend.
+```js
+    for (const [key, value] of Object.entries(object)) { ... }
+```
+
+**2. Mandatory Variable Declaration (const/let)**
+When destructuring values inside a loop header, you must declare them using `const` or `let`.
+
+* **Scope:** Using `const` ensures the variables are fresh and unique to each loop iteration, preventing data leakage.
+* **Requirement:** Omitting the declaration will cause a reference error in strict mode (standard in Node.js) because JavaScript cannot assign values to undeclared variables.
+* **Preference:** Use `const` by default for loop variables if the value isn't reassigned within that specific block.
+
+**3. Practical Summary**
+To process a grouped object (like sellers in a cart), combine both:
+`for (const [id, data] of Object.entries(groups)) { ... }`
+This converts the object to an iterable format and safely declares local variables for each pass.
+
+---
