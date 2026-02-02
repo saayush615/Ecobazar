@@ -303,6 +303,24 @@ This is a learning-focused project. Contributions are welcome!
 
 ---
 
+## Credits & Acknowledgments
+
+### UI Design
+The visual design and user interface of this project are based on the excellent work of **[Templatecookie](https://www.figma.com/@templatecookie)**. Their design is publicly available and free to use.
+
+- **Designer:** [Templatecookie](https://www.figma.com/@templatecookie)
+- **Original Design:** [shopery](https://www.figma.com/community/file/1272474484693685580/shopery-organic-ecommerce-shop-website-figma-template-community)
+
+Special thanks for creating such a beautiful and functional design that made this learning project possible!
+
+### Technologies
+Built with amazing open-source technologies:
+- React, Express.js, MongoDB, Node.js
+- shadcn/ui components
+- Tailwind CSS
+
+---
+
 ## License
 
 This project is intended **solely for educational purposes**.
