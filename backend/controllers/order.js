@@ -309,7 +309,7 @@ async function handleGetMyOrders(req,res,next) {
                 }
             }
 
-            acc[sessionId].order.push(order);
+            acc[sessionId].orders?.push(order);
             acc[sessionId].totalAmount += order.totalAmount;
 
             return acc;
