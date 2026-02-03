@@ -72,7 +72,7 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
         currency: razorpayOrder.currency,
         name: "Ecobazar",
         description: "Product Purchase",
-        razorpayOrder_id: razorpayOrder.id,
+        order_id: razorpayOrder.id,
         
         // Success handler
         handler: async function (response) {
