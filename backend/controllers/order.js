@@ -290,11 +290,35 @@ async function handleGetMyOrders(req,res,next) {
     try {
         const userId = req.user.id;
 
-        const orders = await Order.find({ user: userId }).populate('carts.product').sort({ createdAt: -1 });
+        const orders = await Order.find({ user: userId })
+            .populate('carts.product')
+            .populate('seller', 'name shopName email')
+            .sort({ createdAt: -1 });
+
+        const groupedBySession = orders.reduce((acc, order) => {
+            const sessionId = order.checkoutSessionId;
+
+            if (!acc[sessionId]) {
+                acc[sessionId] = {
+                    checkoutSessionId: sessionId,
+                    createdAt: order.createdAt,
+                    paymentMethod: order.paymentMethod,
+                    paymentStatus: order.paymentStatus,
+                    orders: [],
+                    totalAmount: 0
+                }
+            }
+
+            acc[sessionId].order.push(order);
+            acc[sessionId].totalAmount += order.totalAmount;
+
+            return acc;
+        }, {});
+
         return res.status(200).json({
             success: true,
             message: 'Fetched order success',
-            orders
+            checkouts: groupedBySession
         });
 
     } catch (error) {
