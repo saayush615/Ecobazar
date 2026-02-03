@@ -63,16 +63,16 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
         { withCredentials: true }
       );
 
-      const { order, orderId, key } = orderResponse.data;
+      const { razorpayOrder, checkoutSessionId, key } = orderResponse.data;
 
       // Step 2: Configure Razorpay options
       const options = {
         key: key,
-        amount: order.amount,
-        currency: order.currency,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
         name: "Ecobazar",
         description: "Product Purchase",
-        order_id: order.id,
+        razorpayOrder_id: razorpayOrder.id,
         
         // Success handler
         handler: async function (response) {
@@ -84,7 +84,7 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
-                orderId: orderId
+                checkoutSessionId: checkoutSessionId
               },
               { withCredentials: true }
             );
@@ -121,7 +121,7 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
             try {
               await axios.post(
                 `${import.meta.env.VITE_API_URL}/order/payment-failure`,
-                { orderId: orderId },
+                { checkoutSessionId: checkoutSessionId },
                 { withCredentials: true }
               );
               toast.error('Payment cancelled');
