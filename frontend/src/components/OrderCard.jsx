@@ -22,6 +22,7 @@ import axios from 'axios'
 const OrderCard = ({ 
   orderId,
   orderDate,
+  sellerShopName,
   items = [],
   totalAmount,
   status,
@@ -92,6 +93,10 @@ const OrderCard = ({
               <p className='text-sm text-gray-600 dark:text-gray-400'>
                 Placed on {formatDate(orderDate)}
               </p>
+              <div className='flex flex-row items-center gap-1'>
+                <p className='text-sm text-gray-600 dark:text-gray-400'>Sold by:</p>
+                <span className='text-sm font-bold text-green-600 dark:text-green-400'>{sellerShopName}</span>
+              </div>
             </div>
             <div>
               <p className='text-2xl font-bold text-green-600 dark:text-green-400'>
