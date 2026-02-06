@@ -44,7 +44,7 @@ const Cart = () => {
                 <h3 className='text-2xl font-bold'>Cart Total:</h3>
                 <div className='flex flex-row items-center justify-between my-4'>
                   <p className='text-lg'>Sub Total:</p>
-                  <span className='text-2xl font-bold text-green-600'>₹{total.toFixed(2)}</span>
+                  <span className='text-2xl font-bold text-green-600'>₹{total?.toFixed(2)}</span>
                 </div>
                 <div>
                   <div className='border-t-2 m-1 p-1 border-gray-700 dark:border-gray-200'></div>

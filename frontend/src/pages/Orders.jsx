@@ -22,7 +22,11 @@ const Orders = () => {
         `${import.meta.env.VITE_API_URL}/order/`,
         { withCredentials: true }
       )
-      setOrders(response.data.orders || [])
+      const data = Object.values(response.data?.checkouts); 
+      const sortedData = data
+        .flatMap(eachOrder => eachOrder.orders)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setOrders(sortedData || []);
     } catch (error) {
       console.error('Fetch orders error:', error)
     } finally {
@@ -32,11 +36,11 @@ const Orders = () => {
 
   const handleCancelSuccess = (orderId) => {
     setOrders(prevOrders =>
-      prevOrders.map(order =>
-        order._id === orderId
+      prevOrders.map(order => 
+          order._id === orderId
           ? { ...order, status: 'Cancelled' }
           : order
-      )
+        )
     )
   }
 
@@ -135,6 +139,7 @@ const Orders = () => {
                 key={order._id}
                 orderId={order._id}
                 orderDate={order.createdAt}
+                sellerShopName={order.sellerShopName}
                 items={order.carts}
                 totalAmount={order.totalAmount}
                 status={order.status}

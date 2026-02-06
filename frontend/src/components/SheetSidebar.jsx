@@ -45,38 +45,40 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
       <>
         <Sheet open={open} onOpenChange={onOpenChange}>
           <SheetContent aria-describedby={undefined}>
-              <SheetHeader>
+            <SheetHeader>
               <SheetTitle>Your {contentType}</SheetTitle>
-              </SheetHeader>
-              { contentType === 'Cart' && (
-                cartData.map((item) => 
-                  (<CartCard key={item._id} 
-                    id={item._id}
-                    Pname={item.product?.name} 
-                    source={`${import.meta.env.VITE_API_URL}${item.product?.image}`} 
-                    category={item.product?.category} 
-                    stock={item.product?.stock} 
-                    discountPrice={item.product?.discountPrice} 
-                    originalPrice={item.product?.originalPrice}
-                    quantity={item.quantity}
-                  />))
-              )}
+            </SheetHeader>
+              <div className='w-full flex-1 overflow-y-scroll py-4'>
+                { contentType === 'Cart' && (
+                  cartData.map((item) => 
+                    (<CartCard key={item._id} 
+                      id={item._id}
+                      Pname={item.product?.name} 
+                      source={`${import.meta.env.VITE_API_URL}${item.product?.image}`} 
+                      category={item.product?.category} 
+                      stock={item.product?.stock} 
+                      discountPrice={item.product?.discountPrice} 
+                      originalPrice={item.product?.originalPrice}
+                      quantity={item.quantity}
+                    />))
+                )}
 
-              { contentType === 'Wishlist' && (
-                wishlistItems.map((item) => (
-                <FavCard 
-                  key={item._id}
-                  id={item._id}
-                  productId={item.product?._id}
-                  name={item.product?.name}
-                  source={`${import.meta.env.VITE_API_URL}${item.product?.image}`}
-                  category={item.product?.category}
-                  discountPrice={item.product?.discountPrice}
-                  originalPrice={item.product?.originalPrice}
-                  stock={item.product?.stock}
-                  onRemove={handleRemoveFromWishlist}
-                />))
-              )}
+                { contentType === 'Wishlist' && (
+                  wishlistItems.map((item) => (
+                  <FavCard 
+                    key={item._id}
+                    id={item._id}
+                    productId={item.product?._id}
+                    name={item.product?.name}
+                    source={`${import.meta.env.VITE_API_URL}${item.product?.image}`}
+                    category={item.product?.category}
+                    discountPrice={item.product?.discountPrice}
+                    originalPrice={item.product?.originalPrice}
+                    stock={item.product?.stock}
+                    onRemove={handleRemoveFromWishlist}
+                  />))
+                )}
+              </div>
 
             <SheetFooter>
               { contentType === 'Cart' && (
