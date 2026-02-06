@@ -42,7 +42,7 @@ const Products = () => {
         `${import.meta.env.VITE_API_URL}/seller/`,
         { withCredentials: true }
       )
-      console.log(response.data?.products)
+      // console.log(response.data?.products)
       setProducts(response.data?.products || [])
     }catch (error){
       console.error('Fetch Data error', error);
