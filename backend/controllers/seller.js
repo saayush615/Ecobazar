@@ -130,4 +130,66 @@ async function handleShowAllProd(req, res, next) {
     }
 }
 
-export { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd };
+async function handleGetSellerOrders(req,res,next) {
+    try {
+        const sellerId = req.user.id;
+
+        const orders = await Order.find({ 
+            seller: sellerId,
+            status: { $in: ['Pending','Confirmed','Processing','Shipped']}
+        })
+        .populate('carts.product')
+        .populate('user','name email phone')
+        .sort({ createdAt: -1 });
+
+        if(orders.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No active orders',
+                orders: []
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Active orders retrived successfully',
+            orders,
+            count: orders.length
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function handleGetSellerOrderHistory(req,res,next) {
+    try {
+        const sellerId = req.user.id;
+
+        const orders = await Order.find({ 
+            seller: sellerId,
+            status: { $in: ['Delivered','Cancelled']}
+        })
+        .populate('carts.product')
+        .populate('user','name email phone')
+        .sort({ createdAt: -1 });
+
+        if(orders.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No order history',
+                orders: []
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Order history retrived successfully',
+            orders,
+            count: orders.length
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd, handleGetSellerOrders, handleGetSellerOrderHistory };
