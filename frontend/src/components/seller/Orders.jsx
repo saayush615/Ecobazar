@@ -15,8 +15,34 @@ import {
 } from "@/components/ui/table"
 
 const Orders = () => {
-    const [loading, setLoading] = useState(true); 
+    const [loading, setLoading] = useState(false); 
     const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+      fetchOrders();
+    },[])
+
+    async function fetchOrders() {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/seller/orders/`, {withCredentials: true});
+        const orders = response.data?.orders;
+        console.log(orders)
+        if (orders.length === 0){
+          return;
+        }
+
+        setProducts(orders);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (products.length === 0) {
+      return <div className='text-gray-600 dark:text-gray-300'>No active orders</div>
+    }
     
     if (loading) {
         return (
@@ -27,7 +53,6 @@ const Orders = () => {
     }
   return (
     <>
-      <LoadingOverlay show={actionLoading} text="Processing..." />
 
       <div className='rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden'>
         <Table>

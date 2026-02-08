@@ -18,6 +18,40 @@ const OrderHistory = () => {
     const [loading, setLoading] = useState(true); 
     const [products, setProducts] = useState([]);
 
+    useEffect(() => {
+      new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(54)
+          }, 5000);
+        });
+    },[]);
+
+    async function fetchOrders() {
+      setLoading(true);
+      try {
+        const response = new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(54)
+          }, 5000);
+        });
+        const orders = response.data?.orders;
+        console.log(orders)
+        if (orders.length === 0){
+          return;
+        }
+
+        setProducts(orders);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (products.length === 0) {
+      return <div className='text-gray-600 dark:text-gray-300'>No order history</div>
+    };
+
     if (loading) {
         return (
           <div className='rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden'>
@@ -28,7 +62,6 @@ const OrderHistory = () => {
 
   return (
     <>
-      <LoadingOverlay show={actionLoading} text="Processing..." />
 
       <div className='rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden'>
         <Table>
