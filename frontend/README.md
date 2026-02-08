@@ -1429,3 +1429,12 @@ _Common Interview Mistakes_
 - Missing error handling → App crashes on API failure
 - Not resetting form → Old data remains after submit
 ---
+## Note 19: Hyration error
+### 📚 What is Hydration?
+**Hydration** is the process where React attaches event listeners and makes a server-rendered HTML page interactive on the client side.
+
+How it Works:
+- **Server**: Renders HTML and sends to browser
+- **Browser**: Shows static HTML immediately (fast!)
+- **React**: "Hydrates" by comparing server HTML with what React would render
+- **Problem**: If they don't match → Hydration Error ❌
