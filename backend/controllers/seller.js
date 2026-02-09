@@ -1,7 +1,7 @@
 import product from '../models/product.js';
 import cart from '../models/cart.js';
 import Order from '../models/order.js';
-import { createValidationError, createNotFoundError, createUnauthorizedError } from '../utils/ErrorFactory.js'
+import { createValidationError, createNotFoundError, createForbiddenError } from '../utils/ErrorFactory.js'
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -192,4 +192,37 @@ async function handleGetSellerOrderHistory(req,res,next) {
     }
 }
 
-export { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd, handleGetSellerOrders, handleGetSellerOrderHistory };
+async function handleChangeOrderStatus(req,res,next) {
+    try {
+        const sellerId = req.user.id;
+        const orderId = req.params.orderId;
+        const { changedStatus } = req.body;
+
+        if (!orderId) {
+            return next(createValidationError('orderId is required!'));
+        }
+
+        const response = await Order.findById(orderId);
+
+        if (response.seller.toString() !== sellerId.toString()) {
+            return next(createForbiddenError('You can only change the status of your own order'));
+        }
+
+        if (response.status === 'Delivered' || response.status === 'Cancelled') {
+            return next(createValidationError(`Cannot update ${response.status.toLowerCase()} orders`));
+        }
+
+        response.status = changedStatus;
+        await response.save();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Status changed successfully',
+            updatedOrder: response
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd, handleGetSellerOrders, handleGetSellerOrderHistory, handleChangeOrderStatus };
