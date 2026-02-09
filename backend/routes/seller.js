@@ -6,7 +6,8 @@ import {
     handleDeleteProd, 
     handleShowAllProd, 
     handleGetSellerOrders,
-    handleGetSellerOrderHistory  } from '../controllers/seller.js';
+    handleGetSellerOrderHistory,
+    handleChangeOrderStatus  } from '../controllers/seller.js';
 
 import {upload } from '../config/upload.js'
 
@@ -19,5 +20,7 @@ router.delete('/:id', handleDeleteProd);
 
 router.get('/orders', handleGetSellerOrders);
 router.get('/order-history', handleGetSellerOrderHistory);
+
+router.patch('/orderStatus/:orderId', handleChangeOrderStatus);
 
 export default router;
