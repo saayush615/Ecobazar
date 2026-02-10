@@ -180,7 +180,7 @@ NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
 
 # Database
-MONGOOSE_URI=mongodb://localhost:27017/ecobazar
+MONGODB_URI=mongodb://localhost:27017/ecobazar
 
 # JWT Secret
 secret=your_jwt_secret_key_here
