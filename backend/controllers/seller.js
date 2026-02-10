@@ -1,7 +1,7 @@
 import product from '../models/product.js';
 import cart from '../models/cart.js';
 import Order from '../models/order.js';
-import { createValidationError, createNotFoundError, createUnauthorizedError } from '../utils/ErrorFactory.js'
+import { createValidationError, createNotFoundError, createForbiddenError } from '../utils/ErrorFactory.js'
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -130,4 +130,99 @@ async function handleShowAllProd(req, res, next) {
     }
 }
 
-export { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd };
+async function handleGetSellerOrders(req,res,next) {
+    try {
+        const sellerId = req.user.id;
+
+        const orders = await Order.find({ 
+            seller: sellerId,
+            status: { $in: ['Pending','Confirmed','Processing','Shipped']}
+        })
+        .populate('carts.product')
+        .populate('user','name email phone')
+        .sort({ createdAt: -1 });
+
+        if(orders.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No active orders',
+                orders: []
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Active orders retrived successfully',
+            orders,
+            count: orders.length
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function handleGetSellerOrderHistory(req,res,next) {
+    try {
+        const sellerId = req.user.id;
+
+        const orders = await Order.find({ 
+            seller: sellerId,
+            status: { $in: ['Delivered','Cancelled']}
+        })
+        .populate('carts.product')
+        .populate('user','name email phone')
+        .sort({ createdAt: -1 });
+
+        if(orders.length === 0) {
+            return res.status(200).json({
+                success: true,
+                message: 'No order history',
+                orders: []
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Order history retrived successfully',
+            orders,
+            count: orders.length
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+async function handleChangeOrderStatus(req,res,next) {
+    try {
+        const sellerId = req.user.id;
+        const orderId = req.params.orderId;
+        const { changedStatus } = req.body;
+
+        if (!orderId) {
+            return next(createValidationError('orderId is required!'));
+        }
+
+        const response = await Order.findById(orderId);
+
+        if (response.seller.toString() !== sellerId.toString()) {
+            return next(createForbiddenError('You can only change the status of your own order'));
+        }
+
+        if (response.status === 'Delivered' || response.status === 'Cancelled') {
+            return next(createValidationError(`Cannot update ${response.status.toLowerCase()} orders`));
+        }
+
+        response.status = changedStatus;
+        await response.save();
+
+        return res.status(201).json({
+            success: true,
+            message: 'Status changed successfully',
+            updatedOrder: response
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+export { handlePostProd, handleUpdateProd, handleDeleteProd, handleShowAllProd, handleGetSellerOrders, handleGetSellerOrderHistory, handleChangeOrderStatus };

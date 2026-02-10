@@ -15,6 +15,8 @@ import { X } from 'lucide-react'
 import { Plus } from 'lucide-react';
 
 import Products from '@/components/seller/Products'
+import Orders from '@/components/seller/Orders'
+import OrderHistory from '@/components/seller/OrderHistory'
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('products')
@@ -57,9 +59,9 @@ const Dashboard = () => {
       case 'products':
         return <Products key={refreshProducts} />  // Key Prop Pattern: When you change the key prop on a component, React unmounts and remounts it, triggering useEffect hooks
       case 'orders':
-        return <div className='text-gray-600 dark:text-gray-300'>Orders content will go here</div>
+        return <Orders />
       case 'history':
-        return <div className='text-gray-600 dark:text-gray-300'>Order History content will go here</div>
+        return <OrderHistory />
       case 'sales':
         return <div className='text-gray-600 dark:text-gray-300'>Sales content will go here</div>
       default:
