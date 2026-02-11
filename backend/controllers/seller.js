@@ -110,10 +110,7 @@ async function handleDeleteProd(req, res, next) {
         
         // Delete associated image
         if (deletedProduct && deletedProduct.image) {
-            const imagePath = path.join(__dirname, '..', deletedProduct.image);
-            fs.unlink(imagePath, (err) => {
-                if (err) console.error('Error deleting image:', err);
-            });
+            await deleteFromCloudinary(deletedProduct.image);
         }
         
         return res.status(200).json({ 
