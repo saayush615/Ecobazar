@@ -1,7 +1,8 @@
 import product from '../models/product.js';
 import cart from '../models/cart.js';
 import Order from '../models/order.js';
-import { createValidationError, createNotFoundError, createForbiddenError } from '../utils/ErrorFactory.js'
+import { uploadToCloudinary, deleteFromCloudinary } from '../config/cloudinary.js';
+import { createValidationError, createNotFoundError, createForbiddenError, createFileUploadError } from '../utils/ErrorFactory.js'
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -13,6 +14,17 @@ async function handlePostProd(req, res, next) {
     try {
         const { name, originalPrice, discountPrice, category, stock } = req.body;
         const seller = req.user.id;
+
+        let imageUrl = null;
+
+        if (req.file) {
+            const localFilePath = req.file.path;
+            imageUrl = await uploadToCloudinary(localFilePath);
+
+            if (!image) {
+                return next(createFileUploadError('Failed to upload image to cloudinary'));
+            }
+        }
         
         // Get image path if uploaded
         const image = req.file ? `/uploads/products/${req.file.filename}` : null;
@@ -23,7 +35,7 @@ async function handlePostProd(req, res, next) {
             discountPrice,
             category, 
             stock, 
-            image,
+            image: imageUrl,
             seller 
         });
         
@@ -34,11 +46,8 @@ async function handlePostProd(req, res, next) {
         });
     } catch (error) {
         // Delete uploaded file if product creation fails
-        if (req.file) {
-            const filePath = path.join(__dirname, '../uploads/products', req.file.filename);
-            fs.unlink(filePath, (err) => {
-                if (err) console.error('Error deleting file:', err);
-            });
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
         }
         next(error);
     }
