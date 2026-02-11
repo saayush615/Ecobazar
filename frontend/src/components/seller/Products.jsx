@@ -121,7 +121,7 @@ const Products = () => {
   // Helper function to get full image URL
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
-    return `${import.meta.env.VITE_API_URL}${imagePath}`;
+    return imagePath;
   }
 
   if (loading) {
