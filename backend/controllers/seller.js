@@ -21,13 +21,10 @@ async function handlePostProd(req, res, next) {
             const localFilePath = req.file.path;
             imageUrl = await uploadToCloudinary(localFilePath);
 
-            if (!image) {
+            if (!imageUrl) {
                 return next(createFileUploadError('Failed to upload image to cloudinary'));
             }
         }
-        
-        // Get image path if uploaded
-        const image = req.file ? `/uploads/products/${req.file.filename}` : null;
         
         const newProduct = await product.create({ 
             name, 
