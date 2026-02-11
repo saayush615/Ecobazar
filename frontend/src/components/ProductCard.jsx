@@ -59,7 +59,7 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
         <Card className={`cursor-pointer transition-all duration-300 ease-in-out hover:border-green-700 group`}>
 
             <CardHeader className='relative'>
-                <img src={`${import.meta.env.VITE_API_URL}${source}`} alt="Category" className='w-full h-20 sm:h-24 md:h-28 object-contain' />
+                <img src={source} alt="Category" className='w-full h-20 sm:h-24 md:h-28 object-contain' />
 
                 {/* Favourite */}
                 <button 
