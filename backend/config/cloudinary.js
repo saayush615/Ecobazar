@@ -14,7 +14,7 @@ cloudinary.config({
 async function uploadToCloudinary(localFilePath) {
     try {
         // Validation
-        if (!localFilePath || fs.existsSync(localFilePath)) {
+        if (!localFilePath || !fs.existsSync(localFilePath)) {
             console.error('File not found:', localFilePath);
             return null;
         }
@@ -25,7 +25,7 @@ async function uploadToCloudinary(localFilePath) {
         });
 
         fs.unlinkSync(localFilePath);
-        console.log('uploadResult:', uploadResult);
+        // console.log('uploadResult:', uploadResult);
 
         return uploadResult.secure_url;
     } catch (error) {
@@ -48,7 +48,7 @@ async function deleteFromCloudinary(imageUrl) {
         const publicId = `ecobazar/products/${fileNameWithExtension.split('.')[0]}`;
 
         await cloudinary.uploader.destroy(publicId);
-        console.log('Deleted from cloudinary successfully:', publicId);
+        // console.log('Deleted from cloudinary successfully:', publicId);
     } catch (error) {
         console.error('Cloudinary delete failed', error);
     }
