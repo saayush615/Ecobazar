@@ -67,16 +67,21 @@ async function handleUpdateProd(req, res, next) {
 
         const updateData = { name, price, category, stock };
         
-        // If new image uploaded, delete old one and use new
+
         if (req.file) {
-            // Delete old image if exists
+
             if (existingProduct.image) {
-                const oldImagePath = path.join(__dirname, '..', existingProduct.image);
-                fs.unlink(oldImagePath, (err) => {
-                    if (err) console.error('Error deleting old image:', err);
-                });
+                await deleteFromCloudinary(existingProduct.image);
             }
-            updateData.image = `/uploads/products/${req.file.filename}`;
+
+            const localFilePath = req.file.path;
+            const imageUrl = await uploadToCloudinary(localFilePath);
+
+            if (!imageUrl) {
+                return next(createFileUploadError('Failed to upload new image!'));
+            }
+
+            updateData.image = imageUrl;
         }
         
         const updatedProduct = await product.findByIdAndUpdate(
@@ -91,6 +96,9 @@ async function handleUpdateProd(req, res, next) {
             product: updatedProduct 
         });
     } catch (error) {
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
         next(error);
     }
 }
