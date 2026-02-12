@@ -11,4 +11,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    outDir: 'dist',  // ⭐ Must match 'output_location' in workflow
+    emptyOutDir: true,
+    sourcemap: false,  // Disable for production
+  },
 })

@@ -1,0 +1,92 @@
+name: Azure Static Web App - Deploy Frontend
+
+on:
+  push:
+    branches:
+      - main  # Triggers on push to main branch
+    paths:
+      - 'frontend/**'  # Only triggers when frontend files change
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+
+# Environment variables used across all jobs
+env:
+  NODE_VERSION: '20.x'  # Match your local Node.js version
+  FRONTEND_DIR: './frontend'
+
+jobs:
+  build_and_deploy:
+    # Only run if PR is not closed, or if it's a push event
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    
+    runs-on: ubuntu-latest
+    name: Build and Deploy
+    
+    steps:
+      # 1. Get the code from GitHub repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: false
+
+      # 2. Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: '${{ env.FRONTEND_DIR }}/package-lock.json'
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm ci  # 'ci' is faster and more reliable than 'install' for CI/CD
+
+      # 4. Create production .env file from GitHub secrets
+      - name: Create .env file
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: |
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
+        # Add more environment variables as needed:
+        # echo "VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}" >> .env
+
+      # 5. Build the React app
+      - name: Build application
+        working-directory: ${{ env.FRONTEND_DIR }}
+        run: npm run build
+
+      # 6. Deploy to Azure Static Web Apps
+      - name: Deploy to Azure Static Web Apps
+        id: deploy
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}  # Automatically provided by GitHub
+          action: "upload"
+          
+          # Path configuration
+          app_location: "/frontend"           # Root of your app
+          api_location: ""                     # No Azure Functions (backend is separate)
+          output_location: "dist"              # Vite outputs to 'dist' folder
+          
+          # Skip deployment if build already happened
+          skip_app_build: true
+
+  # Clean up staging environments when PR is closed
+  close_pull_request:
+    if: github.event_name == 'pull_request' && github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    name: Close Pull Request
+    
+    steps:
+      - name: Close Pull Request
+        id: closepullrequest
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: "close"
