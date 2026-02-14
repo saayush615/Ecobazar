@@ -44,6 +44,7 @@ jobs:
         run: |
           cat > .env << EOF
           NODE_ENV=production
+          PORT=${{ secrets.PORT }}
           FRONTEND_URL=${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           
           # Database
