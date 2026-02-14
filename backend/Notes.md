@@ -903,3 +903,694 @@ console.log(allOrders);
 > **Pro Tip:** Use optional chaining `session.orders?.flatMap(...)` or a fallback `session.orders || []` if you aren't 100% sure the nested array exists in every object.
 
 ---
+
+## Note-12: GitHub Actions - Deploying Backend to Azure App Service
+
+### 📚 Understanding the Complete Workflow
+
+This workflow deploys your Node.js backend to **Azure App Service** (different from Azure Static Web Apps used for frontend). The deployment follows a **Build → Deploy → Cleanup** architecture.
+
+---
+
+#### Key Differences: Azure App Service vs Static Web Apps
+
+| Feature | **Azure Static Web Apps** (Frontend) | **Azure App Service** (Backend) |
+|---------|-------------------------------------|--------------------------------|
+| Purpose | Serves static HTML/JS/CSS | Runs Node.js server |
+| Hosting | Global CDN | Single region server |
+| Scaling | Automatic | Manual/Auto-scaling rules |
+| Deployment | Direct upload of dist/ | Zip deployment |
+
+---
+
+### 🎯 Workflow Structure
+
+```
+📦 JOB 1: BUILD
+  ↓ Checkout → Setup Node → Install deps → Create .env → Run tests → Prepare package → Zip → Upload artifact
+  
+📤 JOB 2: DEPLOY  
+  ↓ Download artifact → Extract zip → Deploy to Azure → Health check
+  
+🗑️ JOB 3: CLEANUP
+  ↓ Delete temporary artifacts
+```
+
+---
+
+### 🔧 Build Job - Detailed Breakdown
+
+#### Step 1: Checkout repository
+*(Already explained in Frontend Note-20, Step 1)*
+
+---
+
+#### Step 2: Setup Node.js
+*(Already explained in Frontend Note-20, Step 2)*
+
+---
+
+#### Step 3: Install dependencies
+*(Already explained in Frontend Note-20, Step 3)*
+
+---
+
+#### Step 4: Create Production .env File
+
+```yml
+- name: Create production environment file
+  working-directory: ${{ env.WORKING_DIRECTORY }}
+  run: |
+    cat > .env << EOF
+    NODE_ENV=production
+    PORT=${{ secrets.PORT }}
+    MONGODB_URI=${{ secrets.MONGODB_URI }}
+    secret=${{ secrets.SECRET }}
+    # ... more secrets
+    EOF
+```
+
+**What it does:**
+- Creates `.env` file using `cat` command (different approach than frontend's `echo`)
+- Uses heredoc syntax (`<< EOF ... EOF`) for multi-line content
+
+**Breaking down the syntax:**
+- `cat > .env << EOF` - Write to .env until EOF marker
+- `EOF` - End marker (can be any word, conventionally EOF/EOL)
+- Why this approach? Cleaner for many variables (10+ secrets)
+
+**Comparison with Frontend:**
+```yml
+# Frontend (echo approach - good for 2-3 vars)
+echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
+echo "VITE_CLIENT_ID=${{ secrets.CLIENT_ID }}" >> .env
+
+# Backend (heredoc approach - better for many vars)
+cat > .env << EOF
+PORT=${{ secrets.PORT }}
+MONGODB_URI=${{ secrets.MONGODB_URI }}
+secret=${{ secrets.SECRET }}
+EOF
+```
+
+---
+
+#### Step 5: Run Tests
+
+```yml
+- name: Run tests
+  working-directory: ${{ env.WORKING_DIRECTORY }}
+  run: npm test --if-present
+  continue-on-error: true
+```
+
+**What it does:**
+- Runs your test suite if `package.json` has a test script
+- `--if-present` - Skip if no test script (doesn't fail)
+- `continue-on-error: true` - Deploy even if tests fail (⚠️ risky!)
+
+---
+
+#### Step 6: Prepare Deployment Package
+
+```yml
+- name: Prepare deployment package
+  working-directory: ${{ env.WORKING_DIRECTORY }}
+  run: |
+    mkdir -p ../deploy
+    cp -r . ../deploy/
+    cd ../deploy
+    rm -rf node_modules
+    npm ci --omit=dev
+    rm -rf .git .github tests coverage *.md
+```
+
+**What it does:**
+- Creates a clean, production-ready deployment package
+- Removes development dependencies and unnecessary files
+
+**Breaking down each command:**
+
+1. **`mkdir -p ../deploy`**
+   - Creates deploy directory
+   - `-p` - Don't error if exists
+
+2. **`cp -r . ../deploy/`**
+   - Copy everything to deploy folder
+   - `-r` - Recursive (includes subdirectories)
+
+3. **`rm -rf node_modules`**
+   - Delete all dependencies
+   - Why? Re-install without dev dependencies
+
+4. **`npm ci --omit=dev`**
+   - Clean install of **production-only** dependencies
+   - Skips devDependencies (testing libraries, linters, etc.)
+   - **Size difference:**
+     ```
+     All dependencies:        ~300 MB (with Jest, ESLint, etc.)
+     Production only:         ~80 MB  (just Express, Mongoose, etc.)
+     ```
+
+5. **`rm -rf .git .github tests coverage *.md`**
+   - Remove unnecessary files from deployment
+   - `.git` - Version control (not needed on server)
+   - `.github` - Workflow files
+   - `tests`, `coverage` - Test artifacts
+   - `*.md` - Documentation files
+
+**What gets deployed vs. excluded:**
+```
+✅ Deployed:                    ❌ Excluded:
+├── src/                        ├── node_modules/ (dev deps)
+├── package.json                ├── tests/
+├── .env (production)           ├── coverage/
+└── node_modules/ (prod only)   ├── README.md
+                                └── .git/
+```
+
+---
+
+#### Step 7: Create Deployment Artifact (Zip)
+
+```yml
+- name: Create deployment artifact
+  run: |
+    cd deploy
+    zip -r ../deployment.zip .
+    cd ..
+```
+
+**What it does:**
+- Compresses the deploy folder into a single zip file
+- Faster to upload one 80MB zip than 10,000+ individual files
+
+**Breaking down the command:**
+- `zip -r ../deployment.zip .`
+  - `-r` - Recursive (include subdirectories)
+  - `../deployment.zip` - Save zip in parent directory
+  - `.` - Zip current directory contents
+
+**Why zip? Performance comparison:**
+```
+Uploading 10,000 files individually:  ~5-8 minutes
+Uploading 1 zip file:                 ~30-60 seconds
+Extraction on Azure:                  ~10 seconds
+Total:                                ~40-70 seconds ✅
+```
+
+---
+
+#### Step 8: Upload Artifact for Deployment Job
+
+```yml
+- name: Upload deployment artifact
+  uses: actions/upload-artifact@v4
+  with:
+    name: backend-app
+    path: deployment.zip
+    retention-days: 1
+```
+
+**What it does:**
+- Saves the zip file temporarily in GitHub's artifact storage
+- Makes it available to the next job (Deploy)
+
+**Why separate jobs?**
+```
+Build Job (ubuntu-latest)  →  Artifact Storage  →  Deploy Job (ubuntu-latest)
+├── Builds code                   ↓                  ├── Downloads artifact
+├── Runs tests                 Stores zip             ├── Deploys to Azure
+└── Creates zip               (temporary)            └── Verifies deployment
+```
+
+**Breaking down parameters:**
+- `name: backend-app` - Identifier to retrieve later
+- `path: deployment.zip` - File to upload
+- `retention-days: 1` - Auto-delete after 24 hours
+  - Why? Save storage costs
+  - You can always rebuild from source code
+
+**What if you skip it? ❌**
+- Deploy job has nothing to deploy
+- Workflow fails at deploy step
+
+---
+
+### 🚀 Deploy Job - Detailed Breakdown
+
+#### Pre-requisites
+
+```yml
+needs: build
+```
+- Deploy job waits for build job to complete
+- If build fails, deploy never runs
+
+```yml
+environment:
+  name: 'Production'
+  url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+```
+- `name: 'Production'` - Environment name (can require manual approval)
+- `url` - Displays deployment URL in GitHub UI
+
+---
+
+#### Step 1: Download Build Artifact
+
+```yml
+- name: Download build artifact
+  uses: actions/download-artifact@v4
+  with:
+    name: backend-app
+```
+
+**What it does:**
+- Downloads the `deployment.zip` created in build job
+- Extracts to runner's working directory
+
+**Retrieval:**
+- `name: backend-app` - Must match upload step exactly
+- Downloads to: `/home/runner/work/Ecobazar/Ecobazar/backend-app/deployment.zip`
+
+---
+
+#### Step 2: Extract Deployment Package
+
+```yml
+- name: Extract deployment package
+  run: unzip deployment.zip
+```
+
+**What it does:**
+- Unzips the deployment package
+- Creates all files/folders in current directory
+
+**Result:**
+```
+Before:                After:
+deployment.zip    →    src/
+                       node_modules/
+                       package.json
+                       .env
+```
+
+---
+
+#### Step 3: Deploy to Azure App Service
+
+```yml
+- name: Deploy to Azure App Service
+  id: deploy-to-webapp
+  uses: azure/webapps-deploy@v3
+  with:
+    app-name: ${{ env.AZURE_WEBAPP_NAME }}
+    publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+    package: .
+```
+
+**What it does:**
+- Uploads your backend to Azure App Service
+- Azure automatically runs `npm start` after deployment
+
+**Breaking down parameters:**
+
+1. **`app-name: ${{ env.AZURE_WEBAPP_NAME }}`**
+   - Name of your Azure App Service
+   - Example: `ecobazar-backend`
+   - Must match the resource in Azure Portal
+
+2. **`publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}`**
+   - XML file containing deployment credentials
+   - **How to get it:**
+     1. Azure Portal → App Service → Overview
+     2. Click "Get publish profile"
+     3. Download XML file
+     4. Copy entire XML content
+     5. GitHub repo → Settings → Secrets → Add `AZURE_WEBAPP_PUBLISH_PROFILE`
+
+3. **`package: .`**
+   - Current directory contains all files to deploy
+   - Azure zips it and uploads
+
+**What happens on Azure side:**
+```
+1. Azure receives deployment.zip
+2. Stops current app instance
+3. Extracts files to /home/site/wwwroot
+4. Detects Node.js app (sees package.json)
+5. Runs npm install --production (if needed)
+6. Runs npm start (or start script)
+7. App goes live!
+```
+
+**Startup command on Azure:**
+- Reads `package.json`:
+```json
+{
+  "scripts": {
+    "start": "node src/server.js"
+  }
+}
+```
+- Azure runs: `npm start`
+- Your backend starts listening on port 8080 (or PORT env var)
+
+---
+
+#### Step 4: Verify Deployment
+
+```yml
+- name: Verify deployment
+  run: |
+    echo "🚀 Deployment completed!"
+    echo "Application URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}"
+    sleep 10
+    curl -f ${{ steps.deploy-to-webapp.outputs.webapp-url }}/health || echo "⚠️ Health check failed"
+```
+
+**What it does:**
+- Waits 10 seconds for app to start
+- Tests health endpoint to confirm deployment success
+
+**Breaking down the commands:**
+
+1. **`sleep 10`**
+   - Wait for Node.js app to fully start
+   - Initialization takes 5-15 seconds
+
+2. **`curl -f <url>/health`**
+   - `-f` - Fail on HTTP errors (4xx, 5xx)
+   - Tests `/health` endpoint
+   - `|| echo "⚠️ Health check failed"` - Show warning if fails
+
+**Your backend should have:**
+```javascript
+// src/routes/health.js
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+```
+
+**Why verify?**
+- Deployment succeeds ≠ App works
+- Catches startup errors:
+  - Database connection failed
+  - Missing environment variables
+  - Port binding issues
+
+---
+
+### 🗑️ Cleanup Job - Detailed Breakdown
+
+```yml
+cleanup:
+  name: Cleanup old deployments
+  runs-on: ubuntu-latest
+  needs: deploy
+  if: success()
+  
+  steps:
+    - name: Delete deployment artifacts
+      uses: geekyeggo/delete-artifact@v5
+      with:
+        name: backend-app
+```
+
+**What it does:**
+- Deletes `deployment.zip` from GitHub artifact storage
+- Runs only if deploy succeeds (`if: success()`)
+
+**Why cleanup?**
+- GitHub has artifact storage limits
+- Old artifacts cost money (after free tier)
+- Artifacts auto-expire (retention-days: 1), but manual cleanup is faster
+
+**If deploy fails:**
+- Cleanup skipped
+- Artifact kept for debugging
+- Developers can download and inspect
+
+---
+
+### 💡 Triggers Explained
+
+```yml
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/azure-node-webapp.yml'
+  workflow_dispatch:
+```
+
+**When does this workflow run?**
+
+**Scenario 1: Push to Main (Backend Changes)**
+```bash
+# You modify backend code
+git add backend/src/controllers/user.js
+git commit -m "Fix user login bug"
+git push origin main
+# ✅ Workflow triggers → Deploys backend
+```
+
+**Scenario 2: Push to Main (Frontend Changes Only)**
+```bash
+# You modify frontend code only
+git add frontend/src/App.jsx
+git commit -m "Update homepage"
+git push origin main
+# ⏭️ Workflow SKIPS (no backend changes)
+```
+
+**Scenario 3: Modify Workflow File**
+```bash
+# You update deployment workflow
+git add .github/workflows/azure-node-webapp.yml
+git commit -m "Update Node version to 22.x"
+git push origin main
+# ✅ Workflow triggers (workflow file changed)
+```
+
+**Scenario 4: Manual Trigger**
+```
+# GitHub UI: Actions tab → Select workflow → Run workflow
+# ✅ Runs immediately (manual override)
+```
+
+**Path Filtering Benefits:**
+```
+Scenario                              Trigger?    Reason
+─────────────────────────────────────────────────────────────
+Edit backend/src/app.js              ✅ Yes      backend/** matched
+Edit frontend/src/App.jsx            ❌ No       Not in backend/
+Edit .github/workflows/azure-*.yml   ✅ Yes      Workflow file matched
+Edit README.md                       ❌ No       Not in paths
+```
+
+**Comparison with Frontend Workflow:**
+| Feature | **Frontend** | **Backend** |
+|---------|-------------|------------|
+| Triggers on | `frontend/**` changes | `backend/**` changes |
+| Pull Requests | ✅ Yes (preview URLs) | ❌ No (risky for DBs) |
+| Manual trigger | ✅ workflow_dispatch | ✅ workflow_dispatch |
+
+**Why no PR deployments for backend?**
+- Backend has database/state (risky to test)
+- Could create duplicate database entries
+- Frontend is stateless (safe to preview)
+
+---
+
+### ✅ Setting Up GitHub Secrets
+
+**Required Secrets for Backend:**
+
+1. **AZURE_WEBAPP_PUBLISH_PROFILE**
+   - From: Azure Portal → App Service → Get publish profile
+   - XML file containing FTP credentials and deployment URLs
+
+2. **Environment Variables** (.env secrets)
+   - `PORT` - Server port (usually 8080 for Azure)
+   - `MONGODB_URI` - Database connection string
+   - `SECRET` - JWT signing key
+   - `RAZORPAY_API_KEY`, `RAZORPAY_SECRET_KEY`
+   - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+   - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
+   - `FACEBOOK_APP_ID`, `FACEBOOK_APP_SECRET`
+
+**How to add secrets:**
+```
+1. GitHub repo → Settings
+2. Secrets and variables → Actions
+3. New repository secret
+4. Name: MONGODB_URI
+5. Value: mongodb+srv://user:pass@cluster.mongodb.net/ecobazar
+6. Add secret
+```
+
+---
+
+### 🎯 Complete Workflow Architecture
+
+**Visual Flow:**
+```
+┌──────────────────────────────────────────────────────────────┐
+│  Developer pushes to main (backend changes)                  │
+└────────────────────┬─────────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────┐
+    │  Trigger: GitHub Actions Workflow              │
+    └────────────────┬───────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────┐
+    │  Runner: Ubuntu VM (GitHub's server)           │
+    └────────────────┬───────────────────────────────┘
+                     ▼
+┌────────────────────────────────────────────────────────────┐
+│                      BUILD JOB                             │
+└────────────────────────────────────────────────────────────┘
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 1: Checkout Code                                 │
+    │  downloads repo to runner                              │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 2: Setup Node.js 20.x                            │
+    │  installs Node + enables npm caching                   │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 3: npm ci                                        │
+    │  installs exact versions from package-lock.json        │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 4: Create .env                                   │
+    │  injects secrets (MONGODB_URI, JWT secret, etc.)       │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 5: npm test --if-present                         │
+    │  runs test suite (continues even if fails)             │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 6: Prepare Deployment Package                    │
+    │  • Copy to deploy/ folder                              │
+    │  • Remove node_modules                                 │
+    │  • Install production deps only (npm ci --omit=dev)    │
+    │  • Remove .git, tests, *.md files                      │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 7: Zip Deployment Package                        │
+    │  creates deployment.zip (~80MB)                        │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 8: Upload Artifact                               │
+    │  saves deployment.zip to GitHub artifact storage       │
+    │  (retention: 1 day)                                    │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+┌────────────────────────────────────────────────────────────┐
+│                      DEPLOY JOB                            │
+│  (waits for BUILD to complete)                             │
+└────────────────────────────────────────────────────────────┘
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 1: Download Artifact                             │
+    │  retrieves deployment.zip from artifact storage        │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 2: Extract Package                               │
+    │  unzips deployment.zip                                 │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 3: Deploy to Azure App Service                   │
+    │  • Uploads files via publish profile                   │
+    │  • Azure stops current app                             │
+    │  • Extracts to /home/site/wwwroot                      │
+    │  • Runs npm start                                      │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 4: Verify Deployment                             │
+    │  • Wait 10 seconds                                     │
+    │  • Test /health endpoint                               │
+    │  • Display deployment URL                              │
+    └────────────────┬───────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Result: Live at ecobazar-backend.azurewebsites.net    │
+    └────────────────────────────────────────────────────────┘
+                     ▼
+┌────────────────────────────────────────────────────────────┐
+│                    CLEANUP JOB                             │
+│  (runs only if deploy succeeds)                            │
+└────────────────────────────────────────────────────────────┘
+    ┌────────────────────────────────────────────────────────┐
+    │  Step 1: Delete Artifacts                              │
+    │  removes deployment.zip from GitHub storage            │
+    └────────────────────────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────────────────┐
+    │  Workflow Complete ✅                                   │
+    └────────────────────────────────────────────────────────┘
+```
+
+**Job Dependencies:**
+```
+BUILD JOB
+   ↓ (needs: build)
+DEPLOY JOB
+   ↓ (needs: deploy)
+CLEANUP JOB
+```
+
+**Execution Time Breakdown:**
+```
+Build Job:       2-4 minutes
+├── Checkout:           10s
+├── Setup Node:         20s
+├── npm ci:             60s
+├── Tests:              30s
+├── Prepare package:    40s
+├── Zip:                20s
+└── Upload artifact:    30s
+
+Deploy Job:      1-2 minutes
+├── Download:           20s
+├── Extract:            10s
+├── Deploy:             60s
+└── Verify:             15s
+
+Cleanup Job:     10-20 seconds
+
+Total:           3-6 minutes
+```
+
+---
+
+### 🆚 Frontend vs Backend Workflow Comparison
+
+| Aspect | **Frontend (Static Web Apps)** | **Backend (App Service)** |
+|--------|--------------------------------|---------------------------|
+| **Build Output** | `dist/` (HTML/JS/CSS) | Source code + node_modules |
+| **Deployment** | Upload dist/ directly | Zip → Upload → Extract → Run |
+| **Server** | CDN (global) | Single VM (region-specific) |
+| **Startup** | Instant (static files) | ~10s (Node.js startup) |
+| **Scaling** | Automatic (CDN) | Manual/Auto-scale rules |
+| **PR Previews** | ✅ Yes | ❌ No (DB safety) |
+| **Health Check** | Not needed (static) | ✅ Required (app can crash) |
+| **Artifacts** | Not needed | ✅ Yes (deployment.zip) |
+
+---
+
+
