@@ -1438,3 +1438,532 @@ How it Works:
 - **Browser**: Shows static HTML immediately (fast!)
 - **React**: "Hydrates" by comparing server HTML with what React would render
 - **Problem**: If they don't match → Hydration Error ❌
+
+---
+## Note-20: GitHub Actions - Deploying React to Azure Static Web Apps
+
+### 📚 Understanding the Complete Workflow
+
+---
+
+#### Step 1: Checkout Repository
+```yml
+- name: Checkout repository
+  uses: actions/checkout@v4
+  with:
+    submodules: true
+    lfs: false
+```
+**What it does:**
+- Downloads your code from GitHub to the runner (GitHub's virtual machine)
+- Like doing `git clone` in the CI/CD environment
+
+**Breaking down the syntax:**
+- `uses: actions/checkout@v4` - This is a pre-built action from GitHub's marketplace
+    - `actions/checkout` - Name of the action (owned by GitHub)
+    - `@v4` - Version 4 of this action
+
+**Parameters (`with`):**
+- `submodules: true` - If you have Git submodules, clone them too
+- `lfs: false` - Don't download large files stored in Git LFS (Large File Storage)
+
+**What if you skip it? ❌**
+The runner would have *no code* to build! Essential step.
+
+---
+
+#### Step 2: Set Up Node.js Environment
+```yml
+- name: Set up Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version: ${{ env.NODE_VERSION }}
+    cache: 'npm'
+    cache-dependency-path: '${{ env.FRONTEND_DIR }}/package-lock.json'
+```
+
+**What it does:**
+- Installs Node.js on the runner machine
+- Like installing Node.js on your computer before running `npm install`
+- Sets up npm package caching for faster builds
+
+**Breaking down the syntax:**
+- `uses: actions/setup-node@v4` - Pre-built action from GitHub to install Node.js
+- `${{ env.NODE_VERSION }}` - Variable syntax in GitHub Actions
+    - `${{ }}` - Expression syntax (like template literals in JS)
+    - `env.NODE_VERSION` - Reads from the `env:` section at top of file
+
+**Parameters (`with`):**
+- `node-version: ${{ env.NODE_VERSION }}` - Which Node.js version to install (e.g., '20.x')
+- `cache: 'npm'` - Tells it to cache npm packages between runs
+    - First run: Downloads all packages (slow)
+    - Second run: Reuses cached packages (fast! ⚡)
+- `cache-dependency-path` - Tells it WHERE to look for package-lock.json
+    - Needed because your frontend is in `/frontend` subdirectory, not root
+
+**What if you skip it? ❌**
+- No Node.js = Can't run `npm install` or `npm run build`
+- No caching = Every build re-downloads all packages (slow 🐌)
+
+**Why cache matters:**
+- Without cache: 2-3 minutes to download dependencies
+- With cache: 10-20 seconds! Huge time saver.
+
+---
+
+#### Step 3: Install Dependencies
+```yml
+- name: Install dependencies
+  working-directory: ${{ env.FRONTEND_DIR }}
+  run: npm ci
+```
+
+**What it does:**
+- Installs all npm packages listed in `package.json`
+- Like running `npm install` on your local machine
+
+**Breaking down the syntax:**
+- `working-directory: ${{ env.FRONTEND_DIR }}` - Changes directory to `/frontend`
+    - Like doing `cd frontend` in terminal
+    - All subsequent `run` commands execute from this directory
+- `run: npm ci` - Runs a shell command
+
+**Why `npm ci` instead of `npm install`? 🤔**
+```bash
+npm install  # Local development ✅
+npm ci       # CI/CD pipelines ✅
+```
+
+Differences:
+| Feature | `npm install` | `npm ci` |
+|---------|---------------|----------|
+| Speed | Slower | Faster |
+| Deletes node_modules | No | Yes (fresh install) |
+| Updates package-lock.json | Yes | No (throws error if mismatch) |
+| Consistency | Can vary | 100% reproducible |
+
+**Key insight:**
+- `npm ci` = "clean install"
+- Ensures EXACT versions from package-lock.json
+- Perfect for production builds (no surprises!)
+
+**What if you skip it? ❌**
+- No `node_modules` folder
+- Build step will fail (missing React, Vite, etc.)
+
+---
+
+#### Step 4: Create Environment Variables (.env)
+```yml
+- name: Create .env file
+  working-directory: ${{ env.FRONTEND_DIR }}
+  run: |
+    echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
+    echo "VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}" >> .env
+```
+
+**What it does:**
+- Creates a `.env` file with your production environment variables
+- Like creating `.env.production` but using GitHub Secrets for security
+
+**Breaking down the syntax:**
+- `run: |` - The pipe `|` means multi-line script
+    - Everything indented below runs as separate commands
+- `echo "KEY=value" > .env` - Creates new .env file (overwrites if exists)
+- `echo "KEY=value" >> .env` - Appends to existing .env file
+    - First line uses `>` (create/overwrite)
+    - Subsequent lines use `>>` (append)
+
+**Understanding GitHub Secrets:**
+```yml
+${{ secrets.VITE_API_URL }}
+```
+- `secrets.*` - Access encrypted secrets stored in GitHub repo settings
+- Where to set them:
+    1. Go to GitHub repo → Settings → Secrets and variables → Actions
+    2. Click "New repository secret"
+    3. Name: `VITE_API_URL`
+    4. Value: `https://your-api.com`
+    5. Click "Add secret"
+
+**Why use Secrets? 🔒**
+- ❌ DON'T hardcode: `echo "VITE_API_URL=https://api.com" > .env`
+- ✅ DO use secrets: `echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env`
+
+Benefits:
+- API keys, tokens never exposed in code
+- Different values for dev/staging/production
+- Can be updated without changing code
+
+**What if you skip it? ❌**
+- Your React app won't know the API URL
+- API calls will fail in production
+- Features requiring env vars won't work
+
+**Example .env created:**
+```bash
+VITE_API_URL=https://ecobazar-api.azurewebsites.net
+VITE_GOOGLE_CLIENT_ID=123456-abcdef.apps.googleusercontent.com
+```
+
+---
+
+#### Step 5: Build the Application
+```yml
+- name: Build application
+  working-directory: ${{ env.FRONTEND_DIR }}
+  run: npm run build
+```
+
+**What it does:**
+- Runs your Vite build command
+- Transpiles, bundles, and optimizes your React app for production
+- Creates a `dist/` folder with optimized static files
+
+**What happens during build?**
+```bash
+npm run build
+# ↓ Runs script in package.json
+"build": "vite build"
+# ↓ Vite does:
+```
+1. **Transpile** - JSX → JavaScript, Modern JS → ES5
+2. **Bundle** - Combines all files into optimized chunks
+3. **Minify** - Removes whitespace, shortens variable names
+4. **Optimize** - Tree-shaking, code-splitting, image compression
+5. **Output** - Creates `dist/` folder with production files
+
+**Before vs After:**
+```
+Before (src/):           After (dist/):
+├── App.jsx              ├── index.html
+├── main.jsx             ├── assets/
+├── components/          │   ├── index-a1b2c3.js (minified)
+│   ├── Header.jsx       │   ├── vendor-d4e5f6.js (libraries)
+│   └── Footer.jsx       │   └── style-g7h8i9.css (combined)
+└── styles/              └── (ready to deploy!)
+```
+
+**Hash in filenames (a1b2c3)?**
+- Called "content hash" or "cache busting"
+- Changes when file content changes
+- Browsers cache old version, fetch new when hash changes
+- Example: `index-a1b2c3.js` → User updates code → `index-x9y8z7.js`
+
+**What if you skip it? ❌**
+- No `dist/` folder to deploy
+- Deployment step will fail
+
+**Build time:**
+- Small app: 10-30 seconds
+- Medium app: 30-60 seconds
+- Large app: 1-3 minutes
+
+---
+
+#### Step 6: Deploy to Azure Static Web Apps
+```yml
+- name: Deploy to Azure Static Web Apps
+  id: deploy
+  uses: Azure/static-web-apps-deploy@v1
+  with:
+    azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+    repo_token: ${{ secrets.GITHUB_TOKEN }}
+    action: "upload"
+    app_location: "/frontend"
+    api_location: ""
+    output_location: "dist"
+    skip_app_build: true
+```
+
+**What it does:**
+- Takes your built files from `dist/` folder
+- Uploads them to Azure's global CDN
+- Makes your app accessible worldwide at your Azure URL
+
+**Breaking down EACH parameter:**
+
+1. **`azure_static_web_apps_api_token`** 🔑
+```yml
+azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+```
+- Authentication token to access your Azure Static Web App
+- Like a password that proves GitHub can deploy to Azure
+- How to get it:
+    1. Create Static Web App in Azure Portal
+    2. Azure auto-generates this token
+    3. Copy token → Add to GitHub Secrets as `AZURE_STATIC_WEB_APPS_API_TOKEN`
+
+2. **`repo_token`** 🎫
+```yml
+repo_token: ${{ secrets.GITHUB_TOKEN }}
+```
+- Automatically provided by GitHub (you don't create this!)
+- Allows Azure action to comment on Pull Requests
+- Creates preview URLs like: `https://happy-wave-123.azurestaticapps.net`
+
+3. **`action: "upload"`** 📤
+```yml
+action: "upload"
+```
+- Tells Azure action what to do
+- Options:
+    - `"upload"` - Deploy the app (main job)
+    - `"close"` - Delete preview environment (PR cleanup job)
+
+4. **`app_location: "/frontend"`** 📂
+```yml
+app_location: "/frontend"
+```
+- Root directory of your application
+- In monorepo: `/frontend` or `/backend`
+- In single-app repo: `/` or leave empty
+
+5. **`api_location: ""`** ⚙️
+```yml
+api_location: ""
+```
+- Location of Azure Functions (serverless backend)
+- Empty = No Azure Functions
+- If you had: `api_location: "/api"` (for Azure Functions)
+- Your case: Backend on separate Azure App Service, so empty
+
+6. **`output_location: "dist"`** 📦
+```yml
+output_location: "dist"
+```
+- Where your build output is (relative to `app_location`)
+- Vite uses `dist/`
+- Create React App uses `build/`
+- Next.js uses `out/` (for static export)
+
+**Path Resolution Example:**
+```
+Repo root: /home/runner/work/Ecobazar/Ecobazar
+app_location: /frontend
+→ Looks in: /home/runner/work/Ecobazar/Ecobazar/frontend
+
+output_location: dist
+→ Looks in: /home/runner/work/Ecobazar/Ecobazar/frontend/dist
+
+Files deployed:
+✅ /frontend/dist/index.html
+✅ /frontend/dist/assets/index-a1b2c3.js
+❌ /frontend/src/App.jsx (source files NOT deployed)
+```
+
+7. **`skip_app_build: true`** ⏭️
+```yml
+skip_app_build: true
+```
+- Skip Azure's built-in build process
+- Why? We already built in Step 5!
+- Without this: Azure tries to build again (wastes time, may fail)
+
+**Deployment Flow:**
+```
+1. Azure action zips your dist/ folder
+2. Uploads to Azure's build service
+3. Azure extracts files to CDN
+4. CDN distributes globally (USA, Europe, Asia, etc.)
+5. Returns deployment URL
+6. Comments on PR with preview URL (if PR event)
+```
+
+**What if you skip it? ❌**
+- Built files sit in runner
+- Never reach Azure
+- App not deployed!
+
+---
+
+#### Step 7: Close Pull Request (Cleanup Job)
+```yml
+close_pull_request:
+  if: github.event_name == 'pull_request' && github.event.action == 'closed'
+  runs-on: ubuntu-latest
+  name: Close Pull Request
+  
+  steps:
+    - name: Close Pull Request
+      uses: Azure/static-web-apps-deploy@v1
+      with:
+        azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+        action: "close"
+```
+
+**What it does:**
+- When a PR is closed (merged or rejected), deletes the staging environment
+- Cleans up the temporary preview URL created for that PR
+- Saves Azure costs (fewer environments running)
+
+**Breaking down the condition:**
+```yml
+if: github.event_name == 'pull_request' && github.event.action == 'closed'
+```
+- `github.event_name == 'pull_request'` - Only for PR events (not pushes)
+- `github.event.action == 'closed'` - Only when PR is closed
+    - Merged = closed ✅
+    - Rejected = closed ✅
+    - Still open = not closed ❌
+
+**Why separate job?**
+- Deploy job: Runs when PR opened/updated
+- Cleanup job: Runs when PR closed
+- Can't be same job (different triggers)
+
+**What happens:**
+1. PR #42 created → Azure creates `pr-42-abc123.azurestaticapps.net`
+2. You review, test preview URL
+3. PR #42 merged → This job runs
+4. Azure deletes `pr-42-abc123.azurestaticapps.net`
+5. Only production URL remains: `ecobazar.azurestaticapps.net`
+
+**What if you skip it? ❌**
+- Preview environments never deleted
+- Accumulate over time (cost money)
+- Azure might hit environment limits
+
+---
+
+### 🎯 Complete Workflow Architecture
+
+**Visual Flow:**
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Developer pushes to main OR opens/updates PR               │
+└────────────────────┬────────────────────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────┐
+    │  Trigger: GitHub Actions Workflow          │
+    └────────────────┬───────────────────────────┘
+                     ▼
+    ┌────────────────────────────────────────────┐
+    │  Runner: Ubuntu VM (GitHub's server)       │
+    └────────────────┬───────────────────────────┘
+                     ▼
+    ┌─────────────────────────────────────────────────────┐
+    │  Step 1: Checkout Code                              │
+    │  downloads repo to runner                           │
+    └─────────────────┬───────────────────────────────────┘
+                      ▼
+    ┌─────────────────────────────────────────────────────┐
+    │  Step 2: Setup Node.js 20.x                         │
+    │  installs Node + enables npm caching                │
+    └─────────────────┬───────────────────────────────────┘
+                      ▼
+    ┌─────────────────────────────────────────────────────┐
+    │  Step 3: npm ci                                     │
+    │  installs exact versions from package-lock.json     │
+    └─────────────────┬───────────────────────────────────┘
+                      ▼
+    ┌─────────────────────────────────────────────────────┐
+    │  Step 4: Create .env                                │
+    │  injects secrets as environment variables           │
+    └─────────────────┬───────────────────────────────────┘
+                      ▼
+    ┌─────────────────────────────────────────────────────┐
+    │  Step 5: npm run build                              │
+    │  creates optimized dist/ folder                     │
+    └─────────────────┬───────────────────────────────────┘
+                      ▼
+    ┌─────────────────────────────────────────────────────┐
+    │  Step 6: Deploy to Azure                            │
+    │  uploads dist/ to Azure CDN                         │
+    └─────────────────┬───────────────────────────────────┘
+                      ▼
+    ┌─────────────────────────────────────────────────────┐
+    │  Result: Live at ecobazar.azurestaticapps.net       │
+    └─────────────────────────────────────────────────────┘
+
+For PRs only:
+    ┌─────────────────────────────────────────────────────┐
+    │  PR Preview: pr-123.azurestaticapps.net             │
+    └─────────────────┬───────────────────────────────────┘
+                      ▼
+    ┌─────────────────────────────────────────────────────┐
+    │  When PR closed → Cleanup job deletes preview       │
+    └─────────────────────────────────────────────────────┘
+```
+
+---
+
+### 💡 Triggers Explained
+
+```yml
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+    paths:
+      - 'frontend/**'
+```
+
+**When does this workflow run?**
+
+**Scenario 1: Push to Main**
+```bash
+# You're on main branch locally
+git add .
+git commit -m "Update homepage"
+git push origin main
+# ✅ Workflow triggers → Deploys to production
+```
+
+**Scenario 2: Create Pull Request**
+```bash
+# You're on feature branch
+git checkout -b feature/add-cart
+git push origin feature/add-cart
+# Create PR on GitHub: feature/add-cart → main
+# ✅ Workflow triggers → Creates preview URL
+```
+
+**Scenario 3: Update Pull Request**
+```bash
+# PR already exists
+git add .
+git commit -m "Fix cart bug"
+git push origin feature/add-cart
+# ✅ Workflow triggers → Updates preview URL
+```
+
+**Scenario 4: Close/Merge Pull Request**
+```bash
+# Click "Merge PR" or "Close PR" on GitHub
+# ✅ Cleanup workflow triggers → Deletes preview URL
+```
+
+**Path Filtering:**
+```yml
+paths:
+  - 'frontend/**'
+```
+- Only triggers if frontend files changed
+- Change `backend/` file → Workflow skips ⏭️
+- Change `frontend/` file → Workflow runs ✅
+- Saves CI/CD minutes!
+
+---
+
+### ✅ Setting Up GitHub Secrets
+
+**Required Secrets:**
+1. **AZURE_STATIC_WEB_APPS_API_TOKEN**
+    - From: Azure Portal → Your Static Web App → Manage deployment token
+    - Copy the token
+
+2. **VITE_API_URL**
+    - Your backend API URL
+    - Example: `https://ecobazar-api.azurewebsites.net`
+
+3. **VITE_GOOGLE_CLIENT_ID** (if using OAuth)
+    - From Google Cloud Console
+    - Example: `123456-abc.apps.googleusercontent.com`
+---
