@@ -52,8 +52,6 @@ jobs:
         working-directory: ${{ env.FRONTEND_DIR }}
         run: |
           echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
-        # Add more environment variables as needed:
-        # echo "VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}" >> .env
 
       # 5. Build the React app
       - name: Build application
