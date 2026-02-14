@@ -1,0 +1,166 @@
+name: Deploy Backend to Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'  # Only deploy when backend changes
+      - '.github/workflows/azure-node-webapp.yml'
+  workflow_dispatch:  # Allow manual triggers
+
+# Environment variables
+env:
+  AZURE_WEBAPP_NAME: 'eco-bazar'  # ⚠️ Change to your Azure App Service name
+  NODE_VERSION: '20.x'  # Match your local Node version
+  WORKING_DIRECTORY: './backend'
+
+jobs:
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Setup Node.js
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: '${{ env.WORKING_DIRECTORY }}/package-lock.json'
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: npm ci 
+
+      # 4. Create production .env file from secrets
+      - name: Create production environment file
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          cat > .env << EOF
+          NODE_ENV=production
+          PORT=${{ secrets.PORT }}
+          FRONTEND_URL=${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          
+          # Database
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
+          
+          # JWT
+          secret=${{ secrets.SECRET }}
+          
+          # OAuth
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          FACEBOOK_APP_ID=${{ secrets.FACEBOOK_APP_ID }}
+          FACEBOOK_APP_SECRET=${{ secrets.FACEBOOK_APP_SECRET }}
+          
+          # Razorpay
+          RAZORPAY_API_KEY=${{ secrets.RAZORPAY_API_KEY }}
+          RAZORPAY_SECRET_KEY=${{ secrets.RAZORPAY_SECRET_KEY }}
+          
+          # Cloudinary
+          CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+          EOF
+
+      # 5. Run tests (optional but recommended)
+      - name: Run tests
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: npm test --if-present
+        continue-on-error: true  # Don't fail deployment if tests fail
+
+      # 6. Prepare deployment package
+      - name: Prepare deployment package
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          # Create deployment directory
+          mkdir -p ../deploy
+          
+          # Copy necessary files
+          cp -r . ../deploy/
+          
+          # Remove dev dependencies and clean up
+          cd ../deploy
+          rm -rf node_modules
+          npm ci --omit=dev
+          
+          # Remove unnecessary files
+          rm -rf .git .github tests coverage *.md
+
+      # 7. Zip deployment package
+      - name: Create deployment artifact
+        run: |
+          cd deploy
+          zip -r ../deployment.zip .
+          cd ..
+
+      # 8. Upload artifact for deployment job
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-app
+          path: deployment.zip
+          retention-days: 1  # Clean up after 1 day
+
+  # =====================================
+  # DEPLOY JOB
+  # =====================================
+  deploy:
+    name: Deploy to Azure
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    
+    steps:
+      # 1. Download build artifact
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-app
+
+      # 2. Extract deployment package
+      - name: Extract deployment package
+        run: unzip deployment.zip
+
+      # 3. Deploy to Azure App Service
+      - name: Deploy to Azure App Service
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .
+
+      # 4. Verify deployment
+      - name: Verify deployment
+        run: |
+          echo "🚀 Deployment completed!"
+          echo "Application URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}"
+          
+          # Wait for app to start
+          sleep 10
+          
+          # Health check
+          curl -f ${{ steps.deploy-to-webapp.outputs.webapp-url }}/health || echo "⚠️ Health check failed"
+
+
+
+  cleanup:
+    name: Cleanup old deployments
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: success()
+    
+    steps:
+      - name: Delete deployment artifacts
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: backend-app

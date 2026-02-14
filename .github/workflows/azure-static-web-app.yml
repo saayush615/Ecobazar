@@ -51,7 +51,7 @@ jobs:
       - name: Create .env file
         working-directory: ${{ env.FRONTEND_DIR }}
         run: |
-          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env
+          echo "VITE_API_URL=${{ secrets.AZURE_NODEJS_WEBAPP_URL }}" > .env
 
       # 5. Build the React app
       - name: Build application
