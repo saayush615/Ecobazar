@@ -68,9 +68,9 @@ jobs:
           action: "upload"
           
           # Path configuration
-          app_location: "/frontend"           # Root of your app
+          app_location: "frontend/dist"           # Root of your app
           api_location: ""                     # No Azure Functions (backend is separate)
-          output_location: "dist"              # Vite outputs to 'dist' folder
+          output_location: ""              # Vite outputs to 'dist' folder
           
           # Skip deployment if build already happened
           skip_app_build: true
