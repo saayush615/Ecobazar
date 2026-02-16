@@ -31,7 +31,7 @@ const app = express();
 dotenv.config();
 
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://icy-meadow-0f2535900.2.azurestaticapps.net'],
     credentials: true    // Allow cookies to be sent/received
 }))
 

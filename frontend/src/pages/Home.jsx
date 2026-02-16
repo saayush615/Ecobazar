@@ -46,7 +46,6 @@ const Home = () => {
       setAllProducts(prod.data?.products);
     } catch (error) {
       console.error(error);
-      console.log(import.meta.env.VITE_API_URL)
     } finally {
       setLoading(false);
     }
