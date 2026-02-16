@@ -42,11 +42,11 @@ const Home = () => {
     setLoading(true);
     try {
       const prod = await axios.get(`${import.meta.env.VITE_API_URL}/product/all`);
-      console.log(import.meta.env.VITE_API_URL)
-      console.log(prod)
+      // console.log(prod)
       setAllProducts(prod.data?.products);
     } catch (error) {
       console.error(error);
+      console.log(import.meta.env.VITE_API_URL)
     } finally {
       setLoading(false);
     }
