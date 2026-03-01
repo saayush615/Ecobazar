@@ -1,6 +1,8 @@
 # Ecobazar
 A modern, full-featured _e-commerce marketplace_ built with the MERN stack that enables users to **buy** and **sell** organic products with ease. Features include **OAuth authentication**, **payment integration**, and a beautiful **dark mode** UI.
 
+**YouTube Demo:** [Watch the demo](https://www.youtube.com/watch?v=aeabq4fRP28)
+
 ## Tech Stack
 
 ### Frontend
