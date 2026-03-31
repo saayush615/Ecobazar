@@ -11,6 +11,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashbord' 
 import Orders from './pages/Orders'
 import Category from './pages/Category'
+import Settings from './pages/Settings'
 
 import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
 import { WishlistProvider } from '@/contexts/WishlistContext'
@@ -81,6 +82,17 @@ function App() {
             <RequireAuth>
               <BuyerOrPublicRoute>
                 <Cart /> 
+              </BuyerOrPublicRoute>
+            </RequireAuth>
+          } 
+        />
+
+        <Route 
+          path='/settings' 
+          element={ 
+            <RequireAuth>
+              <BuyerOrPublicRoute>
+                <Settings /> 
               </BuyerOrPublicRoute>
             </RequireAuth>
           } 
