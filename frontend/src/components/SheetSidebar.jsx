@@ -70,7 +70,7 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
                     id={item._id}
                     productId={item.product?._id}
                     name={item.product?.name}
-                    source={`${import.meta.env.VITE_API_URL}${item.product?.image}`}
+                    source={`${item.product?.image}`}
                     category={item.product?.category}
                     discountPrice={item.product?.discountPrice}
                     originalPrice={item.product?.originalPrice}
