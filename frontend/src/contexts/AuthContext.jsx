@@ -41,11 +41,13 @@ export const AuthProvider = ({ children }) => {
     const logout = async () => {
         setLoading(true)
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/logout`,{
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/logout`, {}, {
                 withCredentials: true
             })
 
             if (response.data.success) {
+                setUser(null);
+                setIsAuthenticated(false);
                 navigate('/login',{
                     state: { logoutSuccess: true }
                 });
