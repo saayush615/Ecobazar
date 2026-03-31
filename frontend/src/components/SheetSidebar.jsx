@@ -54,7 +54,7 @@ const SheetSidebar = ({ contentType, open, onOpenChange }) => {
                     (<CartCard key={item._id} 
                       id={item._id}
                       Pname={item.product?.name} 
-                      source={`${import.meta.env.VITE_API_URL}${item.product?.image}`} 
+                      source={`${item.product?.image}`} 
                       category={item.product?.category} 
                       stock={item.product?.stock} 
                       discountPrice={item.product?.discountPrice} 
