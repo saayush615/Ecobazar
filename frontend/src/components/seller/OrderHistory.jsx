@@ -104,7 +104,7 @@ const OrderHistory = () => {
                   <div key={index} className='flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg'>
                     <div className='w-16 h-16 bg-white dark:bg-gray-700 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-600'>
                       <img 
-                        src={`${import.meta.env.VITE_API_URL}${item.product?.image}`} 
+                        src={`${item.product?.image}`} 
                         alt={item.product?.name}
                         className='w-full h-full object-cover'
                       />
