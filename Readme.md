@@ -1,11 +1,12 @@
-# Ecobazar
+# 🌿 Ecobazar
+
 A modern, full-featured _e-commerce marketplace_ built with the MERN stack that enables users to **buy** and **sell** organic products with ease. Features include **OAuth authentication**, **payment integration**, and a beautiful **dark mode** UI.
 
-**YouTube Demo:** [Watch the demo](https://www.youtube.com/watch?v=aeabq4fRP28)
+🎥 **YouTube Demo:** [Watch the demo](https://www.youtube.com/watch?v=aeabq4fRP28)
 
-## Tech Stack
+## 🚀 Tech Stack
 
-### Frontend
+### 💻 Frontend
 - **Framework:** React 19 (Vite)
 - **Routing:** React Router DOM v7
 - **UI Components:** shadcn/ui (Radix UI primitives)
@@ -16,7 +17,7 @@ A modern, full-featured _e-commerce marketplace_ built with the MERN stack that 
 - **Notifications:** Sonner (Toast notifications)
 - **Image Slider:** Swiper.js
 
-### Backend
+### ⚙️ Backend
 - **Runtime:** Node.js
 - **Framework:** Express.js v5
 - **Database:** MongoDB (Mongoose ODM)
@@ -28,37 +29,37 @@ A modern, full-featured _e-commerce marketplace_ built with the MERN stack that 
 - **Payment Gateway:** Razorpay
 - **Security & Middleware:** Cookie-parser, CORS
 
-## Key Features
+## ✨ Key Features
 
-### User Features
-- **Authentication:** Email/Password login and Google/Facebook OAuth
-- **Product Browsing:** Search, filter, and category-based navigation [**❌ Not Yet Made**]
-- **Shopping Cart:** Add/remove items with quantity management
-- **Wishlist:** Save favorite products for later
-- **Order Management:** Place orders and view order history
-- **Payment Integration:** Secure payments via Razorpay
-- **Dark Mode:** Complete dark mode support
-- **Responsive Design:** Mobile-first, fully responsive UI
+### 👤 User Features
+- 🔐 **Authentication:** Email/Password login and Google/Facebook OAuth
+- 🔍 **Product Browsing:** Search, filter, and category-based navigation [**❌ Not Yet Made**]
+- 🛒 **Shopping Cart:** Add/remove items with quantity management
+- ❤️ **Wishlist:** Save favorite products for later
+- 📦 **Order Management:** Place orders and view order history
+- 💳 **Payment Integration:** Secure payments via Razorpay
+- 🌙 **Dark Mode:** Complete dark mode support
+- 📱 **Responsive Design:** Mobile-first, fully responsive UI
 
-### Seller Features
-- **Seller Dashboard:** Dedicated dashboard for sellers
-- **Product Management:** Add, edit, and delete products
-- **Image Upload:** Product image uploads using Multer
-- **Order Tracking:** View and manage customer orders.[**❌ Not Yet Made**]
-- **Sales Analytics:** Dashboard with sales statistics and insights.[**❌ Not Yet Made**]
+### 🏪 Seller Features
+- 📊 **Seller Dashboard:** Dedicated dashboard for sellers
+- 📝 **Product Management:** Add, edit, and delete products
+- 🖼️ **Image Upload:** Product image uploads using Multer
+- 📋 **Order Tracking:** View and manage customer orders [**❌ Not Yet Made**]
+- 📈 **Sales Analytics:** Dashboard with sales statistics and insights [**❌ Not Yet Made**]
 
-### Technical Features
-- **JWT Authentication:** Secure token-based authentication using HTTP-only cookies
-- **OAuth 2.0:** Google authentication with Passport.js
-- **File Uploads:** Image upload with validation and secure storage
-- **Payment Verification:** Razorpay signature verification for secure transactions
-- **Error Handling:** Centralized global error-handling middleware
-- **Protected Routes:** Role-based access control (RBAC)
-- **Context API:** Global state management for cart and wishlist
-- **Form Validation:** Client-side validation using React Hook Form
+### 🔧 Technical Features
+- 🔑 **JWT Authentication:** Secure token-based authentication using HTTP-only cookies
+- 🔐 **OAuth 2.0:** Google authentication with Passport.js
+- 📤 **File Uploads:** Image upload with validation and secure storage
+- ✅ **Payment Verification:** Razorpay signature verification for secure transactions
+- ⚠️ **Error Handling:** Centralized global error-handling middleware
+- 🛡️ **Protected Routes:** Role-based access control (RBAC)
+- 🌐 **Context API:** Global state management for cart and wishlist
+- ✔️ **Form Validation:** Client-side validation using React Hook Form
 
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 Ecobazar/
@@ -157,16 +158,16 @@ Ecobazar/
 
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
-### Prerequisites
+### 📋 Prerequisites
 - **Node.js:** v18 or higher
 - **MongoDB:** Local instance or MongoDB Atlas
 - **Razorpay Account:** Required for payment integration
 - **Google Cloud Console Project:** Required for Google OAuth setup
 
-### Backend Setup
-1. **Navigate to backend directory**
+### ⚙️ Backend Setup
+1️⃣ **Navigate to backend directory**
 ```bash
 cd backend
 ```
@@ -174,7 +175,7 @@ cd backend
 ```bash
 npm install
 ```
-3.**Create** `.env` **file**
+3️⃣ **Create** `.env` **file**
 ```bash
 # Server
 PORT=3000
@@ -199,35 +200,35 @@ FACEBOOK_APP_SECRET=your_facebook_app_secret
 RAZORPAY_API_KEY=your_razorpay_key_id
 RAZORPAY_SECRET_KEY=your_razorpay_secret_key
 ```
-4. **Start the server**
+4️⃣ **Start the server**
 ```bash
 npm run dev
 ```
 Server will run on `http://localhost:3000`
 
-### Frontend Setup
-1. **Navigate to frontend directory**
+### 💻 Frontend Setup
+1️⃣ **Navigate to frontend directory**
 ```bash
 cd frontend
 ```
-2. **Install dependencies**
+2️⃣ **Install dependencies**
 ```bash
 npm install
 ```
-3. **Create** `.env` **file**
+3️⃣ **Create** `.env` **file**
 ```bash
 VITE_API_URL=http://localhost:3000
 ```
-4. **Start the development server**
+4️⃣ **Start the development server**
 ```bash
 npm run dev
 ```
 App will run on `http://localhost:5173`
 
 
-## API Routes
+## 🔌 API Routes
 
-### Authentication
+### 🔐 Authentication
 - **POST** `/user/signup` — User registration  
 - **POST** `/user/login` — User login  
 - **POST** `/user/logout` — User logout  
@@ -237,11 +238,11 @@ App will run on `http://localhost:5173`
 - **GET** `/oauth/facebook` — Initiate Facebook OAuth  
 - **GET** `/oauth/facebook/callback` — Facebook OAuth callback  
 
-### Products
+### 🛍️ Products
 - **GET** `/product/all` — Get all products  
 - **GET** `/product/:id` — Get a single product.
 
-### Cart & Wishlist
+### 🛒 Cart & Wishlist
 - **GET** `/cart` — Get user cart  
 - **POST** `/cart/:id` — Add item to cart  
 - **PUT** `/cart/:id` — Update cart product Quantity  
@@ -251,7 +252,7 @@ App will run on `http://localhost:5173`
 - **POST** `/fav` — Add item to wishlist  
 - **DELETE** `/fav/:favoriteId` — Remove item from wishlist  
 
-### Orders
+### 📦 Orders
 - **POST** `/order/cod-order` — Create an order with cash on delivery payment option. 
 - **GET** `/order` — Get user orders
 - **PUT** `/order/:id` - Cancel Order  
@@ -259,55 +260,55 @@ App will run on `http://localhost:5173`
 - **POST** `/order/verify-payment` — Verify Razorpay payment signature.
 - **POST** `/order/payment-failure` — Handle payment failure  
 
-### Contact
+### 📧 Contact
 - **POST** `/contact` — Submit contact form
 
-### Seller
+### 🏪 Seller
 - **GET** `/seller/` — Get all product posted by seller.
 - **POST** `/seller/` — Post the product.
 - **PUT** `/seller/:id` — Edit the product info
 - **Delete** `/seller/:id` — Remove the product
 
-## UI Components (shadcn/ui)
+## 🎨 UI Components (shadcn/ui)
 
 The project leverages **shadcn/ui** components located in the `ui` directory, built on top of Radix UI primitives:
 
-- **Card**
-- **Dialog**
-- **Sheet** (Mobile drawer)
-- **Navigation Menu**
-- **Table**
-- **Sonner** (Toaster notifications)
-- **And more…**
+- 🃏 **Card**
+- 💬 **Dialog**
+- 📱 **Sheet** (Mobile drawer)
+- 🧭 **Navigation Menu**
+- 📊 **Table**
+- 🔔 **Sonner** (Toaster notifications)
+- ✨ **And more…**
 
 ---
 
-## Security Features
+## 🔒 Security Features
 
-- **JWT with HTTP-only Cookies:** Prevents XSS-based token access
-- **Password Hashing:** Secure password storage using Bcrypt
-- **CORS Configuration:** Controlled cross-origin requests
-- **File Upload Validation:** Enforced type and size restrictions
-- **Payment Signature Verification:** Razorpay webhook/signature validation
-- **Protected Routes:** Role-based access control (RBAC)
-- **Input Sanitization:** Client-side and server-side form validation
+- 🍪 **JWT with HTTP-only Cookies:** Prevents XSS-based token access
+- 🔐 **Password Hashing:** Secure password storage using Bcrypt
+- 🌐 **CORS Configuration:** Controlled cross-origin requests
+- 📤 **File Upload Validation:** Enforced type and size restrictions
+- ✅ **Payment Signature Verification:** Razorpay webhook/signature validation
+- 🛡️ **Protected Routes:** Role-based access control (RBAC)
+- 🧹 **Input Sanitization:** Client-side and server-side form validation
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 This is a learning-focused project. Contributions are welcome!
 
-- Fork the repository  
-- Create a new feature branch  
-- Make your changes  
-- Submit a pull request  
+1. 🍴 Fork the repository  
+2. 🌱 Create a new feature branch  
+3. ✏️ Make your changes  
+4. 🚀 Submit a pull request
 
 ---
 
-## Credits & Acknowledgments
+## 🙏 Credits & Acknowledgments
 
-### UI Design
+### 🎨 UI Design
 The visual design and user interface of this project are based on the excellent work of **[Templatecookie](https://www.figma.com/@templatecookie)**. Their design is publicly available and free to use.
 
 - **Designer:** [Templatecookie](https://www.figma.com/@templatecookie)
@@ -315,7 +316,7 @@ The visual design and user interface of this project are based on the excellent 
 
 Special thanks for creating such a beautiful and functional design that made this learning project possible!
 
-### Technologies
+### 💻 Technologies
 Built with amazing open-source technologies:
 - React, Express.js, MongoDB, Node.js
 - shadcn/ui components
@@ -323,12 +324,12 @@ Built with amazing open-source technologies:
 
 ---
 
-## License
+## 📄 License
 
 This project is intended **solely for educational purposes**.
 
 ---
 
-##  Author
+## 👨‍💻 Author
 
 Built with ❤️ as a full-stack learning project.
