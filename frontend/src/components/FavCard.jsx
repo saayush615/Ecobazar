@@ -1,34 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   Card,
   CardContent,
 } from "@/components/ui/card"
+import { useCart } from '@/hooks/useCart'
 import { HandHelping, Heart, ShoppingBag } from 'lucide-react'
-import { toast } from 'sonner'
-import axios from 'axios'
 
 const FavCard = ({ id, productId, name, source, category, discountPrice, originalPrice, stock, onRemove }) => {
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleAddToCart = async () => {
-    if (isLoading) return;
-
-    setIsLoading(true)
-    try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/cart/${productId}`, {}, { withCredentials: true });
-        // console.log(response);
-        
-        if (response.status === 201) {
-            toast.success('Product Added to Cart',{ description: 'Continue Shopping', duration: 3000 })
-        }
-    } catch (error) {
-        console.log(error);
-        toast.error( 'Failed to add product to Cart', { description: `${error.response?.data?.error}` , duration: 3000 })
-    } finally {
-        setIsLoading(false);
-    }
-  }
+  const { handleAddToCart } = useCart()
 
   return (
     <Card>
@@ -72,7 +52,7 @@ const FavCard = ({ id, productId, name, source, category, discountPrice, origina
             </div>
           </div>
           <button
-            onClick={handleAddToCart}
+            onClick={() => handleAddToCart(productId)}
             className='w-full flex flex-row items-center justify-center gap-1 rounded-lg bg-green-700 hover:bg-green-600 active:scale-95 transition-all duration-200 cursor-pointer py-2 px-1'
             aria-label='Add to Cart'
           >
