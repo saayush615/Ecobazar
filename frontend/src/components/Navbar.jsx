@@ -53,35 +53,35 @@ const Navbar = () => {
 
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
-                    <Link to = '/' className=" p-4 font-medium text-[16px] text-white hover:text-gray-100 hover:bg-gray-700 transition-colors">
+                    <Link to = '/' className=" p-4 font-medium text-[16px] text-white hover:bg-gray-700 transition-colors">
                       Home
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className=" p-4 font-medium text-white hover:text-gray-100 hover:bg-gray-700 transition-colors">
+                  <NavigationMenuTrigger className="p-4 font-medium text-white hover:bg-gray-700 dark:hover:bg-gray-700 hover:text-white dark:hover:text-white transition-colors rounded">
                     Category
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className='flex flex-col p-2 min-w-[200px]'>
                       <NavigationMenuLink asChild>
-                        <Link to = '/category/fresh-vegetables' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                        <Link to = '/category/fresh-vegetables' className='px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white rounded'>
                           Vegetable
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link to = '/category/fresh-fruits' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                        <Link to = '/category/fresh-fruits' className='px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white rounded'>
                           Fruits
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link to = '/category/snacks' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                        <Link to = '/category/snacks' className='px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white rounded'>
                           Snacks
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link to = '/category/meat-and-fish' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                        <Link to = '/category/meat-and-fish' className='px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white rounded'>
                           Meat & Fish
                         </Link>
                       </NavigationMenuLink>
@@ -90,28 +90,28 @@ const Navbar = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="p-4 font-medium text-white hover:text-gray-100 hover:bg-gray-700 transition-colors">
+                  <NavigationMenuTrigger className="p-4 font-medium text-white hover:bg-gray-700 dark:hover:bg-gray-700 hover:text-white dark:hover:text-white transition-colors rounded">
                     My Account
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className='flex flex-col p-2 min-w-[200px]'>
                       <NavigationMenuLink asChild>
-                        <Link to = '/orders' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                        <Link to = '/orders' className='px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white rounded'>
                           Orders
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link to = '/cart' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                        <Link to = '/cart' className='px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white rounded'>
                           Cart
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link to = '/wishlist' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                        <Link to = '/wishlist' className='px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white rounded'>
                           Wishlist
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link to = '/settings' className='px-4 py-2 hover:bg-gray-200 rounded'>
+                        <Link to = '/settings' className='px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white dark:hover:text-white rounded'>
                           Settings
                         </Link>
                       </NavigationMenuLink>
@@ -121,7 +121,7 @@ const Navbar = () => {
 
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
-                    <Link to = '/about' className=" p-4 font-medium text-[16px] text-white hover:text-gray-100 hover:bg-gray-700 transition-colors">
+                    <Link to = '/about' className=" p-4 font-medium text-[16px] text-white hover:bg-gray-700 transition-colors">
                       About
                     </Link>
                   </NavigationMenuLink>
@@ -129,7 +129,7 @@ const Navbar = () => {
 
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
-                    <Link to = '/contact' className=" p-4 font-medium text-[16px] text-white hover:text-gray-100 hover:bg-gray-700 transition-colors">
+                    <Link to = '/contact' className=" p-4 font-medium text-[16px] text-white hover:bg-gray-700 transition-colors">
                       Contact
                     </Link>
                   </NavigationMenuLink>
