@@ -52,7 +52,7 @@ async function handlePostProd(req, res, next) {
 
 async function handleUpdateProd(req, res, next) {
     try {
-        const { name, price, category, stock } = req.body;
+        const { name, originalPrice, discountPrice, category, stock } = req.body;
         const ProductId = req.params.id;
         
         
@@ -62,7 +62,7 @@ async function handleUpdateProd(req, res, next) {
         }
         
 
-        const updateData = { name, price, category, stock };
+        const updateData = { name, originalPrice, discountPrice, category, stock };
         
 
         if (req.file) {
