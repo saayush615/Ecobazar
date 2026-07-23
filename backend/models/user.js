@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema({
         required: function(){
             return !this.googleId && !this.facebookId;
         },
-        minlength: [6, 'Password should be at least 6 characters'],
+        minlength: [8, 'Password should be at least 8 characters'],
         select: false  // 🔒 Password won't be returned by default
     },
     role: {

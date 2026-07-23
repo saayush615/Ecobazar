@@ -1,10 +1,12 @@
 import express from 'express';
 import { handleSignup, handleLogin, handleAuthentication } from '../controllers/user.js';
+import { registerSchema, loginSchema } from "../schema/auth.schema.js";
+import { validateBody } from "../middlewares/validate.js";
 
 const router = express.Router();
 
-router.post('/signup', handleSignup);
-router.post('/login', handleLogin);
+router.post('/signup', validateBody(registerSchema), handleSignup);
+router.post('/login', validateBody(loginSchema), handleLogin);
 
 router.get('/me', handleAuthentication)
 
