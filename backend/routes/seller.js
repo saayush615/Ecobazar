@@ -17,6 +17,7 @@ const router = express.Router();
 
 router.get('/', handleShowAllProd);
 router.post('/',upload.single('image'), validateBody(sellerProductSchema), handlePostProd);
+// Send full field while updating -> put
 router.put('/:id',upload.single('image'), validateBody(sellerProductSchema), handleUpdateProd);
 router.delete('/:id', handleDeleteProd);
 
