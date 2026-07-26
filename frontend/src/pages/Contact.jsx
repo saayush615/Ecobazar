@@ -6,6 +6,8 @@ import { toast } from "sonner"
 
 import { useForm } from "react-hook-form"
 import axios from 'axios'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { contactSchema } from '@/schemas/contact.schema'
 
 const Contact = () => {
 
@@ -16,7 +18,9 @@ const Contact = () => {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+      resolver: zodResolver(contactSchema),
+    });
 
 
   const contactInfo = [
@@ -129,10 +133,7 @@ const Contact = () => {
                     type='text'
                     id='name'
                     placeholder='eg. Ram kumar'
-                    {...register("name", {
-                      required: { value: true, message: 'Full name is required' },
-                      minLength: { value: 3, message: 'Name must be at least 3 characters' }
-                    })}
+                    {...register("name")}
                     className='w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all'
                   />
                   {errors.name && 
@@ -151,13 +152,7 @@ const Contact = () => {
                     type='email'
                     id='email'
                     placeholder='eg. ram123@gmail.com'
-                    {...register("email", {
-                      required: { value: true, message: 'Email is required' },
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: 'Invalid email address'
-                      }
-                    })}
+                    {...register("email")}
                     className='w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all'
                   />
                   {errors.email && (
@@ -176,10 +171,7 @@ const Contact = () => {
                     type='text'
                     id='subject'
                     placeholder='eg. Inquiry about organic products'
-                    {...register("subject", {
-                      required: { value: true, message: 'Subject is required' },
-                      maxLength: { value: 50, message: 'Subject must not exceed 50 characters'}
-                    })}
+                    {...register("subject")}
                     className='w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all'
                   />
                 </div>
@@ -194,9 +186,7 @@ const Contact = () => {
                   <textarea
                     id='message'
                     placeholder='Write your message here...'
-                    {...register("message", {
-                      required: { value: true, message: 'Message is required' }
-                    })}
+                    {...register("message")}
                     rows='5'
                     className='w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all resize-none'
                   />

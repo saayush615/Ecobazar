@@ -10,6 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { zodResolver } from '@hookform/resolvers/zod'
+import { sellerProductSchema } from '@/schemas/product.schema'
 
 const AddProducts = ({ open, onOpenChange, onProductAdded }) => {
   const [loading, setLoading] = useState(false);
@@ -21,7 +23,9 @@ const AddProducts = ({ open, onOpenChange, onProductAdded }) => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+      resolver: zodResolver(sellerProductSchema),
+    });
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];

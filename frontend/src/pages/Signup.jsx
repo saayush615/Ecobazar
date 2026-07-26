@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
@@ -6,6 +6,9 @@ import { FcGoogle } from "react-icons/fc";
 import { IoLogoFacebook } from "react-icons/io";
 
 import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { registerSchema } from '@/schemas/auth.schema';
+
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -28,22 +31,29 @@ const Signup = () => {
     register,
     handleSubmit,
     reset,
-    watch,
+    getValues,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+      resolver: zodResolver(registerSchema),
+      defaultValues: {
+      role: "buyer",
+      terms: false,
+    },
+    });
 
-  const password = watch('password', '');
+  // keep role synced for zod validation
+  useEffect(() => {
+    setValue("role", accountType, { shouldValidate: true });
+  }, [accountType, setValue]);
 
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const { confirmPassword, fullName, ...submitData } = data;
+      const { confirmPassword, terms, ...submitData } = data;
 
-      // console.log({role: accountType, name: data.fullName, ...submitData})
-
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/signup`, {
-        role: accountType, 
-        name: data.fullName, 
+      await axios.post(`${import.meta.env.VITE_API_URL}/user/signup`, {
+        role: accountType,
         ...submitData
       });
 
@@ -62,6 +72,12 @@ const Signup = () => {
       setLoading(false);
     }
   }
+
+  // called when zod validation fails
+  const onInvalid = (formErrors) => {
+    console.log("❌ Zod/RHF validation errors:", formErrors);
+    console.log("📝 Current form values:", getValues());
+  };
 
   const handleGoogleOauth = () => {
     window.location.href = `${import.meta.env.VITE_API_URL}/oauth/google`
@@ -109,7 +125,9 @@ const Signup = () => {
           </div>
 
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-4'>
+            <form onSubmit={handleSubmit(onSubmit,onInvalid)} className='flex flex-col gap-4'>
+
+              <input type="hidden" {...register("role")} />
               
               {/* Common Fields */}
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
@@ -121,14 +139,11 @@ const Signup = () => {
                   <input
                     type='text'
                     placeholder='John Doe'
-                    {...register("fullName", {
-                      required: { value: true, message: 'Full name is required' },
-                      minLength: { value: 3, message: 'Name must be at least 3 characters' }
-                    })}
+                    {...register("name")}
                     className='w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors'
                   />
-                  {errors.fullName && (
-                    <p className="text-red-500 text-xs mt-1">{errors.fullName.message}</p>
+                  {errors.name && (
+                    <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
                   )}
                 </div>
 
@@ -140,13 +155,7 @@ const Signup = () => {
                   <input
                     type='email'
                     placeholder='john@example.com'
-                    {...register("email", {
-                      required: { value: true, message: 'Email is required' },
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: 'Invalid email address'
-                      }
-                    })}
+                    {...register("email")}
                     className='w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors'
                   />
                   {errors.email && (
@@ -167,9 +176,7 @@ const Signup = () => {
                       <input
                         type='text'
                         placeholder='My Organic Store'
-                        {...register("shopName", {
-                          required: { value: accountType === 'seller', message: 'Shop name is required' }
-                        })}
+                        {...register("shopName")}
                         className='w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors'
                       />
                       {errors.shopName && (
@@ -185,9 +192,7 @@ const Signup = () => {
                       <input
                         type='text'
                         placeholder='REG123456'
-                        {...register("businessRegNo", {
-                          required: { value: accountType === 'seller', message: 'Registration number is required' }
-                        })}
+                        {...register("businessRegNo")}
                         className='w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors'
                       />
                       {errors.businessRegNo && (
@@ -204,9 +209,7 @@ const Signup = () => {
                     <textarea
                       placeholder='123 Main St, City, State, ZIP'
                       rows={2}
-                      {...register("businessAddress", {
-                        required: { value: accountType === 'seller', message: 'Business address is required' }
-                      })}
+                      {...register("businessAddress")}
                       className='w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors resize-none'
                     />
                     {errors.businessAddress && (
@@ -227,12 +230,7 @@ const Signup = () => {
                     <input
                       type='tel'
                       placeholder='+1 (555) 123-4567'
-                      {...register("phone", {
-                        pattern: {
-                          value: /^[0-9+\s()-]+$/,
-                          message: 'Invalid phone number'
-                        }
-                      })}
+                      {...register("phone")}
                       className='w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors'
                     />
                     {errors.phone && (
@@ -265,10 +263,7 @@ const Signup = () => {
                   <input
                     type='password'
                     placeholder='••••••••'
-                    {...register("password", {
-                      required: { value: true, message: 'Password is required' },
-                      minLength: { value: 8, message: 'Password must be at least 8 characters' }
-                    })}
+                    {...register("password")}
                     className='w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors'
                   />
                   {errors.password && (
@@ -284,10 +279,7 @@ const Signup = () => {
                   <input
                     type='password'
                     placeholder='••••••••'
-                    {...register("confirmPassword", {
-                      required: { value: true, message: 'Please confirm your password' },
-                      validate: value => value === password || 'Password donot match'
-                    })}
+                    {...register("confirmPassword")}
                     className='w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors'
                   />
                   {errors.confirmPassword && (
@@ -301,9 +293,7 @@ const Signup = () => {
                 <input
                   type='checkbox'
                   id='terms'
-                  {...register("terms", {
-                    required: { value: true, message: 'You must accept terms and conditions' }
-                  })}
+                  {...register("terms")}
                   className='mt-1 h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded'
                 />
                 <label htmlFor='terms' className='text-sm text-gray-600 dark:text-gray-400'>

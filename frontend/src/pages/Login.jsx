@@ -6,6 +6,9 @@ import { FcGoogle } from "react-icons/fc";
 import { IoLogoFacebook } from "react-icons/io";
 
 import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { loginSchema } from '@/schemas/auth.schema';
+
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import axios from 'axios';
 import { useAuth } from '@/hooks/useAuth';
@@ -49,7 +52,9 @@ const Login = () => {
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm()
+    } = useForm({
+    resolver: zodResolver(loginSchema),
+  })
 
     const onSubmit = async (data) => {
       setLoading(true);
@@ -96,9 +101,7 @@ const Login = () => {
               {/* Email */}
                 <input type='email'
                   placeholder='Email' 
-                  {...register("email", {
-                    required: {value: true, message: 'Email is a required'}
-                  })} 
+                  {...register("email")} 
                   className='border-2 active:border-green-500 px-4 py-2 my-2'
                 />
                 {errors.email && (
@@ -108,9 +111,7 @@ const Login = () => {
               {/* Password */}
                 <input type='password'
                   placeholder='Password' 
-                  {...register("password", {
-                    required: {value: true, message: 'Email is a required'}
-                  })} 
+                  {...register("password")} 
                   className='border-2 active:border-green-500 px-4 py-2 my-2'
                 />
                 {errors.password && (
