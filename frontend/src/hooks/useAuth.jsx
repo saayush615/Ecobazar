@@ -1,12 +1,33 @@
-import React, { useContext } from 'react'
-import AuthContext from '@/contexts/AuthContext'
+import { useSelector, useDispatch } from 'react-redux'
+import { loginSuccess, logoutUser, checkAuth } from '@/store/slices/authSlice'
+import { useNavigate } from 'react-router-dom'
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const { user, isAuthenticated, loading } = useSelector((state) => state.auth)
 
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider')
+  const login = ({ userData }) => {
+    dispatch(loginSuccess(userData))
+  }
+
+  const logout = async () => {
+    const result = await dispatch(logoutUser())
+    if (logoutUser.fulfilled.match(result)) {
+      navigate('/login', { state: { logoutSuccess: true } })
     }
+  }
 
-    return context;
+  const checkAuthStatus = () => {
+    dispatch(checkAuth())
+  }
+
+  return {
+    user,
+    isAuthenticated,
+    loading,
+    login,
+    logout,
+    checkAuth: checkAuthStatus,
+  }
 }

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useAuth } from './hooks/useAuth'
 import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import { Toaster } from "@/components/ui/sonner"
@@ -20,6 +21,11 @@ import Wishlist from './pages/Wishlist'
 import Cart from './pages/Cart'
 
 function App() {
+  const {checkAuth} = useAuth()
+
+  useEffect(() => {
+    checkAuth();
+  },[])
 
   return (
     <>
