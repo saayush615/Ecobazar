@@ -38,7 +38,7 @@ async function handleAddToCart(req,res,next) {
         return res.status(201).json({
             success: true,
             message: 'Product added to cart',
-            updatedCart,
+            cartItems: updatedCart,
             total
         })
     } catch (error) {
@@ -60,11 +60,13 @@ async function handleProdRemove(req,res,next) {
         }
 
         await Cart.findByIdAndDelete(cartItem._id);
-        
+
+        const cartItems = await Cart.find({ user: userId }).populate('product');
+
         return res.status(200).json({
             success: true,
             message: 'Item removed from cart',
-            cartItem
+            cartItems
         })
     } catch (error) {
         next(error)
@@ -100,11 +102,13 @@ async function handleUpdateQuantity(req,res,next) {
             })
         }
 
-        const newcart = await Cart.findOneAndUpdate({ _id: cartId }, { quantity: quantity }, {new: true}).populate('product');
+        await Cart.findOneAndUpdate({ _id: cartId }, { quantity: quantity }, {new: true}).populate('product');
+        const cartItems = await Cart.find({ user: userId }).populate('product');
+
         return res.status(200).json({
             success: true,
             message: 'Cart quantity updated successfully',
-            newcart
+            cartItems
         })
 
     } catch (error) {
