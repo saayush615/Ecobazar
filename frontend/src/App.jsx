@@ -15,20 +15,24 @@ import Category from './pages/Category'
 import Settings from './pages/Settings'
 
 import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
-import { WishlistProvider } from '@/contexts/WishlistContext'
 import Wishlist from './pages/Wishlist'
 import Cart from './pages/Cart'
+import useWishlist from './hooks/useWishlist'
 
 function App() {
   const {checkAuth} = useAuth()
+  const { fetchWishlist } = useWishlist()
 
   useEffect(() => {
     checkAuth();
   },[])
 
+  useEffect(() => { 
+    fetchWishlist() 
+  }, [])
+
   return (
     <>
-      <WishlistProvider>
       <Toaster position="top-right" richColors closeButton />
       <Routes>
         <Route path='/' element={ 
@@ -125,7 +129,6 @@ function App() {
           } 
         />
       </Routes>
-      </WishlistProvider>
     </>
   )
 }

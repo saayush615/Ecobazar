@@ -1,7 +1,6 @@
 import React from 'react'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
-import { toast } from 'sonner'
 import { useWishlist } from '@/hooks/useWishlist'
 import FavCard from '@/components/FavCard'
 
@@ -9,13 +8,7 @@ const Wishlist = () => {
     const { wishlistItems, removeFromWishlist } = useWishlist();
 
     const handleRemoveFromWishlist = async (favoriteId) => {
-        const result = await removeFromWishlist(favoriteId);
-        
-        if (result.success) {
-        toast.success('Removed from Wishlist');
-        } else {
-        toast.error(result.error || 'Failed to remove');
-        }
+        await removeFromWishlist(favoriteId);
     }
     
   return (

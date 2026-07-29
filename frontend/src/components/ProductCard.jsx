@@ -19,7 +19,7 @@ import { useCart } from '@/hooks/useCart';
 
 const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) => {
     const [isLoading, setIsLoading] = useState(false);
-    const { loading, wishlistItems, addToWishlist, removeFromWishlist, isInWishlist, getWishlistItem } = useWishlist();
+    const { addToWishlist, removeFromWishlist, isInWishlist, getWishlistItem } = useWishlist();
     const { handleAddToCart } = useCart();
 
     const handleToggleWishlist = async () => {
@@ -29,23 +29,9 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
         try{
             if(isInWishlist(prodId)){
                 const wishlistItem = getWishlistItem(prodId);
-                const result = await removeFromWishlist(wishlistItem._id);
-
-                if (result.success){
-                    toast.success('Removed product from wishlist', { duration: 2000 });
-                }
-                else{
-                    toast.error(result.error, { duration: 3000 });
-                }
+                await removeFromWishlist(wishlistItem._id);
             } else {
-                const result = await addToWishlist(prodId);
-
-                if (result.success){
-                    toast.success('Added to wishlist', { duration: 2000 });
-                }
-                else{
-                    toast.error(result.error, { duration: 3000 });
-                }
+                await addToWishlist(prodId);
             }
         } catch(error) {
             console.error(error);

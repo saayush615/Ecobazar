@@ -13,22 +13,17 @@ import PaymentMethodDialog from './PaymentMethodDialog';
 
 import { useWishlist } from '@/hooks/useWishlist'
 import { useCart } from '@/hooks/useCart'
+import { toast } from 'sonner';
 
 const SheetSidebar = ({ contentType, open, onOpenChange }) => {
   const [loading, setLoading] = useState(false);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false)
 
-  const { wishlistItems, removeFromWishlist, wishlistCount } = useWishlist();
+  const { wishlistItems, removeFromWishlist } = useWishlist();
   const { cartData, total } = useCart();
 
   const handleRemoveFromWishlist = async (favoriteId) => {
-    const result = await removeFromWishlist(favoriteId);
-    
-    if (result.success) {
-      toast.success('Removed from Wishlist');
-    } else {
-      toast.error(result.error || 'Failed to remove');
-    }
+    await removeFromWishlist(favoriteId);
   }
 
   const handleProceedToOrder = () => {

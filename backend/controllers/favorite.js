@@ -21,12 +21,14 @@ async function handlePostFav(req,res,next) {
         }
 
         const favcard = await Favorite.create({ user: userId, product: productId });
-        await favcard.populate('product');
+        
+        const favCards = await Favorite.find({ user: userId }).populate('product').sort({ createdAt: -1 });
 
         return res.status(201).json({
             success: true,
             message: 'Product added to wishlist',
-            favcard
+            count: favCards.length,
+            data: favCards
         })
     } catch (error) {
         next(error);
@@ -37,13 +39,13 @@ async function handleGetFav(req,res,next) {
     try {
         const userId = req.user.id;
 
-        const favCard = await Favorite.find({ user: userId }).populate('product').sort({ createdAt: -1 });
+        const favCards = await Favorite.find({ user: userId }).populate('product').sort({ createdAt: -1 });
 
         return res.status(200).json({
             success: true,
-            message: favCard.length > 0 ? 'Wishlist retrieved successfully' : 'Wishlist is Empty',
-            count: favCard.length,
-            data: favCard
+            message: favCards.length > 0 ? 'Wishlist retrieved successfully' : 'Wishlist is Empty',
+            count: favCards.length,
+            data: favCards
         })
     } catch (error) {
         next(error);
