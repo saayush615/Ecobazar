@@ -16,7 +16,6 @@ import Settings from './pages/Settings'
 
 import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
 import { WishlistProvider } from '@/contexts/WishlistContext'
-import { CartProvider } from '@/contexts/CartContext'
 import Wishlist from './pages/Wishlist'
 import Cart from './pages/Cart'
 
@@ -29,7 +28,6 @@ function App() {
 
   return (
     <>
-      <CartProvider>
       <WishlistProvider>
       <Toaster position="top-right" richColors closeButton />
       <Routes>
@@ -128,7 +126,6 @@ function App() {
         />
       </Routes>
       </WishlistProvider>
-      </CartProvider>
     </>
   )
 }
