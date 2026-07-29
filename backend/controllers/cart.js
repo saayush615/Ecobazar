@@ -29,17 +29,18 @@ async function handleAddToCart(req,res,next) {
             await cartItem.save();
         }
 
-        const updatedCart = await Cart.find({ user: userId }).populate('product');
+        const cartItems = await Cart.find({ user: userId }).populate('product').sort({ createdAt: -1 });
 
-        const total = updatedCart.reduce((sum,item) => {
-            return sum + (item.quantity * (item.product?.discountPrice ? item.product?.discountPrice : item.product?.originalPrice))
+        const total = cartItems.reduce((sum, item) => {
+            return sum + (item.quantity * (item.product?.discountPrice || item.product?.originalPrice))
         }, 0)
 
         return res.status(201).json({
             success: true,
             message: 'Product added to cart',
-            cartItems: updatedCart,
-            total
+            cartItems,
+            total,
+            itemCount: cartItems.length
         })
     } catch (error) {
         next(error);
@@ -61,12 +62,18 @@ async function handleProdRemove(req,res,next) {
 
         await Cart.findByIdAndDelete(cartItem._id);
 
-        const cartItems = await Cart.find({ user: userId }).populate('product');
+        const cartItems = await Cart.find({ user: userId }).populate('product').sort({ createdAt: -1 });
+
+        const total = cartItems.reduce((sum, item) => {
+            return sum + (item.quantity * (item.product?.discountPrice || item.product?.originalPrice))
+        }, 0)
 
         return res.status(200).json({
             success: true,
             message: 'Item removed from cart',
-            cartItems
+            cartItems,
+            total,
+            itemCount: cartItems.length
         })
     } catch (error) {
         next(error)
@@ -103,12 +110,18 @@ async function handleUpdateQuantity(req,res,next) {
         }
 
         await Cart.findOneAndUpdate({ _id: cartId }, { quantity: quantity }, {new: true}).populate('product');
-        const cartItems = await Cart.find({ user: userId }).populate('product');
+        const cartItems = await Cart.find({ user: userId }).populate('product').sort({ createdAt: -1 });
+
+        const total = cartItems.reduce((sum, item) => {
+            return sum + (item.quantity * (item.product?.discountPrice || item.product?.originalPrice))
+        }, 0)
 
         return res.status(200).json({
             success: true,
             message: 'Cart quantity updated successfully',
-            cartItems
+            cartItems,
+            total,
+            itemCount: cartItems.length
         })
 
     } catch (error) {
