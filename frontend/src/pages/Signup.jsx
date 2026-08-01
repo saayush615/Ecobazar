@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { registerSchema } from '@/schemas/auth.schema';
 
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
   Card,
@@ -19,13 +18,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { useAuth } from '@/hooks/useAuth';
 
 const Signup = () => {
   const navigate = useNavigate();
   const [accountType, setAccountType] = useState('buyer'); // 'buyer' or 'seller'
-  const [loading, setLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
+
+  const { signup, signupPending } = useAuth();
 
   const {
     register,
@@ -48,28 +47,20 @@ const Signup = () => {
   }, [accountType, setValue]);
 
   const onSubmit = async (data) => {
-    setLoading(true);
     try {
       const { confirmPassword, terms, ...submitData } = data;
 
-      await axios.post(`${import.meta.env.VITE_API_URL}/user/signup`, {
+      const response = await signup({
         role: accountType,
         ...submitData
       });
-
-      // Add success handling
-      setSuccessMsg('Account created successfully! Redirecting to login...');
-      setErrorMsg('');
       reset();
 
-      navigate('/login')
-
+      if (response?.user?.role === 'buyer') navigate('/', { state: { loginSuccess: true }});
+      if (response?.user?.role === 'seller') navigate('/dashbord', { state: { loginSuccess: true } });
+      
     } catch (error) {
       console.log(error);
-      setErrorMsg(error.response?.data?.error || 'Signup failed. Please try again.');
-      setSuccessMsg('');
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -308,9 +299,9 @@ const Signup = () => {
               <button
                 type='submit'
                 className='w-full px-4 py-3 mt-2 rounded-lg bg-green-600 hover:bg-green-500 cursor-pointer text-white font-semibold active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed'
-                disabled={loading}
+                disabled={signupPending}
               >
-                {loading ? 'Creating Account...' : `Create ${accountType === 'buyer' ? 'Buyer' : 'Seller'} Account`}
+                {signupPending ? 'Creating Account...' : `Create ${accountType === 'buyer' ? 'Buyer' : 'Seller'} Account`}
               </button>
             </form>
           </CardContent>

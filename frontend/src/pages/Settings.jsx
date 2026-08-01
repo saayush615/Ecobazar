@@ -5,6 +5,10 @@ import { LogOut } from 'lucide-react'
 const Settings = () => {
   const { logout, user, isAuthenticated } = useAuth()
 
+  const logoutClick = async () => {
+    await logout();
+  }
+
   return (
     <div className='min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4'>
       <div className='max-w-4xl mx-auto'>
@@ -44,7 +48,7 @@ const Settings = () => {
           {isAuthenticated && (
             <div className='border-t border-gray-200 dark:border-gray-700 px-6 py-4'>
               <button
-                onClick={logout}
+                onClick={logoutClick}
                 className='flex items-center justify-center gap-2 w-full py-3 px-4 cursor-pointer bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors active:scale-95'
               >
                 <LogOut className='w-5 h-5' />

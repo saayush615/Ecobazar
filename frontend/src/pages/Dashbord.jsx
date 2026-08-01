@@ -37,8 +37,8 @@ const Dashboard = () => {
   }, [])
   
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
   }
 
   const navigationItems = [

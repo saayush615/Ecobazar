@@ -55,11 +55,35 @@ async function handleSignup(req,res,next) {
 
         // Create the user
         const user = await User.create(userData);
+
+        if(user){
+            // Create a token with user ID and role
+            const token = createToken({ 
+                id: user._id , 
+                name: user.name, 
+                email: user.email, 
+                role: user.role, 
+                ...(user.role === 'seller' && { shopName: user.shopName, businessRegNo: user.businessRegNo, businessAddress: user.businessAddress })
+            });
+
+            res.cookie('uid',token, {
+                httpOnly: true,                                          // Prevents JavaScript access (XSS protection)
+                secure: process.env.NODE_ENV === 'production',          // HTTPS only in production
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',  // Allow cross-origin
+                maxAge: 24 * 60 * 60 * 1000                             // 24 hours
+            });
+        }
         
         return res.status(201).json({
             success: true,
             message: 'Signup Successfully!, Proceed to login',
-            user
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                ...(user.role === 'seller' && { shopName: user.shopName, businessRegNo: user.businessRegNo, businessAddress: user.businessAddress })
+            }
         })
     } catch(err) {
         next(err)
