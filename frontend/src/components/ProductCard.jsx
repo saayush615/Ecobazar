@@ -22,6 +22,11 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
     const { addToWishlist, removeFromWishlist, isInWishlist, getWishlistItem } = useWishlist();
     const { handleAddToCart } = useCart();
 
+    const handleAddToCartClick = async () => {
+        if (!prodId) return
+        await handleAddToCart(prodId)
+    }
+
     const handleToggleWishlist = async () => {
         if(isLoading) return;
 
@@ -83,7 +88,7 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
                     </div>
 
                     <button 
-                        onClick={() => handleAddToCart(prodId)}
+                        onClick={handleAddToCartClick}
                         className='size-9 p-2 bg-gray-200 dark:text-black transition-colors duration-300 cursor-pointer hover:bg-green-500 rounded-2xl hover:scale-105 active:scale-95'
                         aria-label="Add to cart"
                     >

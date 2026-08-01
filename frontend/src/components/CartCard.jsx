@@ -13,23 +13,23 @@ const CartCard = ({ id, Pname, source, category, stock, discountPrice, originalP
 
   const { handleRemoveFromCart: onDelete, handleUpdateQuantity: onUpdate } = useCart();
   
-  const handleDeleteCart = () => {
-    onDelete(id)
+  const handleDeleteCart = async () => {
+    await onDelete(id)
   }
 
-  const handleDecreaseQuantity = () => {
+  const handleDecreaseQuantity = async () => {
     const newQuantity = quantity - 1;
     if(newQuantity >= 1){
-      onUpdate(id, newQuantity);
+      await onUpdate(id, newQuantity);
     } else{
       toast.error('Quantity should be 1 or more', {duration: 2000})
     }
   }
 
-  const handleIncreaseQuantity = () => {
+  const handleIncreaseQuantity = async () => {
     const newQuantity = quantity + 1;
     if(newQuantity <= stock){
-      onUpdate(id, newQuantity);
+      await onUpdate(id, newQuantity);
     } else{
       toast.error(`${stock} Product are in stock!`, {duration: 2000})
     }

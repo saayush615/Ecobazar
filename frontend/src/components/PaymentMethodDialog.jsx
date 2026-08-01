@@ -10,11 +10,23 @@ import { CreditCard, HandCoins } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'sonner'
 import { useCart } from '@/hooks/useCart'
+import { useAuth } from '@/hooks/useAuth'
+
+const loadRazorpayScript = () =>
+  new Promise((resolve, reject) => {
+    if (window.Razorpay) return resolve();
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('Failed to load Razorpay'));
+    document.head.appendChild(script);
+});
 
 const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
   const [loading, setLoading] = useState(false);
 
-  const { setCartData, setCartQuantity, setTotal } = useCart()
+  const { user, refetchUser } = useAuth();
+  const { clearCartCache } = useCart();
   
   const paymentMethods = [
     {
@@ -49,12 +61,14 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
   const handleRazorpayPayment = async () => {
     setLoading(true);
     try {
-      // Step 0: get the user data from backend
-      const userData = await axios.get(`${import.meta.env.VITE_API_URL}/user/me`,{
-          withCredentials: true
-      })
+      // Load Razorpay SDK only when user clicks "Online Payment"
+      await loadRazorpayScript();
 
-      const { name, email, phone } = userData.data?.user;
+      // Step 0: get the user data
+      const result = await refetchUser();
+      const freshUser = result.data?.user ?? user;
+
+      const { name, email, phone } = freshUser ?? {};
 
       // Step 1: Create order on backend
       const orderResponse = await axios.post(
@@ -91,9 +105,7 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
 
             if (verifyResponse.data.success) {
               toast.success('Payment successful!');
-              setCartData([]);
-              setCartQuantity(0);
-              setTotal(0);
+              clearCartCache();
               onOpenChange(false);
             }
           } catch (error) {
@@ -161,9 +173,7 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
         });
         
         // Clear cart and close sidebar
-        setCartData([]);
-        setCartQuantity(0);
-        setTotal(0);
+        clearCartCache()
         onOpenChange(false);
       }
     } catch (error) {
