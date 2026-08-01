@@ -1,92 +1,109 @@
 import { useCallback } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
-  fetchWishlist as fetchWishlistThunk,
-  addToWishlist as addWishlistThunk,
-  removeFromWishlist as removeWishlistThunk,
-} from '@/store/slices/wishlistSlice'
+  fetchWishlist as fetchWishlistApi,
+  addToWishlist as addToWishlistApi,
+  removeFromWishlist as removeFromWishlistApi,
+} from '@/lib/api/wishlist'
+import { useAuth } from './useAuth'
 
 export const useWishlist = () => {
-    const dispatch = useDispatch()
-    const { wishlistItems, loading, error } = useSelector(
-        (state) => state.wishlist
-    )
+    const queryClient = useQueryClient();
+    const { isAuthenticated } = useAuth()
 
-    const fetchWishlist = useCallback(() => {
-        return dispatch(fetchWishlistThunk())
-    }, [dispatch])
+    const { data, isLoading, refetch } = useQuery({
+        queryKey: ['wishlist'],
+        queryFn: fetchWishlistApi,
+        enabled: isAuthenticated,
+        retry: false,
+        staleTime: 1000 * 30,
+    })
 
-    const addToWishlist = useCallback(
-        async (prodId) => {
+    const addToWishlistMutation = useMutation({
+        mutationFn: addToWishlistApi,
+        onMutate: async () => {
+            await queryClient.cancelQueries({ queryKey: ['wishlist'] })
+            const previousWishlist = queryClient.getQueryData(['wishlist'])
+            return { previousWishlist }
+        },
+        onError: (err, productId, context) => {
+            if (context?.previousWishlist) {
+                queryClient.setQueryData(['wishlist'], context.previousWishlist)
+            }
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['wishlist'] })
+        },
+    })
+
+    const removeFromWishlistMutation = useMutation({
+        mutationFn: removeFromWishlistApi,
+        onMutate: async (favoriteId) => {
+            await queryClient.cancelQueries({ queryKey: ['wishlist'] })
+            const previousWishlist = queryClient.getQueryData(['wishlist'])
+            if (previousWishlist) {
+                queryClient.setQueryData(['wishlist'], {
+                    data: previousWishlist.data?.filter(item => item._id !== favoriteId) || [],
+                    count: Math.max(0, (previousWishlist.count || 0) - 1),
+                })
+            }
+            return { previousWishlist }
+        },
+        onError: (err, favoriteId, context) => {
+            if (context?.previousWishlist) {
+                queryClient.setQueryData(['wishlist'], context.previousWishlist)
+            }
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['wishlist'] })
+        },
+    })
+
+    const addToWishlist = useCallback(async (prodId) => {
         try {
-            const result = await dispatch(addWishlistThunk(prodId))
-
-            if (addWishlistThunk.fulfilled.match(result)) {
+            const result = await addToWishlistMutation.mutateAsync(prodId)
             toast.success('Product Added to Wishlist', {
-                description: 'Continue Shopping',
-                duration: 3000,
+                description: 'Continue Shopping', duration: 3000,
             })
-            } else {
-            toast.error('Failed to add product to wishlist', {
-                description: result.payload || 'Try Again!',
-                duration: 3000,
-            })
-            }
-
             return result
         } catch (error) {
             toast.error('Failed to add product to wishlist', {
-            description: 'Try Again!',
-            duration: 3000,
+                description: error?.response?.data?.error || 'Try Again!', duration: 3000,
             })
             throw error
         }
-        },
-        [dispatch]
-    )
+    }, [addToWishlistMutation])
 
-    const removeFromWishlist = useCallback(
-        async (itemId) => {
+    const removeFromWishlist = useCallback(async (itemId) => {
         try {
-            const result = await dispatch(removeWishlistThunk(itemId))
-
-            if (removeWishlistThunk.fulfilled.match(result)) {
+            const result = await removeFromWishlistMutation.mutateAsync(itemId)
             toast.success('Wishlist Removed', { duration: 3000 })
-            } else {
-            toast.error('Something went wrong!', {
-                description: result.payload || 'Try Again!',
-                duration: 3000,
-            })
-            }
-
             return result
         } catch (error) {
             toast.error('Something went wrong!', {
-            description: 'Try Again!',
-            duration: 3000,
+                description: error?.response?.data?.error || 'Try Again!', duration: 3000,
             })
             throw error
         }
-        },
-        [dispatch]
-    )
+    }, [removeFromWishlistMutation])
+
+    const wishlistItems = data?.data ?? []
 
     const isInWishlist = (productId) => {
-        return wishlistItems?.some(item => item.product?._id === productId);
+        return wishlistItems?.some(item => item.product?._id === productId)
     }
 
     const getWishlistItem = (productId) => {
-        return wishlistItems?.find(item => item.product._id === productId);
+        return wishlistItems?.find(item => item.product?._id === productId)
     }
 
   return {
     wishlistItems,
-    loading,
-    error,
+    loading: isLoading,
     addToWishlist,
     removeFromWishlist,
-    fetchWishlist,
+    fetchWishlist: refetch,
     isInWishlist,
     getWishlistItem,
     wishlistCount: wishlistItems?.length ?? 0
