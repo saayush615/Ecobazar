@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
+import React, {useEffect} from 'react'
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom'
 import { toast } from "sonner"
 
 import { LoadingOverlay } from '@/components/ui/loading'
@@ -28,41 +28,24 @@ import ProductCard from '@/components/ProductCard'
 import SaleCard from '@/components/SaleCard'
 import TestimonySlider from '@/components/TestimonySlider'
 import Footer from '@/components/Footer'
-import axios from 'axios'
 import { categoies } from '@/config/categories'
+import { useProduct } from '@/hooks/useProduct'
 
 const Home = () => {
-  // const navigate = useNavigate();
-  // const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [loading, setLoading] = useState(true);
-  const [allProducts, setAllProducts] = useState([])
+  // const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate()
+  const location = useLocation()
 
-  async function getAllProdct() {
-    setLoading(true);
-    try {
-      const prod = await axios.get(`${import.meta.env.VITE_API_URL}/product/all`);
-      // console.log(prod)
-      setAllProducts(prod.data?.products);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const { products: allProducts, loading } = useProduct();
 
+  // Success notification
   useEffect(() => {
-    getAllProdct()
-  }, [])
-
-  useEffect(() => {
-    const authStatus = searchParams.get('auth')
-    
-    if (authStatus === 'loginSuccess') {
+    if (location.state?.loginSuccess) {
       toast.success('Logged in Successfully!');
-      setSearchParams({})
+      // Clear state to prevent showing toast on page refresh
+      navigate(location.pathname, { replace: true, state: {} })
     }
-  }, [searchParams])
+  }, [])
 
   const Sales = [
     {id: 1, name:'Best Deal', title:'Sale of Month', desc:'Few Hours Left!', source: sale1},

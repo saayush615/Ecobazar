@@ -1,34 +1,22 @@
 import React, {useState, useEffect} from 'react'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
-import axios from 'axios'
 import ProductCard from '@/components/ProductCard'
 import { useParams } from 'react-router-dom'
 import { getCategoryBySlug } from '@/config/categories'
+import { useProductsByCategory } from '@/hooks/useProduct'
+import { LoadingOverlay } from '@/components/ui/loading'
 
 const Category = () => {
-    const [loading, setLoading] = useState(true);
     const [title, setTitle] = useState('');
     const [banner, setBanner] = useState(null);
-    const [allProducts, setAllProducts] = useState([]);
     const [pageNotFound, setPageNotFound] = useState(false);
     const { categoryslug } = useParams();
-  
-    async function getFilteredProdct() {
-      setLoading(true);
-      try {
-        const prod = await axios.get(`${import.meta.env.VITE_API_URL}/product/filter/${categoryslug}`);
-        // console.log(prod.data?.products)
-        setAllProducts(prod.data?.products);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
+
+    const isReady = !pageNotFound && !!categoryslug;
+    const { products: allProducts, loading } = useProductsByCategory(isReady ? categoryslug : null);
   
     useEffect(() => {
-      getFilteredProdct();
       const data = getCategoryBySlug(categoryslug);
       if (!data) {
         setPageNotFound(true);
@@ -49,6 +37,8 @@ const Category = () => {
     }
 
   return (
+    <>
+    <LoadingOverlay show={loading} text="Loading..." />
     <div className='flex flex-col justify-between gap-1 min-h-screen dark:bg-gray-900'>
       <div>
         <Header />
@@ -76,6 +66,7 @@ const Category = () => {
       </div>
       <Footer />
     </div>
+    </>
   )
 }
 
