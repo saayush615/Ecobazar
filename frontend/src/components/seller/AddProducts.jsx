@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useForm } from "react-hook-form"
-import axios from 'axios'
+import { useSeller } from '@/hooks/useSeller'
 import { toast } from 'sonner'
 import { Upload, X } from 'lucide-react'
 import { LoadingSpinner } from '@/components/ui/loading'
@@ -13,10 +13,11 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { sellerProductSchema } from '@/schemas/product.schema'
 
-const AddProducts = ({ open, onOpenChange, onProductAdded }) => {
-  const [loading, setLoading] = useState(false);
+const AddProducts = ({ open, onOpenChange }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null); // Store actual file
+
+  const { handleCreateProduct, createProductPending: loading } = useSeller();
   
   const {
     register,
@@ -60,46 +61,21 @@ const AddProducts = ({ open, onOpenChange, onProductAdded }) => {
   };
 
   const onSubmit = async (data) => {
-    setLoading(true);
-    try {
-      // Create FormData to send file + text data
-      const formData = new FormData();
-      formData.append('name', data.name);
-      formData.append('originalPrice', data.originalPrice);
-      formData.append('discountPrice', data.discountPrice);
-      formData.append('category', data.category);
-      formData.append('stock', data.stock);
-      
-      // Append image if selected
-      if (imageFile) {
-        formData.append('image', imageFile);
-      }
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('originalPrice', data.originalPrice);
+    formData.append('discountPrice', data.discountPrice);
+    formData.append('category', data.category);
+    formData.append('stock', data.stock);
+    if (imageFile) formData.append('image', imageFile);
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/seller/`,
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      );
-      
-      toast.success('Product added successfully!');
+    try {
+      await handleCreateProduct(formData); // hook toasts + invalidates
       reset();
       removeImage();
-      
-      if (onProductAdded) {
-        onProductAdded();
-      } else {
-        onOpenChange(false);
-      }
+      onOpenChange(false);
     } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.error || 'Something went wrong!');
-    } finally {
-      setLoading(false);
+      // error already toasted by the hook
     }
   };
 

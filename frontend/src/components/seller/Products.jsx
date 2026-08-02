@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react'
-import axios from 'axios'
+import React, {useState} from 'react'
 import { toast } from 'sonner'
 import { CirclePlus , CircleMinus , Trash  } from 'lucide-react';
 
 import { TableSkeleton, LoadingOverlay } from '@/components/ui/loading'
+import { useSeller } from '@/hooks/useSeller'
 
 import {
   Table,
@@ -26,97 +26,39 @@ import {
 } from "@/components/ui/alert-dialog"
 
 const Products = () => {
-  const [loading, setLoading] = useState(true);  // Initial loading
-  const [products, setProducts] = useState([]);
   const [deleteDialogue, setDeleteDialogue ] = useState({ open: false, productId: null})
-  const [actionLoading, setActionLoading] = useState(false); // For delete and update operation
 
-  useEffect(() => {
-    fetchProducts();
-  },[]);
+  const { products, productsLoading: loading, handleDeleteProduct, handleUpdateProduct, deleteProductPending, updateProductPending } = useSeller();
+  const actionLoading = deleteProductPending || updateProductPending;
 
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/seller/`,
-        { withCredentials: true }
-      )
-      // console.log(response.data?.products)
-      setProducts(response.data?.products || [])
-    }catch (error){
-      console.error('Fetch Data error', error);
-      toast.error(error.response?.data?.error || 'Failed to fetch the products');
-      setProducts([])
-    } finally {
-      setLoading(false)
-    }
+const handleDelete = async (productId) => {
+  try {
+    await handleDeleteProduct(productId); // hook toasts + invalidates ['seller-products']
+    setDeleteDialogue({ open: false, productId: null });
+  } catch (error) {
+    // error already toasted by the hook; keep dialog open
   }
-
-  const handleDelete = async (productId) => {
-    setActionLoading(true);
-    try{
-      await axios.delete(
-        `${import.meta.env.VITE_API_URL}/seller/${productId}`,
-        { withCredentials: true }
-      )
-      setProducts(prev => prev.filter(p => p._id !== productId))
-      toast.success('Product deleted successfully!')
-      setDeleteDialogue({ open: false, productId: null })
-    } catch (error) {
-      console.error('Delete error:', error)
-      toast.error(error.response?.data?.error || 'Failed to delete product')
-    } finally {
-      setActionLoading(false);
-    }
-  }
+}
 
   const openDeleteDialoguebox = (productId) => {
     setDeleteDialogue({ open: true, productId: productId})
   }
 
-  const handleStockChange = async (productId, change) => {
-    const product = products.find(p => p._id === productId);
-    
-    if (!product) {
-      toast.error('Product not found');
-      return;
-    }
-
-    const newStock = product.stock + change;
-    
-    if (newStock < 0) {
-      toast.error('Stock cannot be negative');
-      return;
-    }
-
-    const previousProducts = [...products];
-    setProducts(prev => 
-      prev.map(p => p._id === productId 
-        ? { ...p, stock: newStock } 
-        : p
-      )
-    );
-
-    try {
-      const updatedProduct = {
-        ...product,
-        stock: newStock
-      };
-
-      await axios.put(
-        `${import.meta.env.VITE_API_URL}/seller/${productId}`,
-        updatedProduct,
-        { withCredentials: true }
-      );
-
-      toast.success(`Stock ${change > 0 ? 'increased' : 'decreased'} successfully!`);
-    } catch (error) {
-      setProducts(previousProducts);
-      console.error('Stock update error:', error);
-      toast.error(error.response?.data?.error || 'Failed to update stock');
-    }
-  }
+const handleStockChange = async (productId, change) => {
+  const product = products.find(p => p._id === productId);
+  if (!product) { toast.error('Product not found'); return; }
+  const newStock = product.stock + change;
+  if (newStock < 0) { toast.error('Stock cannot be negative'); return; }
+  try {
+    await handleUpdateProduct(productId, {
+      name: product.name,
+      originalPrice: product.originalPrice,
+      discountPrice: product.discountPrice,
+      category: product.category,
+      stock: newStock,
+    });
+  } catch (error) { /* hook toasts */ }
+}
 
   // Helper function to get full image URL
   const getImageUrl = (imagePath) => {
