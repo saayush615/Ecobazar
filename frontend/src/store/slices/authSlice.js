@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+// **Dead Code**
+
 // Async thunk 1: check if user is logged in
 export const checkAuth = createAsyncThunk('auth/checkAuth', async () => {
     const response = await axios.get(`${import.meta.env.VITE_API_URL}/user/me`,{

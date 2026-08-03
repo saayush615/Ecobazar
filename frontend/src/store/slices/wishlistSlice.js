@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+// **Dead code**
+
 export const fetchWishlist = createAsyncThunk(
   "wishlist/fetchWishlist",
   async (_, { rejectWithValue }) => {

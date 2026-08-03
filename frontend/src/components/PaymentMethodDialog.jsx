@@ -10,11 +10,25 @@ import { CreditCard, HandCoins } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'sonner'
 import { useCart } from '@/hooks/useCart'
+import { useAuth } from '@/hooks/useAuth'
+import { useOrder } from '@/hooks/useOrder' 
+
+const loadRazorpayScript = () =>
+  new Promise((resolve, reject) => {
+    if (window.Razorpay) return resolve();
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('Failed to load Razorpay'));
+    document.head.appendChild(script);
+});
 
 const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
   const [loading, setLoading] = useState(false);
 
-  const { setCartData, setCartQuantity, setTotal } = useCart()
+  const { user, refetchUser } = useAuth();
+  const { clearCartCache } = useCart();
+  const { handleCreateOrder, handleVerifyPayment, handlePaymentFailure, handleCreateCODOrder } = useOrder();
   
   const paymentMethods = [
     {
@@ -49,21 +63,18 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
   const handleRazorpayPayment = async () => {
     setLoading(true);
     try {
-      // Step 0: get the user data from backend
-      const userData = await axios.get(`${import.meta.env.VITE_API_URL}/user/me`,{
-          withCredentials: true
-      })
+      // Load Razorpay SDK only when user clicks "Online Payment"
+      await loadRazorpayScript();
 
-      const { name, email, phone } = userData.data?.user;
+      // Step 0: get the user data
+      const result = await refetchUser();
+      const freshUser = result.data?.user ?? user;
+
+      const { name, email, phone } = freshUser ?? {};
 
       // Step 1: Create order on backend
-      const orderResponse = await axios.post(
-        `${import.meta.env.VITE_API_URL}/order/create-order`,
-        {},
-        { withCredentials: true }
-      );
-
-      const { razorpayOrder, checkoutSessionId, key } = orderResponse.data;
+      const orderResponse = await handleCreateOrder();
+      const { razorpayOrder, checkoutSessionId, key } = orderResponse;
 
       // Step 2: Configure Razorpay options
       const options = {
@@ -78,26 +89,15 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
         handler: async function (response) {
           try {
             // Step 3: Verify payment on backend
-            const verifyResponse = await axios.post(
-              `${import.meta.env.VITE_API_URL}/order/verify-payment`,
-              {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                checkoutSessionId: checkoutSessionId
-              },
-              { withCredentials: true }
-            );
-
-            if (verifyResponse.data.success) {
-              toast.success('Payment successful!');
-              setCartData([]);
-              setCartQuantity(0);
-              setTotal(0);
-              onOpenChange(false);
-            }
+            await handleVerifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              checkoutSessionId: checkoutSessionId
+            });
+            clearCartCache();
+            onOpenChange(false);
           } catch (error) {
-            toast.error('Payment verification failed');
             console.error('Verification error:', error);
           }
         },
@@ -119,11 +119,7 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
           ondismiss: async function() {
             // Handle payment cancellation
             try {
-              await axios.post(
-                `${import.meta.env.VITE_API_URL}/order/payment-failure`,
-                { checkoutSessionId: checkoutSessionId },
-                { withCredentials: true }
-              );
+              await handlePaymentFailure(checkoutSessionId);
               toast.error('Payment cancelled');
             } catch (error) {
               console.error('Error recording cancellation:', error);
@@ -148,27 +144,12 @@ const PaymentMethodDialog = ({ open, onOpenChange, sheetLoading }) => {
   const handleCODPayment = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/order/cod-order`,
-        {},
-        { withCredentials: true }
-      );
-
-      if (response.data.success) {
-        toast.success('Order placed successfully!', {
-          description: 'You can pay when your order is delivered',
-          duration: 4000
-        });
-        
-        // Clear cart and close sidebar
-        setCartData([]);
-        setCartQuantity(0);
-        setTotal(0);
-        onOpenChange(false);
-      }
+      await handleCreateCODOrder();
+      // Clear cart and close sidebar
+      clearCartCache()
+      onOpenChange(false);
     } catch (error) {
       console.error('COD order error:', error);
-      toast.error(error.response?.data?.error || 'Failed to place order');
     } finally {
       setLoading(false);
       sheetLoading(false);

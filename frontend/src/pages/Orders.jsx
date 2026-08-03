@@ -1,48 +1,22 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import React, { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { LoadingOverlay } from '@/components/ui/loading'
 import OrderCard from '@/components/OrderCard'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { Package, ShoppingBag, Filter } from 'lucide-react'
+import { useOrder } from '@/hooks/useOrder'
 
 const Orders = () => {
-  const [orders, setOrders] = useState([])
-  const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('All')
+  const { checkouts, loading, handleCancelOrder } = useOrder();
 
-  useEffect(() => {
-    fetchOrders()
-  }, [])
-
-  const fetchOrders = async () => {
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/order/`,
-        { withCredentials: true }
-      )
-      const data = Object.values(response.data?.checkouts); 
-      const sortedData = data
-        .flatMap(eachOrder => eachOrder.orders)
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setOrders(sortedData || []);
-    } catch (error) {
-      console.error('Fetch orders error:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleCancelSuccess = (orderId) => {
-    setOrders(prevOrders =>
-      prevOrders.map(order => 
-          order._id === orderId
-          ? { ...order, status: 'Cancelled' }
-          : order
-        )
-    )
-  }
+  const orders = useMemo(() =>
+    Object.values(checkouts)
+      .flatMap(eachOrder => eachOrder.orders)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+    [checkouts]
+  )
 
   // Filter orders based on status
   const filterOptions = ['All', 'Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled']
@@ -145,7 +119,6 @@ const Orders = () => {
                 status={order.status}
                 paymentMethod={order.paymentMethod}
                 paymentStatus={order.paymentStatus}
-                onCancelSuccess={handleCancelSuccess}
               />
             ))}
           </div>

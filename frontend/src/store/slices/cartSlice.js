@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+// **Dead Code**
+
 const normalizeCartResponse = (payload, fallbackState) => {
   const cartItems =
     payload?.cartItems ??

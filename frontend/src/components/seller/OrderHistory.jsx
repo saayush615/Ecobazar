@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import axios from 'axios'
-import { toast } from 'sonner'
+import { useSeller } from '@/hooks/useSeller'
 import { Phone , Mail, Calendar, Timer } from 'lucide-react';
 
 import { TableSkeleton, LoadingOverlay } from '@/components/ui/loading'
@@ -16,29 +15,7 @@ import {
 } from "@/components/ui/table"
 
 const OrderHistory = () => {
-    const [loading, setLoading] = useState(true); 
-    const [products, setProducts] = useState([]);
-
-    useEffect(() => {
-      fetchOrders();
-    },[]);
-
-    async function fetchOrders() {
-      setLoading(true);
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/seller/order-history/`, {withCredentials: true});
-        const orders = response.data?.orders;
-        if (orders.length === 0){
-          return;
-        }
-
-        setProducts(orders);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const { orderHistory: products, orderHistoryLoading: loading } = useSeller();
 
     if (products.length === 0) {
       return <div className='text-gray-600 dark:text-gray-300'>No order history</div>

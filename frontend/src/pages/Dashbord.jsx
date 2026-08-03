@@ -22,7 +22,6 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('products')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [addProduct, setAddProduct] = useState(false)
-  const [refreshProducts, setRefreshProducts] = useState(0)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -37,8 +36,8 @@ const Dashboard = () => {
   }, [])
   
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
   }
 
   const navigationItems = [
@@ -48,16 +47,10 @@ const Dashboard = () => {
     { id: 'sales', label: 'Sales', icon: TrendingUp },
   ]
 
-    // Add this callback function
-  const handleProductAdded = () => {
-    setRefreshProducts(prev => prev + 1) // Trigger refresh
-    setAddProduct(false) // Close dialog
-  }
-
   const renderContent = () => {
     switch (activeTab) {
       case 'products':
-        return <Products key={refreshProducts} />  // Key Prop Pattern: When you change the key prop on a component, React unmounts and remounts it, triggering useEffect hooks
+        return <Products />
       case 'orders':
         return <Orders />
       case 'history':
@@ -239,7 +232,7 @@ const Dashboard = () => {
       </main>
 
       {/* Add product */}
-      <AddProducts open={addProduct} onOpenChange={setAddProduct} onProductAdded={handleProductAdded} />
+      <AddProducts open={addProduct} onOpenChange={setAddProduct} />
     </div>
   )
 }

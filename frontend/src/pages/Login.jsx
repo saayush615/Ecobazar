@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { loginSchema } from '@/schemas/auth.schema';
 
 import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import axios from 'axios';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from "sonner"
 import {
@@ -27,9 +26,8 @@ const Login = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, loginPending } = useAuth();
 
   useEffect(() => {
     if (location.state?.logoutSuccess){
@@ -57,23 +55,16 @@ const Login = () => {
   })
 
     const onSubmit = async (data) => {
-      setLoading(true);
       try {
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/user/login`, data, {
-          withCredentials: true // CRITICAL: Send cookies with request
-        });
-        login({ userData: response.data?.user });
+        const response = await login(data);
         reset();
 
-
-        if (response.data?.user?.role === 'buyer') navigate('/', { state: { loginSuccess: true }});
-        if (response.data?.user?.role === 'seller') navigate('/dashbord', { state: { loginSuccess: true } });
+        if (response?.user?.role === 'buyer') navigate('/', { state: { loginSuccess: true }});
+        if (response?.user?.role === 'seller') navigate('/dashbord', { state: { loginSuccess: true } });
 
 
       } catch (error) {
         console.log(error);
-      } finally {
-        setLoading(false);
       }
     }
 
@@ -121,9 +112,9 @@ const Login = () => {
                 <button
                   type='submit'
                   className='px-4 py-2 my-2 rounded-xl bg-green-600 hover:bg-green-500 cursor-pointer text-white active:scale-95'
-                  disabled={loading}
+                  disabled={loginPending}
                 >
-                  {loading ? 'loading...' : 'Login'}
+                  {loginPending ? 'loading...' : 'Login'}
                 </button>
             </form>
         </CardContent>

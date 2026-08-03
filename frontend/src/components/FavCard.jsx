@@ -8,7 +8,12 @@ import { HandHelping, Heart, ShoppingBag } from 'lucide-react'
 
 const FavCard = ({ id, productId, name, source, category, discountPrice, originalPrice, stock, onRemove }) => {
 
-  const { handleAddToCart } = useCart()
+  const { handleAddToCart } = useCart();
+
+  const handleAddToCartClick = async () => {
+    if (!productId) return
+    await handleAddToCart(productId)
+  }
 
   return (
     <Card>
@@ -52,7 +57,7 @@ const FavCard = ({ id, productId, name, source, category, discountPrice, origina
             </div>
           </div>
           <button
-            onClick={() => handleAddToCart(productId)}
+            onClick={handleAddToCartClick}
             className='w-full flex flex-row items-center justify-center gap-1 rounded-lg bg-green-700 hover:bg-green-600 active:scale-95 transition-all duration-200 cursor-pointer py-2 px-1'
             aria-label='Add to Cart'
           >

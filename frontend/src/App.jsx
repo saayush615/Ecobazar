@@ -1,5 +1,3 @@
-import { useEffect } from 'react'
-import { useAuth } from './hooks/useAuth'
 import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import { Toaster } from "@/components/ui/sonner"
@@ -17,20 +15,8 @@ import Settings from './pages/Settings'
 import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
 import Wishlist from './pages/Wishlist'
 import Cart from './pages/Cart'
-import useWishlist from './hooks/useWishlist'
 
 function App() {
-  const {checkAuth} = useAuth()
-  const { fetchWishlist } = useWishlist()
-
-  useEffect(() => {
-    checkAuth();
-  },[])
-
-  useEffect(() => { 
-    fetchWishlist() 
-  }, [])
-
   return (
     <>
       <Toaster position="top-right" richColors closeButton />

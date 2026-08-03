@@ -1,6 +1,4 @@
-import React, {useState, useEffect} from 'react'
-import axios from 'axios'
-import { toast } from 'sonner'
+import React, {useState} from 'react'
 import { Phone , Mail, Calendar, Timer } from 'lucide-react';
 
 import { TableSkeleton, LoadingOverlay } from '@/components/ui/loading'
@@ -35,38 +33,14 @@ import {
 } from "@/components/ui/alert-dialog"
 
 import STATUS_CONFIG from '@/config/sellerStatus';
+import useSeller from '@/hooks/useSeller';
 
 const Orders = () => {
-    const [loading, setLoading] = useState(false);
-    const [actionLoading, setActionLoading] = useState(false); 
-    const [products, setProducts] = useState([]);
-    
-
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [actionType, setActionType] = useState(''); // next or cancel
 
-    useEffect(() => {
-      fetchOrders();
-    },[])
-
-    async function fetchOrders() {
-      setLoading(true);
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/seller/orders/`, {withCredentials: true});
-        const orders = response.data?.orders;
-        if (orders.length === 0){
-          return;
-        }
-
-        setProducts(orders);
-      } catch (error) {
-        console.error(error);
-        toast.error('Failed to fetch orders');
-      } finally {
-        setLoading(false);
-      }
-    }
+    const { orders: products, ordersLoading: loading, handleUpdateOrderStatus, updateOrderStatusPending: actionLoading } = useSeller();
 
 
     const handleNextStatus = (order) => {
@@ -88,34 +62,15 @@ const Orders = () => {
     
     const confirmAction = async () => {
       if (!selectedOrder) return;
-
-      setActionLoading(true);
       try {
         const newStatus = actionType === 'cancel' 
           ? 'Cancelled' 
           : STATUS_CONFIG[selectedOrder.status].nextStatus;
-        
-        const response = await axios.patch(
-          `${import.meta.env.VITE_API_URL}/seller/orderStatus/${selectedOrder._id}`,
-          { changedStatus: newStatus },
-          { withCredentials: true }
-        );
 
-        if (response.data.success) {
-          // Update local state
-          setProducts(products.map(p => 
-            p._id === selectedOrder._id 
-              ? { ...p, status: newStatus }
-              : p
-          ));
-          
-          toast.success(response.data.message);
-        }
+        await handleUpdateOrderStatus(selectedOrder._id, newStatus);
       } catch (error) {
         console.error(error);
-        toast.error(error.response?.data?.message || 'Failed to update order');
       } finally {
-        setActionLoading(false);
         setDialogOpen(false);
         setSelectedOrder(null);
         setActionType('');
