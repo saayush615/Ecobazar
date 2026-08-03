@@ -16,8 +16,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { Package, Truck, CheckCircle, Clock, XCircle } from 'lucide-react'
-import { toast } from 'sonner'
-import axios from 'axios'
+import { useOrder } from '@/hooks/useOrder'
 
 const OrderCard = ({ 
   orderId,
@@ -27,12 +26,11 @@ const OrderCard = ({
   totalAmount,
   status,
   paymentMethod,
-  paymentStatus,
-  onCancelSuccess
+  paymentStatus
 }) => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  
+
+  const { handleCancelOrder: cancelOrder, cancelPending: isLoading } = useOrder();
 
   const statusSteps = [
     { id: 'Pending', label: 'Order Placed', icon: Clock },
@@ -55,23 +53,12 @@ const OrderCard = ({
     })
   }
 
-  const handleCancelOrder = async () => {
-    setIsLoading(true)
+  const confirmCancelOrder = async () => {
     try {
-      const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/order/${orderId}`,
-        {},
-        { withCredentials: true }
-      )
-
-      toast.success('Order cancelled successfully')
-      setCancelDialogOpen(false)
-      onCancelSuccess(orderId)
+      await cancelOrder(orderId); // hook toasts + invalidates ['orders']
+      setCancelDialogOpen(false);
     } catch (error) {
-      console.error('Cancel order error:', error)
-      toast.error(error.response?.data?.error || 'Failed to cancel order')
-    } finally {
-      setIsLoading(false)
+      // error already toasted by the hook; keep dialog open
     }
   }
 
@@ -256,7 +243,7 @@ const OrderCard = ({
           <AlertDialogFooter>
             <AlertDialogCancel className='cursor-pointer'>Keep Order</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleCancelOrder}
+              onClick={confirmCancelOrder}
               disabled={isLoading}
               className='bg-red-600 hover:bg-red-700 cursor-pointer'
             >
