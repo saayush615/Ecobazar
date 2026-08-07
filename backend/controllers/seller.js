@@ -7,6 +7,7 @@ import { createValidationError, createNotFoundError, createForbiddenError, creat
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { deleteCache, deleteCacheByPattern } from '../services/cache.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,6 +42,8 @@ const handlePostProd = asyncHandler(async (req, res, next) => {
         image: imageUrl,
         seller 
     });
+
+    await deleteCacheByPattern('products:*');
     
     return res.status(201).json({ 
         success: true, 
@@ -84,6 +87,9 @@ const handleUpdateProd = asyncHandler(async (req, res, next) => {
         updateData,
         { new: true } // Return updated document
     );
+
+    await deleteCacheByPattern('products:*');
+    await deleteCache(`product:${ProductId}`);
     
     return res.status(200).json({ 
         success: true, 
@@ -95,6 +101,9 @@ const handleUpdateProd = asyncHandler(async (req, res, next) => {
 const handleDeleteProd = asyncHandler(async (req, res, next) => {
     const ProductId = req.params.id;
     const deletedProduct = await product.findByIdAndDelete(ProductId);
+
+    await deleteCacheByPattern('products:*');
+    await deleteCache(`product:${ProductId}`);
     
     // Delete associated image
     if (deletedProduct && deletedProduct.image) {
