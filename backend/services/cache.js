@@ -28,12 +28,16 @@ export async function deleteCache(key) {
 
 export async function deleteCacheByPattern(pattern) {
     try {
-        const keys = [];
-        for await (const key of redis.scanIterator({ match: pattern, count: 100 })) { // KEYS blocks Redis by scanning the entire keyspace at once, which can hurt performance on large datasets. SCAN is incremental and non-blocking. The Node Redis client's scanIterator() wraps SCAN in an async iterator
-            // so I can use for await...of to process matching keys one at a time without managing the scan cursor manually
-            keys.push(key);
-        }
-        if (keys.length > 0) await redis.del(keys);
+        let cursor = '0';
+        do {
+            const [nextCursor, keys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+            // cursor     -> Where this SCAN starts (Redis's internal scan position).
+            // nextCursor -> Where the next SCAN should continue from.
+            // keys       -> Matching keys found in this scan batch.
+            // COUNT 100  -> Try to return ~100 keys per scan (only a hint).
+            if (keys.length > 0) await redis.del(keys);
+            cursor = nextCursor;
+        } while (cursor !== '0');
     } catch (err) {
         console.error('Redis pattern delete failed:', err.message);
     }
