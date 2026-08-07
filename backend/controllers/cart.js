@@ -2,6 +2,7 @@ import Cart from '../models/cart.js';
 import Product from '../models/product.js';
 import User from '../models/user.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { getAvailableStock } from '../services/stock.js';
 
 const handleAddToCart = asyncHandler(async (req,res,next) => {
     const userId = req.user.id;
@@ -93,11 +94,11 @@ const handleUpdateQuantity = asyncHandler(async (req,res,next) => {
         })
     }
 
-    const product = await Product.findById(cartItem.product);
-    if (product && product.stock < quantity) {
+    const availableStock = await getAvailableStock(cartItem.product);
+    if (quantity > availableStock) {
         return res.status(400).json({
             success: false,
-            message: `Only ${product.stock} items are available in stock`
+            message: `Only ${availableStock} items are available in stock`
         })
     }
 
