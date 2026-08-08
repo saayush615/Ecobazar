@@ -8,6 +8,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { deleteCache, deleteCacheByPattern } from '../services/cache.js';
+import { invalidateStock } from '../services/stock.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -88,6 +89,8 @@ const handleUpdateProd = asyncHandler(async (req, res, next) => {
         { new: true } // Return updated document
     );
 
+    await invalidateStock(ProductId); // stock:${productId}
+
     await deleteCacheByPattern('products:*');
     await deleteCache(`product:${ProductId}`);
     
@@ -101,6 +104,8 @@ const handleUpdateProd = asyncHandler(async (req, res, next) => {
 const handleDeleteProd = asyncHandler(async (req, res, next) => {
     const ProductId = req.params.id;
     const deletedProduct = await product.findByIdAndDelete(ProductId);
+
+     await invalidateStock(ProductId); // stock:${productId}
 
     await deleteCacheByPattern('products:*');
     await deleteCache(`product:${ProductId}`);
