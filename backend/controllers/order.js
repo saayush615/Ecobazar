@@ -371,11 +371,14 @@ const handleCancelOrder = asyncHandler(async (req, res, next) => {
       return next(createValidationError('Order cannot be cancelled'));
     }
 
-    if (order.status === 'Pending') {
+    if (order.status === 'Confirmed') {
     for (const cartItem of order.carts) {
             await increaseStock(cartItem.product, cartItem.quantity);
         }
     }
+
+    // If Payment status == 'confirmed' 
+    // refund logic is left
     
     order.status = 'Cancelled';
     await order.save();
