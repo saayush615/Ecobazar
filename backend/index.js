@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import methodOverride from 'method-override';
 import passport from 'passport';
 import cors from 'cors';
+import { startOrderCleanup } from './services/orderCleanup.js';
 
 import './config/passport.js'
 import { connectToDB } from './config/database.js'
@@ -50,6 +51,7 @@ app.use(checkAuthentication);
 
 
 connectToDB();
+startOrderCleanup();
 
 app.get('/', (_req,res) => {
     return res.status(200).json({
