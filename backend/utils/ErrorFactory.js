@@ -18,3 +18,6 @@ export const createDuplicateError = (field = 'Item') =>
 
 export const createFileUploadError = (message = 'File upload failed') => 
     new AppError(`File upload error: ${message}`, 400);
+
+export const createRateLimitError = (message = 'Too many requests') =>
+    new AppError(message, 429);
