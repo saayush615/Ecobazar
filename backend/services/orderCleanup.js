@@ -6,7 +6,7 @@ import { increaseStock } from './stock.js';
 const GRACE_MINUTES = Number(process.env.ORDER_CLEANUP_GRACE_MINUTES) || 15;
 
 export async function runOrderCleanup() {
-    // Distributed lock: only ONE instance may run the job (safe when scaled)
+    // Distributed lock: only ONE instance may run the job (safe when scaled to more than one server).
     const lockAcquired = await redis
         .set('lock:order-cleanup', '1', 'EX', 60, 'NX')
         .catch((err) => {
@@ -54,6 +54,6 @@ export async function runOrderCleanup() {
 }
 
 export function startOrderCleanup() {
-    cron.schedule('*/1 * * * *', runOrderCleanup); // every 15 minutes
+    cron.schedule('*/15 * * * *', runOrderCleanup); // every 15 minutes
     console.log(`Order cleanup job scheduled (every 15 min, grace ${GRACE_MINUTES} min)`);
 }
