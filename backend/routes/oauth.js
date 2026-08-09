@@ -2,12 +2,14 @@ import express from 'express';
 import passport from 'passport';
 import dotenv from 'dotenv'
 import { createToken } from '../services/auth.js'
+import { oauthLimiter } from '../middlewares/rateLimit.js';
 
 dotenv.config();
 
 const router = express.Router();
 
 router.get('/google',
+    oauthLimiter,
     passport.authenticate('google', { 
         scope: ['profile','email'] 
     })
@@ -44,6 +46,7 @@ router.get('/google/callback',
   });
 
 router.get('/facebook',
+    oauthLimiter,
   passport.authenticate('facebook', {
     scope: ['email', 'public_profile']  //  Facebook accounts require app verification for email and public_profile access
   })

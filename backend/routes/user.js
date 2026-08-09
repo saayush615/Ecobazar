@@ -2,11 +2,12 @@ import express from 'express';
 import { handleSignup, handleLogin, handleAuthentication } from '../controllers/user.js';
 import { registerSchema, loginSchema } from "../schema/auth.schema.js";
 import { validateBody } from "../middlewares/validate.js";
+import { signupLimiter, loginLimiter } from '../middlewares/rateLimit.js';
 
 const router = express.Router();
 
-router.post('/signup', validateBody(registerSchema), handleSignup);
-router.post('/login', validateBody(loginSchema), handleLogin);
+router.post('/signup', validateBody(registerSchema), signupLimiter, handleSignup);
+router.post('/login', validateBody(loginSchema), loginLimiter, handleLogin);
 
 router.get('/me', handleAuthentication)
 
