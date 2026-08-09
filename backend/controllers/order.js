@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import asyncHandler from '../utils/asyncHandler.js';
 import { createValidationError, createNotFoundError, createUnauthorizedError } from '../utils/ErrorFactory.js';
+import { getAvailableStock, decreaseStock, releaseReservedStock, increaseStock } from '../services/stock.js';
 
 // Step 1: Create Razorpay Order
 const handleCreateOrder = asyncHandler(async (req, res, next) => {
@@ -50,6 +51,26 @@ const handleCreateOrder = asyncHandler(async (req, res, next) => {
         return sum + (item.quantity * price);
     }, 0);
 
+    const reservedItems = [];
+    for (const item of cartItems) {
+        const productId = item.product?._id;
+        const quantity = item.quantity;
+
+        const available = await getAvailableStock(productId);
+        if (available < quantity) {
+            await releaseReservedStock(reservedItems);   // roll back earlier items
+            return next(createValidationError(`Only ${available} units of "${item.product.name}" available`));
+        }
+
+        const reserved = await decreaseStock(productId, quantity);
+        if (!reserved) {
+            await releaseReservedStock(reservedItems);   // roll back earlier items
+            return next(createValidationError(`Insufficient stock for "${item.product.name}"`));
+        }
+
+        reservedItems.push({ productId, quantity });
+    }
+
     // Razorpay order option
     const options = {
         amount: totalAmount * 100, // Razorpay expects amount in paise (smallest currency unit)
@@ -62,11 +83,13 @@ const handleCreateOrder = asyncHandler(async (req, res, next) => {
         }
     };
 
-    // Create razorpay order
-    const razorpayOrder = await razorpayInstance.orders.create(options);
-
+    let razorpayOrder;
     // Create multiple orders - one pre seller
     const createdOrders = [];
+
+    try{
+    // Create razorpay order
+    razorpayOrder = await razorpayInstance.orders.create(options);
 
     for (const [sellerId, groupData] of Object.entries(sellerGroups)) {
         // Calculate subtotal for this seller's items
@@ -96,6 +119,11 @@ const handleCreateOrder = asyncHandler(async (req, res, next) => {
         });
         
         createdOrders.push(order);
+    }
+
+    } catch (error) {
+        await releaseReservedStock(reservedItems);
+        return next(error);
     }
 
     return res.status(201).json({
@@ -167,18 +195,18 @@ const handleVerifyPayment = asyncHandler(async (req, res, next) => {
 const handlePaymentFailure = asyncHandler(async (req, res, next) => {
     const { checkoutSessionId } = req.body;
 
-    const updateResult = await Order.updateMany(
-        { 
-            checkoutSessionId: checkoutSessionId,
-            paymentStatus: 'pending'
-        },
-        {
-            paymentStatus: 'failed',
-            status: 'Cancelled'
-        }
-    );
+    const orders = await Order.find({ checkoutSessionId, paymentStatus: 'pending' });
 
-    const orders = await Order.find({ checkoutSessionId: checkoutSessionId });
+    for (const order of orders) {
+        for (const cartItem of order.carts) {
+            await increaseStock(cartItem.product, cartItem.quantity);
+        }
+    }
+
+    const updateResult = await Order.updateMany(
+        { checkoutSessionId, paymentStatus: 'pending' },
+        { paymentStatus: 'failed', status: 'Cancelled' }
+    );
 
     return res.status(200).json({
         success: true,
@@ -203,7 +231,7 @@ const handleCODOrder = asyncHandler(async (req,res,next) => {
     if (cartItems.length === 0) {
         return next(createValidationError('Cart is empty'));
     }
-
+// groups = { s1: { seller: {}, items:[]}, s2: { seller: {}, items:[]}}
     const sellerGroups = cartItems.reduce((groups, cartItem) => {
         const sellerId = cartItem.product?.seller?._id.toString();
 
@@ -224,7 +252,29 @@ const handleCODOrder = asyncHandler(async (req,res,next) => {
         return sum + (item.quantity * price);
     }, 0);
 
+    const reservedItems = [];
+    for (const item of cartItems) {
+        const productId = item.product?._id;
+        const quantity = item.quantity;
+
+        const available = await getAvailableStock(productId);
+        if (available < quantity) {
+            await releaseReservedStock(reservedItems);
+            return next(createValidationError(`Only ${available} units of "${item.product.name}" available`));
+        }
+
+        const reserved = await decreaseStock(productId, quantity);
+        if (!reserved) {
+            await releaseReservedStock(reservedItems);
+            return next(createValidationError(`Insufficient stock for "${item.product.name}"`));
+        }
+
+        reservedItems.push({ productId, quantity });
+    }
+
     const createdOrders = [];
+
+    try{
 
     for (const [sellerId, groupData] of Object.entries(sellerGroups)) {
         const sellerSubtotal = groupData.items.reduce((sum, item) => {
@@ -250,6 +300,10 @@ const handleCODOrder = asyncHandler(async (req,res,next) => {
         });
 
         createdOrders.push(order);
+    }
+    } catch(error){
+        await releaseReservedStock(reservedItems);
+        return next(error);
     }
 
     await Cart.deleteMany({ user: userId });
@@ -316,6 +370,15 @@ const handleCancelOrder = asyncHandler(async (req, res, next) => {
     if (!['Pending', 'Confirmed'].includes(order.status)) {
       return next(createValidationError('Order cannot be cancelled'));
     }
+
+    if (order.status === 'Confirmed') {
+    for (const cartItem of order.carts) {
+            await increaseStock(cartItem.product, cartItem.quantity);
+        }
+    }
+
+    // If Payment status == 'confirmed' 
+    // refund logic is left
     
     order.status = 'Cancelled';
     await order.save();
