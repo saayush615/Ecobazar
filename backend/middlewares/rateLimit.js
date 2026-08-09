@@ -4,6 +4,16 @@ import redis from '../config/redis.js';
 
 const sendCommand = (...args) => redis.call(...args);
 
+// rate-limit-redis loads its Lua script during store init (a network call).
+// With `enableOfflineQueue: false`, ioredis rejects commands before the
+// socket is writable, so we must NOT create any store until Redis is ready.
+await new Promise((resolve) => {
+    if (redis.status === 'ready') return resolve();
+    redis.once('ready', resolve);
+});
+
+// Don't "fix" this by flipping enableOfflineQueue back to true. That would make a dead Redis hang every command through ioredis's queue and stall requests — the exact failure mode you set that option to avoid. The ready-wait keeps your resilience config intact.
+
 const rateLimitDefaults = (prefix) => ({
     store: new RedisStore({ sendCommand, prefix }),
     standardHeaders: 'draft-8',   // IETF combined RateLimit header
