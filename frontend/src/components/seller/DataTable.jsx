@@ -120,11 +120,17 @@ const DataTable = ({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows?.length ? (
+            // array of all rows
             table.getRowModel().rows.map(row => (
               <TableRow key={row.id}>
+                {/* Render every cell belonging to the current row */}
                 {row.getAllCells().map(cell => (
                   <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {/* Render the cell using its configured column definition and cell context */}
+                    {flexRender(
+                      cell.column.columnDef.cell, 
+                      cell.getContext()
+                    )}
                   </TableCell>
                 ))}
               </TableRow>
