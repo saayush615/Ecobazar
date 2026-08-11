@@ -17,6 +17,7 @@ import { Plus } from 'lucide-react';
 import Products from '@/components/seller/Products'
 import Orders from '@/components/seller/Orders'
 import OrderHistory from '@/components/seller/OrderHistory'
+import Sales from '@/components/seller/Sales'
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('products')
@@ -56,7 +57,7 @@ const Dashboard = () => {
       case 'history':
         return <OrderHistory />
       case 'sales':
-        return <div className='text-gray-600 dark:text-gray-300'>Sales content will go here</div>
+        return <Sales />
       default:
         return null
     }
