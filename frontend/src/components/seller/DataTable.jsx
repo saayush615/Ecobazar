@@ -22,6 +22,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+// import {
+//   useTanStackTableDevtools,
+// } from '@tanstack/react-table-devtools'
 
 const DataTable = ({
   tableKey,
@@ -68,6 +71,8 @@ const DataTable = ({
     initialState: enablePagination ? { pagination: { pageSize } } : undefined,
     ...options,
   })
+
+  // useTanStackTableDevtools(table);
 
   if (loading) {
     return (
