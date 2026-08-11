@@ -56,6 +56,7 @@ const Products = () => {
   }
 
   const columns = [
+    // display() = used for column that doesn't directly correspond to one property in your data
     columnHelper.display({
       id: 'no',
       header: 'No.',
@@ -64,6 +65,7 @@ const Products = () => {
         return idx + 1
       },
     }),
+    // accessor() = Used when the column is connected to a property in your row data.
     columnHelper.accessor('image', {
       header: 'Image',
       enableSorting: false,
