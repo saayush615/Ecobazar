@@ -7,7 +7,8 @@ import {
     handleShowAllProd, 
     handleGetSellerOrders,
     handleGetSellerOrderHistory,
-    handleChangeOrderStatus  } from '../controllers/seller.js';
+    handleChangeOrderStatus,
+    handleGetAnalytics  } from '../controllers/seller.js';
 
 import {upload } from '../config/upload.js'
 import { validateBody } from '../middlewares/validate.js';
@@ -23,6 +24,7 @@ router.delete('/:id', handleDeleteProd);
 
 router.get('/orders', handleGetSellerOrders);
 router.get('/order-history', handleGetSellerOrderHistory);
+router.get('/analytics', handleGetAnalytics);
 
 router.patch('/orderStatus/:orderId', validateBody(orderStatusSchema), handleChangeOrderStatus);
 
