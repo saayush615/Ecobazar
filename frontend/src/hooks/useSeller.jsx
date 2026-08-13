@@ -9,6 +9,7 @@ import {
   fetchSellerOrders as fetchSellerOrdersApi,
   fetchSellerOrderHistory as fetchSellerOrderHistoryApi,
   updateOrderStatus as updateOrderStatusApi,
+  fetchSellerAnalytics as fetchSellerAnalyticsApi,
 } from '@/lib/api/seller'
 import { useAuth } from './useAuth'
 
@@ -41,14 +42,24 @@ export const useSeller = () => {
     staleTime: 1000 * 30,
   })
 
+  const { data: analyticsData, isLoading: analyticsLoading, refetch: refetchAnalytics } = useQuery({
+    queryKey: ['seller-analytics'],
+    queryFn: fetchSellerAnalyticsApi,
+    enabled: isAuthenticated,
+    retry: false,
+    staleTime: 1000 * 30,
+  })
+
   // Invalidate functions
   const invalidateProducts = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['seller-products'] }) // marks cached data as stale & if that query is currently being used by a component, it will usually refetch it in the background.
-  }, [queryClient])
+      queryClient.invalidateQueries({ queryKey: ['seller-products'] }) // marks cached data as stale & if that query is currently being used by a component, it will usually refetch it in the background.
+      queryClient.invalidateQueries({ queryKey: ['seller-analytics'] }) // stock/category changed → charts must refresh
+    }, [queryClient])
 
   const invalidateOrders = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['seller-orders'] })
     queryClient.invalidateQueries({ queryKey: ['seller-order-history'] })
+    queryClient.invalidateQueries({ queryKey: ['seller-analytics'] })
   }, [queryClient])
 
   // Mutations
@@ -142,9 +153,12 @@ export const useSeller = () => {
     productsLoading,
     ordersLoading,
     orderHistoryLoading,
+    analytics: analyticsData?.analytics ?? null,
+    analyticsLoading,
     refetchProducts,
     refetchOrders,
     refetchOrderHistory,
+    refetchAnalytics,
     createProductPending: createProductMutation.isPending,
     updateProductPending: updateProductMutation.isPending,
     deleteProductPending: deleteProductMutation.isPending,
