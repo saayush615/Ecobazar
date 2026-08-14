@@ -20,7 +20,7 @@ import OrderHistory from '@/components/seller/OrderHistory'
 import Sales from '@/components/seller/Sales'
 
 const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('products')
+  const [activeTab, setActiveTab] = useState('sales')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [addProduct, setAddProduct] = useState(false)
   const { user, logout } = useAuth()
@@ -42,10 +42,10 @@ const Dashboard = () => {
   }
 
   const navigationItems = [
+    { id: 'sales', label: 'Sales', icon: TrendingUp },
     { id: 'products', label: 'Products', icon: Package },
     { id: 'orders', label: 'Orders', icon: ShoppingCart },
     { id: 'history', label: 'Order History', icon: History },
-    { id: 'sales', label: 'Sales', icon: TrendingUp },
   ]
 
   const renderContent = () => {
