@@ -20,3 +20,6 @@ export const fetchSellerOrderHistory = () =>
 
 export const updateOrderStatus = (orderId, changedStatus) =>
   api.patch(`/seller/orderStatus/${orderId}`, { changedStatus }).then(res => res.data);
+
+export const fetchSellerAnalytics = () =>
+  api.get('/seller/analytics').then(res => res.data);

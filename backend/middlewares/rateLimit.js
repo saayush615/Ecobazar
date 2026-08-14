@@ -1,5 +1,5 @@
 import { rateLimit } from 'express-rate-limit';
-import { RedisStore } from 'rate-limit-redis';
+import { RedisStore } from 'rate-limit-redis'; // // RedisStore connects express-rate-limit to our existing Redis.
 import redis from '../config/redis.js';
 
 const sendCommand = (...args) => redis.call(...args);
