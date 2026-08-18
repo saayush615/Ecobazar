@@ -20,6 +20,6 @@ export const validateQuery = (schema) => (req, _res, next) => {
     return next(createValidationError(message));
   }
 
-  req.query = result.data;
+  req.validateQuery = result.data;
   next();
 };

@@ -101,10 +101,10 @@ const handleGetFilteredByCategoryData = asyncHandler(async (req,res,next) => {
 })
 
 const handleSearchProducts = asyncHandler(async (req, res, next) => {
-    const { q, category, minPrice, maxPrice, inStock, sort } = req.query; // Everything from req.query is a string (or undefined)
+    const { q, category, minPrice, maxPrice, inStock, sort } = req.validateQuery; // Everything from req.query is a string (or undefined)
 
-    const page = Math.max(parseInt(req.query.page, 10) || 1, 1); // parseInt = reads digits until it hits garbage, ignores rest. 10 is the radix (base 10), always pass it or you can get weird results with strings like "08"
-    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 12, 1), 50);
+    const page = Math.max(parseInt(req.validateQuery.page, 10) || 1, 1); // parseInt = reads digits until it hits garbage, ignores rest. 10 is the radix (base 10), always pass it or you can get weird results with strings like "08"
+    const limit = Math.min(Math.max(parseInt(req.validateQuery.limit, 10) || 12, 1), 50);
 
     if (
         (minPrice !== undefined && minPrice !== '' && isNaN(Number(minPrice))) ||
