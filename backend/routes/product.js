@@ -1,6 +1,7 @@
 import express from 'express';
 import { handleGetAllProd, handleGetProdById, handleGetFilteredByCategoryData, handleSearchProducts } from '../controllers/product.js';
 import { validateQuery } from '../middlewares/validate.js';
+import { searchProductQuerySchema } from '../schema/product.schema.js';
 
 const router = express.Router();
 
