@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchAllProducts, fetchProductsById, fetchProductsByCategory } from "@/lib/api/product";
+import { fetchAllProducts, fetchProductsById, fetchProductsByCategory, searchProducts } from "@/lib/api/product";
 
 export const useProduct = () => {
     const { data, isLoading, refetch } = useQuery({
@@ -42,6 +42,25 @@ export const useProductsByCategory = (slug) => {
 
     return {
         products: data?.products ?? [],
+        loading: isLoading,
+        refetchProducts: refetch,
+    }
+}
+
+export const useSearchProducts = (params) => {
+    const { data, isLoading, refetch } = useQuery({
+        queryKey: ['products', 'search', params],
+        queryFn: () => searchProducts(params),
+        enabled: !!(params?.q && params.q.trim()),
+        retry: false,
+        staleTime: 1000 * 60 * 2,
+    })
+
+    return {
+        products: data?.products ?? [],
+        total: data?.total ?? 0,
+        totalPages: data?.totalPages ?? 0,
+        page: data?.page ?? 1,
         loading: isLoading,
         refetchProducts: refetch,
     }

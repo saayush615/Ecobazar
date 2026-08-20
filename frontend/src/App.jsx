@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashbord'
 import Orders from './pages/Orders'
 import Category from './pages/Category'
 import Settings from './pages/Settings'
+import SearchResultPage from './pages/Search'
 
 import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
 import Wishlist from './pages/Wishlist'
@@ -44,6 +45,13 @@ function App() {
             <Category /> 
           </BuyerOrPublicRoute>
         } />
+
+        <Route 
+          path='/search' 
+          element={ 
+            <SearchResultPage /> 
+          } 
+        />
 
         <Route path='/signup' element={ <Signup /> } />
         <Route path='/login' element={ <Login /> } />
