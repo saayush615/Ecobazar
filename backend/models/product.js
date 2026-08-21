@@ -26,7 +26,12 @@ const productSchema = mongoose.Schema({
     seller: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', // Refers to the 'user' collection
-    }
+    },
+    description: {
+        type: String,
+        default: ''
+    },
+    
 }, {timestamps: true});
 
 export default mongoose.model('Product', productSchema);
