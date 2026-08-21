@@ -27,7 +27,9 @@ const SearchResultPage = () => {
     const debouncedMin = useDebounce(minInput, 450);
     const debouncedMax = useDebounce(maxInput, 450);
 
-    const updateURL = useCallback((changes) => {
+    // 1. URL's query string in sync with filter state
+    // updateURL = a memoized function that takes an object of {key: value} changes and merges them into the current URL search params.
+    const updateURL = useCallback((changes) => { // changes — an object where keys are search param names and values are the new values to set (e.g. { min: '10', max: '50' })
         const next = new URLSearchParams(searchParams);
         Object.entries(changes).forEach(([key, value]) => {
             if (value === '' || value === null || value === undefined) {

@@ -26,15 +26,19 @@ const Header = () => {
   const location = useLocation();
 
   const isOnSearchPage = location.pathname === '/search';
-  const urlQ = new URLSearchParams(location.search).get('q') ?? '';
+  const urlQ = new URLSearchParams(location.search).get('q') ?? ''; // creates a built-in JS object that makes it easy to parse and read query string parameters(no need to manually split on & and =).
 
   const [searchQuery, setSearchQuery] = useState(urlQ);
   const lastEmittedRef = useRef(urlQ);
   const debouncedSearch = useDebounce(searchQuery, 450);
 
+  // EFFECT 1: Sync the debounced search input -> the URL
+  // Runs whenever the debounced value settles, or the current route changes
   useEffect(() => {
     const q = debouncedSearch.trim();
     if (q === lastEmittedRef.current) return;
+    // Remember this value as the "last emitted" one, so future runs can compare against it.
+  // Using a ref here (not state) because updating it should NOT trigger a re-render.
     lastEmittedRef.current = q;
 
     if (!q) {
@@ -42,11 +46,21 @@ const Header = () => {
       return;
     }
 
+    // encodeURIComponent makes the term URL-safe (escapes spaces, &, ?, etc.)
+    // replace: isOnSearchPage ->
+    //   - true if already on /search: overwrite history entry (no back-button spam per keystroke)
+    //   - false if navigating to /search for the first time: push a new history entry
     navigate(`/search?q=${encodeURIComponent(q)}`, { replace: isOnSearchPage });
   }, [debouncedSearch, isOnSearchPage, navigate]);
 
+
+  // EFFECT 2: Sync the URL -> the search input
+  // Handles cases where the URL changes from OUTSIDE the input itself,
+  // e.g. browser back/forward button, or opening a shared link with ?q=...
   useEffect(() => {
     if (!isOnSearchPage) return;
+
+    // Push whatever the URL currently says into the visible input box
     setSearchQuery(urlQ);
   }, [isOnSearchPage, urlQ]);
 
@@ -56,6 +70,7 @@ const Header = () => {
   }
 
   const handleSearchSubmit = (e) => {
+    // Stop the browser's default full-page-reload form submission behavior
     e.preventDefault();
     const q = searchQuery.trim();
     if (!q) return;
