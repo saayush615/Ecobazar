@@ -67,6 +67,7 @@ const AddProducts = ({ open, onOpenChange }) => {
     formData.append('discountPrice', data.discountPrice);
     formData.append('category', data.category);
     formData.append('stock', data.stock);
+    formData.append('description', data.description ?? '');
     if (imageFile) formData.append('image', imageFile);
 
     try {
@@ -239,6 +240,23 @@ const AddProducts = ({ open, onOpenChange }) => {
               <option value="Diabetic Food">Diabetic Food</option>
               <option value="Dishwash">Dishwash</option>
             </select>
+          </div>
+
+          <div className='flex flex-col gap-1'>
+            <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+              Description
+            </label>
+            <textarea
+              rows={4}
+              placeholder='Describe your product...'
+              {...register('description', {
+                maxLength: { value: 2000, message: 'Description cannot exceed 2000 characters' },
+              })}
+              className='border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-green-500 focus:outline-none transition-colors resize-y'
+            />
+            {errors.description && (
+              <p className='text-xs text-red-500 mt-1'>{errors.description.message}</p>
+            )}
           </div>
 
           {/* Action buttons */}
