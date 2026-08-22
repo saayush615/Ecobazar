@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchAllProducts, fetchProductsById, fetchProductsByCategory, searchProducts } from "@/lib/api/product";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { fetchAllProducts, fetchProductsById, fetchProductsByCategory, searchProducts, suggestProducts } from "@/lib/api/product";
 
 export const useProduct = () => {
     const { data, isLoading, refetch } = useQuery({
@@ -63,5 +63,26 @@ export const useSearchProducts = (params) => {
         page: data?.page ?? 1,
         loading: isLoading,
         refetchProducts: refetch,
+    }
+}
+
+export const MIN_SUGGEST_LENGTH = 2;
+
+export const useSearchSuggestions = (q) => {
+    const trimmed = q?.trim() ?? '';
+
+    const { data, isFetching, isSuccess } = useQuery({
+        queryKey: ['products', 'suggest', trimmed],
+        queryFn: () => suggestProducts(trimmed),
+        enabled: trimmed.length >= MIN_SUGGEST_LENGTH,
+        retry: false,
+        staleTime: 1000 * 30,
+        placeholderData: keepPreviousData, // keep previous rows visible while typing instead of flashing empty
+    })
+
+    return {
+        suggestions: data?.products ?? [],
+        loading: isFetching,
+        settled: isSuccess,
     }
 }
