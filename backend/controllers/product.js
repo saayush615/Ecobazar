@@ -210,4 +210,33 @@ const handleSearchProducts = asyncHandler(async (req, res, next) => {
     });
 });
 
-export { handleGetAllProd, handleGetProdById, handleGetFilteredByCategoryData, handleSearchProducts };
+const handleSuggestProducts = asyncHandler(async (req, res, next) => {
+    const { q, limit } = req.validateQuery;
+    const maxResults = Math.min(limit ?? 8, 10);
+
+    const regex = new RegExp(escapeRegex(q.trim()), 'i');
+    const products = await Product.find(
+        { $or: [{ name: regex }, { category: regex }] },
+        { name: 1, image: 1, category: 1, discountPrice: 1, originalPrice: 1 }
+    )
+        .limit(maxResults)
+        .lean();
+
+    // Suggestion rows only need the effective price - computed here instead of
+    // running the $addFields pipeline / ratings aggregation used by /search.
+    const suggestions = products.map((product) => ({
+        _id: product._id,
+        name: product.name,
+        image: product.image ?? null,
+        category: product.category ?? null,
+        price: product.discountPrice ?? product.originalPrice,
+    }));
+
+    return res.status(200).json({
+        success: true,
+        message: suggestions.length > 0 ? `Suggestions for "${q.trim()}"` : 'No suggestions found',
+        products: suggestions,
+    });
+});
+
+export { handleGetAllProd, handleGetProdById, handleGetFilteredByCategoryData, handleSearchProducts, handleSuggestProducts };
