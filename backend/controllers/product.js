@@ -2,9 +2,31 @@ import Product from '../models/product.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { createNotFoundError, createValidationError } from '../utils/ErrorFactory.js';
 import { getCache, setCache } from '../services/cache.js';
+import Review from '../models/review.js';
+import mongoose from 'mongoose';
 
 const CACHE_TTL = 300;
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// Single aggregate over Review collection -> { _id: productId, averageRating, reviewCount },
+// merged onto each product. Requires plain objects (.lean() or aggregate output).
+const attachRatings = async (plainProducts) => {
+    if (!Array.isArray(plainProducts) || plainProducts.length === 0) {
+        return [];
+    }
+    const stats = await Review.aggregate([
+        { $group: { _id: '$product', averageRating: { $avg: '$rating' }, reviewCount: { $sum: 1 } } },
+    ]);
+    const statMap = new Map(stats.map((stat) => [stat._id.toString(), stat]));
+    return plainProducts.map((product) => {
+        const stat = statMap.get(product._id.toString());
+        return {
+            ...product,
+            averageRating: stat ? Math.round(stat.averageRating * 10) / 10 : 0,
+            reviewCount: stat?.reviewCount ?? 0,
+        };
+    });
+};
 
 const handleGetAllProd = asyncHandler(async (_req,res,next) => {
     const cacheKey = 'products:all';
@@ -16,7 +38,7 @@ const handleGetAllProd = asyncHandler(async (_req,res,next) => {
             products: cached
         })
     }
-    const products = await Product.find();
+    const products = await attachRatings((await Product.find().lean()));
     await setCache(cacheKey, products, CACHE_TTL);
 
     if (products.length === 0) {
@@ -35,7 +57,7 @@ const handleGetAllProd = asyncHandler(async (_req,res,next) => {
 
 const handleGetProdById = asyncHandler(async (req,res,next) => {
     const ProdId = req.params.id;
-    if (!ProdId) {
+    if (!ProdId || !mongoose.isValidObjectId(ProdId)) {
         return next(createValidationError('ProductId is required'));
     }
 
@@ -48,17 +70,35 @@ const handleGetProdById = asyncHandler(async (req,res,next) => {
             product: cached
         })
     }
-    const product = await Product.findById(ProdId);
+    const product = await Product.findById(ProdId)
+        .populate('seller','name shopName');
     if (!product) {
         return next(createNotFoundError('Product'));
     }
 
-    await setCache(cacheKey, product, CACHE_TTL);
+    const reviews = await Review.find({ product: product._id })
+        .populate('user', 'name')
+        .sort({ createdAt: -1 });
+
+    const reviewCount = reviews.length;
+    const averageRating = reviewCount > 0
+        ? Number((reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount).toFixed(1))
+        : 0;
+
+    // Plain object only - Redis stores JSON.stringify output
+    const productWithReviews = {
+        ...product.toObject(),
+        reviews,
+        averageRating,
+        reviewCount
+    };
+
+    await setCache(cacheKey, productWithReviews, CACHE_TTL);
 
     return res.status(200).json({
         success: true,
         message: 'Product retrieved successfully',
-        product
+        product: productWithReviews
     })
 })
 
@@ -82,7 +122,7 @@ const handleGetFilteredByCategoryData = asyncHandler(async (req,res,next) => {
         })
     }
 
-    const filteredData = await Product.find({ category: normalizedCategory});
+    const filteredData = await attachRatings(await Product.find({ category: normalizedCategory }).lean());
     await setCache(cacheKey, filteredData, CACHE_TTL);
 
     if (filteredData.length === 0) {
@@ -157,11 +197,12 @@ const handleSearchProducts = asyncHandler(async (req, res, next) => {
 
     const results = await Product.aggregate(pipeline);
     const total = results[0]?.metadata[0]?.total ?? 0;
+    const products = await attachRatings(results[0]?.data ?? []);
 
     return res.status(200).json({
         success: true,
         message: q && q.trim() ? `Search results for "${q.trim()}"` : 'Products retrieved successfully',
-        products: results[0]?.data ?? [],
+        products,
         page,
         limit,
         total,

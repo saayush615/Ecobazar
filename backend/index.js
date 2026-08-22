@@ -23,6 +23,7 @@ import orderRoute from './routes/order.js';
 import oAuthRoute from './routes/oauth.js';
 import favRoute from './routes/favorite.js';
 import contactRoute from './routes/contact.js';
+import reviewRoute from './routes/review.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,6 +65,7 @@ app.get('/', (_req,res) => {
 
 app.use('/user', userRoute);
 app.use('/product', productRoute);
+app.use('/review', reviewRoute);
 app.use('/cart', buyerOnly, cartRoute);
 app.use('/fav', buyerOnly, favRoute);
 app.use('/order', buyerOnly, orderRoute);

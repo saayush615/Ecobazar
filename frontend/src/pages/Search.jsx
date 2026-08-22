@@ -201,6 +201,8 @@ const SearchResultPage = () => {
                                                 source={product.image}
                                                 originalPrice={product.originalPrice}
                                                 discountedPrice={product.discountPrice}
+                                                averageRating={product.averageRating}
+                                                reviewCount={product.reviewCount}
                                             />
                                         ))}
                                     </div>

@@ -16,6 +16,7 @@ import SearchResultPage from './pages/Search'
 import { SellerOnly, RequireAuth, BuyerOrPublicRoute } from '@/components/ProtectedRoute'
 import Wishlist from './pages/Wishlist'
 import Cart from './pages/Cart'
+import ProductDetail from './pages/ProductDetail'
 
 function App() {
   return (
@@ -43,6 +44,12 @@ function App() {
         <Route path='/category/:categoryslug' element={ 
           <BuyerOrPublicRoute>
             <Category /> 
+          </BuyerOrPublicRoute>
+        } />
+
+        <Route path='/product/:id' element={ 
+          <BuyerOrPublicRoute>
+            <ProductDetail /> 
           </BuyerOrPublicRoute>
         } />
 
