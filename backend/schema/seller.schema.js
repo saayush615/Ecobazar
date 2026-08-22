@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const sellerProductSchema = z.object({
   name: z.string().min(2, "Name is required"),
+  description: z.string().max(200, "Description cannot exceed 2000 characters").optional(),
   originalPrice: z.coerce.number().positive("Original price must be greater than 0"),
   discountPrice: z.coerce.number().nonnegative("Discount price cannot be negative").optional(),
   category: z.string().optional(),

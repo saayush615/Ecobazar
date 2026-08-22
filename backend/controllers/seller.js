@@ -21,7 +21,7 @@ const cleanupLocalFile = (req) => {
 };
 
 const handlePostProd = asyncHandler(async (req, res, next) => {
-    const { name, originalPrice, discountPrice, category, stock } = req.body;
+    const { name, description, originalPrice, discountPrice, category, stock } = req.body;
     const seller = req.user.id;
 
     let imageUrl = null;
@@ -37,6 +37,7 @@ const handlePostProd = asyncHandler(async (req, res, next) => {
     
     const newProduct = await product.create({ 
         name, 
+        description,
         originalPrice,
         discountPrice,
         category, 
@@ -55,7 +56,7 @@ const handlePostProd = asyncHandler(async (req, res, next) => {
 }, cleanupLocalFile)
 
 const handleUpdateProd = asyncHandler(async (req, res, next) => {
-    const { name, originalPrice, discountPrice, category, stock } = req.body;
+    const { name, description, originalPrice, discountPrice, category, stock } = req.body;
     const ProductId = req.params.id;
     
     
@@ -65,7 +66,7 @@ const handleUpdateProd = asyncHandler(async (req, res, next) => {
     }
     
 
-    const updateData = { name, originalPrice, discountPrice, category, stock };
+    const updateData = { name, description, originalPrice, discountPrice, category, stock };
     
 
     if (req.file) {
