@@ -14,3 +14,8 @@ export const searchProductQuerySchema = z.object({
     page: z.coerce.number().int().positive().optional(),
     limit: z.coerce.number().int().positive().max(50).optional(),
 });
+
+export const suggestProductQuerySchema = z.object({
+    q: z.string().trim().min(1).max(100),
+    limit: z.coerce.number().int().positive().max(10).optional(),
+});
