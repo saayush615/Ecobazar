@@ -8,6 +8,26 @@ import mongoose from 'mongoose';
 const CACHE_TTL = 300;
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+// Single aggregate over Review collection -> { _id: productId, averageRating, reviewCount },
+// merged onto each product. Requires plain objects (.lean() or aggregate output).
+const attachRatings = async (plainProducts) => {
+    if (!Array.isArray(plainProducts) || plainProducts.length === 0) {
+        return [];
+    }
+    const stats = await Review.aggregate([
+        { $group: { _id: '$product', averageRating: { $avg: '$rating' }, reviewCount: { $sum: 1 } } },
+    ]);
+    const statMap = new Map(stats.map((stat) => [stat._id.toString(), stat]));
+    return plainProducts.map((product) => {
+        const stat = statMap.get(product._id.toString());
+        return {
+            ...product,
+            averageRating: stat ? Math.round(stat.averageRating * 10) / 10 : 0,
+            reviewCount: stat?.reviewCount ?? 0,
+        };
+    });
+};
+
 const handleGetAllProd = asyncHandler(async (_req,res,next) => {
     const cacheKey = 'products:all';
     const cached = await getCache(cacheKey);
@@ -18,7 +38,7 @@ const handleGetAllProd = asyncHandler(async (_req,res,next) => {
             products: cached
         })
     }
-    const products = await Product.find();
+    const products = await attachRatings((await Product.find().lean()));
     await setCache(cacheKey, products, CACHE_TTL);
 
     if (products.length === 0) {
@@ -102,7 +122,7 @@ const handleGetFilteredByCategoryData = asyncHandler(async (req,res,next) => {
         })
     }
 
-    const filteredData = await Product.find({ category: normalizedCategory});
+    const filteredData = await attachRatings(await Product.find({ category: normalizedCategory }).lean());
     await setCache(cacheKey, filteredData, CACHE_TTL);
 
     if (filteredData.length === 0) {
@@ -177,11 +197,12 @@ const handleSearchProducts = asyncHandler(async (req, res, next) => {
 
     const results = await Product.aggregate(pipeline);
     const total = results[0]?.metadata[0]?.total ?? 0;
+    const products = await attachRatings(results[0]?.data ?? []);
 
     return res.status(200).json({
         success: true,
         message: q && q.trim() ? `Search results for "${q.trim()}"` : 'Products retrieved successfully',
-        products: results[0]?.data ?? [],
+        products,
         page,
         limit,
         total,

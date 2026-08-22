@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import review from '../models/review.js';
 import Product from '../models/product.js';
 import asyncHandler from '../utils/asyncHandler.js';
-import { createValidationError, createNotFoundError, createDuplicateError } from '../utils/ErrorFactory.js';
+import { createValidationError, createNotFoundError, createDuplicateError, createForbiddenError } from '../utils/ErrorFactory.js';
 import { deleteCache } from '../services/cache.js';
 
 const handleGetReview = asyncHandler(async (req,res,next) => {
@@ -51,8 +51,13 @@ const handlePostReview = asyncHandler(async (req,res,next) => {
         comment: comment?.trim() ?? ''
     })
 
-    // product:${id} cache holds reviews/avg-rating -> must be busted
+    // product:${id} cache holds reviews/avg-rating -> must be busted.
+    // List caches now embed ratings too, so bust them as well.
     await deleteCache(`product:${productId}`);
+    await deleteCache('products:all');
+    if (productExists.category) {
+        await deleteCache(`products:category:${productExists.category}`);
+    }
 
     return res.status(201).json({
         success: true,
@@ -81,7 +86,12 @@ const handleDeleteReview = asyncHandler(async (req,res,next) => {
 
     await review.deleteOne({ _id: reviewId });
 
+    const parentProduct = await Product.findById(existingReview.product).select('category');
     await deleteCache(`product:${existingReview.product}`);
+    await deleteCache('products:all');
+    if (parentProduct?.category) {
+        await deleteCache(`products:category:${parentProduct.category}`);
+    }
 
     return res.status(200).json({
         success: true,

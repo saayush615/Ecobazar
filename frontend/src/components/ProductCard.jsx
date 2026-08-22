@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 
-import { ShoppingBag } from 'lucide-react';
-import { Heart } from 'lucide-react';
+import { ShoppingBag, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { useWishlist } from '@/hooks/useWishlist';
@@ -16,8 +16,9 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { useCart } from '@/hooks/useCart';
+import Rating from '@/components/Rating';
 
-const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) => {
+const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice, averageRating = 0, reviewCount = 0 }) => {
     const [isLoading, setIsLoading] = useState(false);
     const { addToWishlist, removeFromWishlist, isInWishlist, getWishlistItem } = useWishlist();
     const { handleAddToCart } = useCart();
@@ -45,24 +46,26 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
             setIsLoading(false);
         }
     }
+
   return (
     <div>
         <Card className={`cursor-pointer transition-all duration-300 ease-in-out hover:border-green-700 group`}>
 
             <CardHeader className='relative'>
-                <img src={source} alt="Category" className='w-full h-20 sm:h-24 md:h-28 object-contain' />
+                <Link to={`/product/${prodId}`} className='block'>
+                    <img src={source} alt={name} className='w-full h-20 sm:h-24 md:h-28 object-contain' />
+                </Link>
 
                 {/* Favourite */}
                 <button 
                     onClick={handleToggleWishlist}
                     className='absolute top-2 right-2'
                     aria-label={isInWishlist(prodId) ? 'Remove from Wishlist' : 'Add to Wishlist'}
-                    disable={isLoading.toString()}
+                    disabled={isLoading}
                 >
                     <Heart 
                         className={`size-8 p-1.5 bg-white dark:bg-gray-900 rounded-2xl transition-all duration-300 active:scale-90 cursor-pointer
-                                ${isInWishlist(prodId) ? 'fill-red-500 text-red-500' : 'hover:text-red-500'}
-                            }`} 
+                                ${isInWishlist(prodId) ? 'fill-red-500 text-red-500' : 'hover:text-red-500'}`}
                     />
                 </button>
 
@@ -77,7 +80,9 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
             </CardHeader>
 
             <CardContent className={`px-2`}>
-                <p className='text-sm transition-colors duration-300 group-hover:text-green-700'>{name}</p>
+                <Link to={`/product/${prodId}`}>
+                    <p className='text-sm transition-colors duration-300 group-hover:text-green-700'>{name}</p>
+                </Link>
 
                 <div className='flex flex-row justify-between items-center'>
                     <div>
@@ -99,7 +104,12 @@ const ProductCard = ({ prodId, name, source, originalPrice, discountedPrice}) =>
             </CardContent>
 
             <CardFooter>
-                <p className='text-xs p-1'>⭐⭐⭐⭐⭐</p>
+                <div className='flex items-center gap-1 p-1'>
+                    <Rating value={Number(averageRating) || 0} size='sm' />
+                    {reviewCount > 0 && (
+                        <span className='text-xs text-gray-500 dark:text-gray-400'>({reviewCount})</span>
+                    )}
+                </div>
             </CardFooter>
 
         </Card>
