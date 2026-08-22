@@ -51,6 +51,7 @@ const Products = () => {
         discountPrice: product.discountPrice,
         category: product.category,
         stock: newStock,
+        description: product.description,
       })
     } catch (error) { /* hook toasts */ }
   }
