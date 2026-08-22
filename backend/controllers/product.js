@@ -2,6 +2,8 @@ import Product from '../models/product.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { createNotFoundError, createValidationError } from '../utils/ErrorFactory.js';
 import { getCache, setCache } from '../services/cache.js';
+import Review from '../models/review.js';
+import mongoose from 'mongoose';
 
 const CACHE_TTL = 300;
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -35,7 +37,7 @@ const handleGetAllProd = asyncHandler(async (_req,res,next) => {
 
 const handleGetProdById = asyncHandler(async (req,res,next) => {
     const ProdId = req.params.id;
-    if (!ProdId) {
+    if (!ProdId || !mongoose.isValidObjectId(ProdId)) {
         return next(createValidationError('ProductId is required'));
     }
 
@@ -48,17 +50,35 @@ const handleGetProdById = asyncHandler(async (req,res,next) => {
             product: cached
         })
     }
-    const product = await Product.findById(ProdId);
+    const product = await Product.findById(ProdId)
+        .populate('seller','name shopName');
     if (!product) {
         return next(createNotFoundError('Product'));
     }
 
-    await setCache(cacheKey, product, CACHE_TTL);
+    const reviews = await Review.find({ product: product._id })
+        .populate('user', 'name')
+        .sort({ createdAt: -1 });
+
+    const reviewCount = reviews.length;
+    const averageRating = reviewCount > 0
+        ? Number((reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount).toFixed(1))
+        : 0;
+
+    // Plain object only - Redis stores JSON.stringify output
+    const productWithReviews = {
+        ...product.toObject(),
+        reviews,
+        averageRating,
+        reviewCount
+    };
+
+    await setCache(cacheKey, productWithReviews, CACHE_TTL);
 
     return res.status(200).json({
         success: true,
         message: 'Product retrieved successfully',
-        product
+        product: productWithReviews
     })
 })
 
