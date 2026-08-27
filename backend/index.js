@@ -35,7 +35,7 @@ app.set('trust proxy', 1);
 dotenv.config();
 
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://icy-meadow-0f2535900.2.azurestaticapps.net'],
+    origin: ['http://localhost:5173', 'https://ecobazar-eta-fawn.vercel.app'],
     credentials: true    // Allow cookies to be sent/received
 }))
 
@@ -61,7 +61,13 @@ app.get('/', (_req,res) => {
         success: true,
         message: 'Welcome to Ecobazar'
     })
-}); 
+});
+
+app.get("/health", (_req, res) => {
+    res.status(200).json({
+        status: "ok"
+    });
+});
 
 app.use('/user', userRoute);
 app.use('/product', productRoute);
