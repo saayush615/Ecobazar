@@ -74,8 +74,10 @@ A modern, full-featured _e-commerce marketplace_ built with the MERN stack that 
 Ecobazar/
 ├── .github/
 │   ├── instructions/          # Development guidelines
-│   └── prompts/
-│       └── senior-mern-mentor.prompt  # AI assistant configuration
+│   ├── prompts/
+│   │   └── senior-mern-mentor.prompt  # AI assistant configuration
+│   └── workflows/
+│       └── backend-deploy.yml # Backend CI/CD (Docker Hub → AWS Lightsail)
 │
 ├── frontend/
 │   ├── public/                # Static assets
@@ -272,6 +274,12 @@ VITE_API_URL=http://localhost:3000
 npm run dev
 ```
 App will run on `http://localhost:5173`
+
+
+## 🚢 CI/CD & Deployment
+
+- ⚙️ **Backend:** GitHub Actions builds the backend Docker image, pushes it to Docker Hub (`saayush615/ecobazar-backend`), then deploys to an **AWS Lightsail** instance over SSH (`docker compose pull app && docker compose up -d app`). Triggered on push to `main` when `backend/**` changes.
+- 🌐 **Frontend:** Deployed to **Vercel** (SPA rewrites via `vercel.json`).
 
 
 ## 🔌 API Routes
