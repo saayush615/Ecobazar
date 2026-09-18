@@ -88,13 +88,7 @@ Ecobazar/
 │   │   │   ├── seller/      # Seller dashboard components + charts/
 │   │   │   ├── Header.jsx
 │   │   │   ├── HeaderSearch.jsx
-│   │   │   ├── Rating.jsx
-│   │   │   ├── DataTable.jsx (seller)
-│   │   │   ├── Navbar.jsx
-│   │   │   ├── Footer.jsx
-│   │   │   ├── ProtectedRoute.jsx
-│   │   │   ├── TestimonySlider.jsx
-│   │   │   └── ...
+│   │   │   ├── ...
 │   │   ├── contexts/        # React Context providers
 │   │   │   └── ThemeContext.jsx
 │   │   ├── hooks/           # Custom React hooks (TanStack Query)
@@ -111,15 +105,7 @@ Ecobazar/
 │   │   ├── store/           # Redux slices (legacy, being phased out)
 │   │   ├── pages/           # Route components
 │   │   │   ├── Home.jsx
-│   │   │   ├── About.jsx
-│   │   │   ├── Contact.jsx
-│   │   │   ├── Signup.jsx
-│   │   │   ├── Login.jsx
-│   │   │   ├── Dashbord.jsx (seller dashboard)
-│   │   │   ├── ProductDetail.jsx
-│   │   │   ├── Search.jsx
-│   │   │   ├── Category.jsx / Cart.jsx / Wishlist.jsx
-│   │   │   └── Orders.jsx / Settings.jsx
+│   │   │   ├── ...
 │   │   ├── App.jsx          # Main app component with routes
 │   │   ├── App.css
 │   │   ├── index.css        # Tailwind imports
@@ -143,14 +129,7 @@ Ecobazar/
 │   │   ├── cloudinary.js   # Image storage config
 │   │   └── upload.js       # Multer file upload config
 │   ├── controllers/         # Route handlers
-│   │   ├── cart.js
-│   │   ├── contact.js
-│   │   ├── favorite.js
-│   │   ├── order.js
-│   │   ├── product.js
-│   │   ├── review.js
-│   │   ├── seller.js
-│   │   └── user.js
+│   │   ├── ...
 │   ├── middlewares/         # Custom middleware
 │   │   ├── auth.js         # JWT check
 │   │   ├── authorization.js # Role-based guards
@@ -158,23 +137,9 @@ Ecobazar/
 │   │   ├── rateLimit.js    # Redis-backed rate limiting
 │   │   └── errorHandler.js # Global error handler
 │   ├── models/              # Mongoose schemas
-│   │   ├── cart.js
-│   │   ├── contact.js
-│   │   ├── favorite.js
-│   │   ├── order.js
-│   │   ├── product.js
-│   │   ├── review.js
-│   │   └── user.js
+│   │   ├── ...
 │   ├── routes/              # API routes
-│   │   ├── cart.js
-│   │   ├── contact.js
-│   │   ├── favorite.js
-│   │   ├── oauth.js        # OAuth routes
-│   │   ├── order.js
-│   │   ├── product.js
-│   │   ├── review.js
-│   │   ├── seller.js
-│   │   └── user.js
+│   │   ├── ...
 │   ├── schema/              # Zod request schemas
 │   ├── services/            # Business logic
 │   │   ├── auth.js         # JWT token creation/verification
